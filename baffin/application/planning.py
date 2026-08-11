@@ -11,7 +11,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
-from baffin.domain import Asset, DerivativeSpec
+from baffin.domain import Asset, DerivativeSpec, StoreState
 
 
 @dataclass(frozen=True)
@@ -48,3 +48,26 @@ def plan_derivatives(
                 )
             )
     return tuple(planned)
+
+
+@dataclass(frozen=True)
+class BuildPlan:
+    """The plan split against the cache: what to skip vs what to generate."""
+
+    hits: tuple[PlannedDerivative, ...]
+    misses: tuple[PlannedDerivative, ...]
+
+
+def diff_plan(
+    plan: tuple[PlannedDerivative, ...], store_state: StoreState
+) -> BuildPlan:
+    """Split a plan into cache HITs and MISSes over an immutable snapshot.
+
+    Pure: a key is a HIT iff it is ``present`` in the snapshot (manifest-recorded
+    AND file-on-disk, pre-checked by the shell). Identical bytes yield an
+    identical key, so a moved or duplicated source is a hit; changing a spec
+    changes only that tier's key, so only that tier misses.
+    """
+    hits = tuple(p for p in plan if p.cache_key in store_state.present)
+    misses = tuple(p for p in plan if p.cache_key not in store_state.present)
+    return BuildPlan(hits=hits, misses=misses)

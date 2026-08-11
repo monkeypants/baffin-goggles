@@ -78,7 +78,7 @@
    commit: Add derivative planning over assets and specs
    - pure expansion of (asset x specs) into planned derivative keys
    test: full plan for N assets x M specs; include_full toggle adds/removes only full tier
-** TODO Add diff_plan producing BuildPlan
+** DONE Add diff_plan producing BuildPlan
    commit: Add cache diff producing the build plan
    - diff_plan(plan, store_state: StoreState) -> BuildPlan of HITs vs MISSes
    - pure over the snapshot; file-existence is pre-checked into StoreState by the shell
