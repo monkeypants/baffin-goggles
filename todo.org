@@ -41,7 +41,7 @@
    - check: ruff + ruff format --check + lint-imports + mypy + pytest
    - placeholder build/serve/clean targets
    test: `make check` runs all five gates green
-** TODO Add GitHub Actions CI running make check      :MILESTONE:
+** DONE Add GitHub Actions CI running make check      :MILESTONE:
    commit: Add GitHub Actions workflow running make check
    - .github/workflows/ci.yml: checkout, install uv, system libvips + ffmpeg, `make check`
    - runs on push + pull_request
