@@ -118,7 +118,7 @@
    commit: Add BuildGallery use case
    - scan -> hash -> read meta -> model -> group -> plan -> diff -> generate MISSES -> render
    test: against fakes — only misses generated; render always invoked; manifest recorded
-** TODO Add CleanGallery use case
+** DONE Add CleanGallery use case
    commit: Add CleanGallery use case
    - prune orphaned derivatives / stale manifest entries; --all wipes cache
    test: against fakes — orphans identified and removed; live keys retained
