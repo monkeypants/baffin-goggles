@@ -66,7 +66,7 @@
 
 * Phase 2 — Functional core (pure, the crown jewel)
   Most of the real logic and most of the tests. Zero images on disk.
-** TODO Add grouping policy type
+** DONE Add grouping policy type
    commit: Add grouping policy configuration type
    - GroupingPolicy(mode, day1_anchor, order) with modes adaptive|day|month|year-month|flat
    test: construction + defaults
