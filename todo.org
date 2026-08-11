@@ -114,7 +114,7 @@
    commit: Add ScanGallery dry-run use case
    - scan -> plan -> diff; report model + HIT/MISS plan, no generation
    test: against fakes — correct plan and counts, no side effects
-** TODO Add BuildGallery use case
+** DONE Add BuildGallery use case
    commit: Add BuildGallery use case
    - scan -> hash -> read meta -> model -> group -> plan -> diff -> generate MISSES -> render
    test: against fakes — only misses generated; render always invoked; manifest recorded
