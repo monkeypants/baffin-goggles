@@ -149,7 +149,7 @@
    commit: Add Pillow thumbnailer fallback
    - same Thumbnailer Protocol, no libvips
    test: parity on dims + GPS-strip against a shared thumbnailer test suite
-** TODO Add FileDerivativeStore with JSON manifest
+** DONE Add FileDerivativeStore with JSON manifest
    commit: Add file derivative store and JSON manifest
    - snapshot() -> StoreState (manifest read + file-existence check), record, orphans
    - .baffin/manifest.json
