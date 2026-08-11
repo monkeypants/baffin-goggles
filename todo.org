@@ -49,7 +49,7 @@
 
 * Phase 1 — Domain (pure frozen dataclasses)
   No I/O, no framework imports. Only behaviour here is a cache key.
-** TODO Add core value objects
+** DONE Add core value objects
    commit: Add domain value objects
    - AssetKind, SourceRef, CameraInfo, GpsFix, AssetMeta, Derivative, Group, Site, Peer
    - RawMetadata (raw read: dims/kind/EXIF — distinct from authored AssetMeta)
