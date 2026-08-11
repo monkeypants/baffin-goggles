@@ -106,7 +106,7 @@
      Thumbnailer, VideoProcessor, DerivativeStore (snapshot/record/orphans), SiteRenderer
    - source-side identity is SourceRef; output side is Path
    test: mypy structural conformance; in-memory fakes implement each port
-** TODO Add in-memory fake adapters for tests
+** DONE Add in-memory fake adapters for tests
    commit: Add in-memory fakes for the ports
    - test doubles: fake repo, hasher, store, renderer, thumbnailer, sidecar store
    test: fakes satisfy the Protocols (mypy) and back the use-case tests below

@@ -76,3 +76,14 @@ forbidden_modules = [
     "baffin.interface.cli",
     "baffin.interface.web",
 ]
+
+[[tool.importlinter.contracts]]
+name = "Test doubles stay out of production"
+type = "forbidden"
+source_modules = [
+    "baffin.domain",
+    "baffin.application",
+    "baffin.adapters",
+    "baffin.interface",
+]
+forbidden_modules = ["baffin.testing"]
