@@ -14,7 +14,8 @@ from typing import Annotated
 import typer
 
 from baffin.adapters.settings import BaffinSettings
-from baffin.interface.cli.wiring import build_builder, build_scanner, load_config
+from baffin.interface.cli.pipeline import run_build
+from baffin.interface.cli.wiring import build_scanner, load_config
 
 SourceOpt = Annotated[Path | None, typer.Option(help="Source folder of originals.")]
 OutputOpt = Annotated[Path | None, typer.Option(help="Output site directory.")]
@@ -112,8 +113,8 @@ def build(
     if force:
         shutil.rmtree(config.output / ".baffin", ignore_errors=True)
 
-    result = build_builder(config).execute(config)
-    typer.echo(f"Generated {len(result.generated)} derivative(s)")
-    typer.echo(f"Groups:    {len(result.site.groups)}")
-    for label, error in result.report.skipped:
+    summary = run_build(config, jobs=jobs)
+    typer.echo(f"Generated {summary.generated} derivative(s)")
+    typer.echo(f"Groups:    {summary.groups}")
+    for label, error in summary.skipped:
         typer.echo(f"skipped {label}: {error}")

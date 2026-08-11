@@ -45,3 +45,9 @@ def test_build_emits_the_expected_site_layout(tmp_path: Path) -> None:
 def test_full_flag_adds_the_full_tier(tmp_path: Path) -> None:
     out, _ = _build(tmp_path, "--full")
     assert len(list((out / "full").glob("*.jpg"))) == 2
+
+
+def test_jobs_flag_builds_the_same_layout(tmp_path: Path) -> None:
+    out, _ = _build(tmp_path, "--jobs", "2")
+    for tier in ("thumb", "low", "med"):
+        assert len(list((out / tier).glob("*.jpg"))) == 2

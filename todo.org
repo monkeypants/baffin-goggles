@@ -198,7 +198,7 @@
    - shell-side composite: hash -> read -> render for one asset; NOT a port
    - picklable inputs/outputs; adapters re-constructable in a worker
    test: serial composite produces expected Derivatives; picklability of args/results asserted
-** TODO Add parallel generation over process pool
+** DONE Add parallel generation over process pool
    commit: Add process-pool generation of misses
    - ProcessPoolExecutor over AssetProcessor, workers ~ CPU, VIPS_CONCURRENCY=1 per worker
    test: parallel vs serial produce identical output; --jobs honoured
