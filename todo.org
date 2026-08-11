@@ -193,7 +193,7 @@
    commit: Add lazy-build end-to-end test
    - build; re-run asserts ALL cache hits; edit a template asserts ZERO image bytes rewritten
    test: the §8 promise, verified end to end in CI
-** TODO Add AssetProcessor per-asset composite
+** DONE Add AssetProcessor per-asset composite
    commit: Add per-asset processor composite
    - shell-side composite: hash -> read -> render for one asset; NOT a port
    - picklable inputs/outputs; adapters re-constructable in a worker
