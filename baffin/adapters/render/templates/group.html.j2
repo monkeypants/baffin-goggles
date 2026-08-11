@@ -1,0 +1,15 @@
+{% extends "base.html.j2" %}
+{% block title %}{{ group.label }} — {{ site.title }}{% endblock %}
+{% block main %}
+<h1>{{ group.label }}</h1>
+<div class="grid" id="gallery">
+{% for a in assets %}
+  <a class="cell" href="{{ a.href }}"{% if a.kind == "video" %} data-video="1"{% endif %}>
+    <img src="{{ a.thumb }}"
+         {% if a.srcset %}srcset="{{ a.srcset }}" sizes="(max-width: 600px) 45vw, 300px"{% endif %}
+         {% if a.width %}width="{{ a.width }}" height="{{ a.height }}"{% endif %}
+         loading="lazy" alt="{{ a.alt }}">
+  </a>
+{% endfor %}
+</div>
+{% endblock %}

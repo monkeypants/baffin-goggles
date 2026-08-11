@@ -7,6 +7,7 @@ authors = [{ name = "Chris Gough", email = "chris.gough@gosource.com.au" }]
 # Runtime dependencies are added per-adapter in later phases; the domain is
 # framework-free (stdlib only).
 dependencies = [
+    "jinja2>=3.1.6",
     "pillow>=12.3.0",
     "pyexiv2>=2.16.0",
     "pyvips>=3.1.1",
@@ -21,6 +22,11 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 # Distribution is "baffin-gallery"; the importable package is "baffin".
 packages = ["baffin"]
+# Ship the Jinja templates and static assets (non-.py package data).
+artifacts = [
+    "baffin/adapters/render/templates/*.j2",
+    "baffin/adapters/render/static/*",
+]
 
 [dependency-groups]
 dev = [

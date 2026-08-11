@@ -1,0 +1,14 @@
+{% extends "base.html.j2" %}
+{% block main %}
+<ul class="timeline">
+{% for g in groups %}
+  <li class="timeline-entry">
+    <a href="{{ g.href }}">
+      {% if g.cover %}<img src="{{ g.cover }}" alt="" loading="lazy">{% endif %}
+      <span class="timeline-label">{{ g.label }}</span>
+      <span class="timeline-count">{{ g.count }}</span>
+    </a>
+  </li>
+{% endfor %}
+</ul>
+{% endblock %}

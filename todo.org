@@ -162,7 +162,7 @@
    commit: Add ffmpeg video processor
    - poster (mid-frame) + copy clip; strip_gps on copy
    test: poster/<hash>.jpg produced; clip copied; original untouched
-** TODO Add Jinja2Renderer
+** DONE Add Jinja2Renderer
    commit: Add Jinja2 site renderer
    - index timeline + per-group pages + sitemap.xml; copy app.css/app.js verbatim
    test: HTML complete and navigable with NO JS (wget/lynx crawl); relative in-site links
