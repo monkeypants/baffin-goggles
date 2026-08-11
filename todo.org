@@ -26,7 +26,7 @@
    commit: Add ruff and mypy strict configuration
    - ruff lint + format config, mypy --strict targeting baffin/
    test: `uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy` all pass on empty tree
-** TODO Add pytest with a smoke test
+** DONE Add pytest with a smoke test
    commit: Add pytest configuration and package-import smoke test
    - tests/ layout, pytest config, markers (manual, wip)
    - tests/test_smoke.py asserting `import baffin`

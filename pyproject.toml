@@ -38,3 +38,11 @@ python_version = "3.12"
 strict = true
 files = ["baffin"]
 warn_unused_configs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--strict-markers --import-mode=importlib"
+markers = [
+    "manual: excluded from the default gate; run explicitly",
+    "wip: work in progress; excluded from the default gate",
+]
