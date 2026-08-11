@@ -90,7 +90,7 @@
 
 * Phase 3 — Application ports & use cases
   Orchestration over Protocol ports + functional core. Tested with fakes only.
-** TODO Define port contracts and error hierarchy      :PREP:
+** DONE Define port contracts and error hierarchy      :PREP:
    commit: Add port error hierarchy and contract fixtures
    Closes the §5 under-specifications before any port is implemented:
    - error types: SourceUnreadable, MetadataUnreadable, DerivativeFailed
