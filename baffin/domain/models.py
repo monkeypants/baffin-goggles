@@ -6,6 +6,7 @@ the only behaviour in the domain is ``DerivativeSpec.cache_key`` (SPEC §3.7).
 
 from __future__ import annotations
 
+import hashlib
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -143,3 +144,25 @@ class Site:
     base_url: str
     peers: tuple[Peer, ...]
     groups: tuple[Group, ...]
+
+
+@dataclass(frozen=True)
+class DerivativeSpec:
+    """One output tier (SPEC §7). ``max_edge`` is the longest edge in px;
+    ``None`` means original size (the ``full`` tier)."""
+
+    name: Literal["thumb", "low", "med", "full"]
+    max_edge: int | None
+    quality: int
+
+    def cache_key(self, asset: Asset) -> str:
+        """Content-addressed derivative cache key: ``hash(content_hash + spec)``.
+
+        Uses stdlib SHA-256 over a canonical string (NOT the builtin ``hash``,
+        which is per-process salted) so the key is stable across runs and
+        machines — the foundation of the lazy-build cache (SPEC §8). Identical
+        bytes under an identical spec always yield the same key; changing any
+        spec field (e.g. thumb 300→320) changes only that tier's key.
+        """
+        canonical = f"{asset.content_hash}:{self.name}:{self.max_edge}:{self.quality}"
+        return hashlib.sha256(canonical.encode("utf-8")).hexdigest()

@@ -59,7 +59,7 @@
    commit: Add Asset domain type
    - Asset(ref, content_hash, kind, captured_at, width, height, orientation, camera, gps)
    test: construction + immutability tests
-** TODO Add DerivativeSpec with cache_key
+** DONE Add DerivativeSpec with cache_key
    commit: Add DerivativeSpec and content-hash cache key
    - DerivativeSpec(name, max_edge, quality); cache_key = hash(content_hash + spec)
    test: cache_key stable across runs, distinct per hash, changes when spec changes
