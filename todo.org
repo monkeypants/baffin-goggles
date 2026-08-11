@@ -70,7 +70,7 @@
    commit: Add grouping policy configuration type
    - GroupingPolicy(mode, day1_anchor, order) with modes adaptive|day|month|year-month|flat
    test: construction + defaults
-** TODO Add group_timeline
+** DONE Add group_timeline
    commit: Add chronological grouping over the timeline
    - adaptive: <=~30 day span -> by-day (trip-day labels); longer -> year->month
    test: table-driven — day/month boundary, trip-day labelling, ordering, empty input, flat
