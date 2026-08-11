@@ -145,7 +145,7 @@
    commit: Add pyvips thumbnailer
    - downscale + auto-orient + sharpen one pass; strip_gps; optional IPTC/XMP embed
    test: output dims/quality; INVARIANT — GPS absent in output; original untouched
-** TODO Add PillowThumbnailer fallback
+** DONE Add PillowThumbnailer fallback
    commit: Add Pillow thumbnailer fallback
    - same Thumbnailer Protocol, no libvips
    test: parity on dims + GPS-strip against a shared thumbnailer test suite
