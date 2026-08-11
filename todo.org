@@ -31,7 +31,7 @@
    - tests/ layout, pytest config, markers (manual, wip)
    - tests/test_smoke.py asserting `import baffin`
    test: `uv run pytest -m "not manual and not wip"` green (>=1 test)
-** TODO Add import-linter contracts
+** DONE Add import-linter contracts
    commit: Add import-linter layered and delivery-agnostic contracts
    - layered contract: domain < application < adapters < interface
    - independence contract: interface/cli & interface/web unimportable by application/domain

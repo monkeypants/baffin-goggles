@@ -46,3 +46,28 @@ markers = [
     "manual: excluded from the default gate; run explicitly",
     "wip: work in progress; excluded from the default gate",
 ]
+
+[tool.importlinter]
+root_package = "baffin"
+
+[[tool.importlinter.contracts]]
+name = "Clean architecture layers"
+type = "layers"
+layers = [
+    "baffin.interface",
+    "baffin.adapters",
+    "baffin.application",
+    "baffin.domain",
+]
+
+[[tool.importlinter.contracts]]
+name = "Delivery-agnostic core"
+type = "forbidden"
+source_modules = [
+    "baffin.application",
+    "baffin.domain",
+]
+forbidden_modules = [
+    "baffin.interface.cli",
+    "baffin.interface.web",
+]
