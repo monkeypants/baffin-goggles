@@ -17,7 +17,7 @@
   The goal of this phase: get the quality gates and GitHub Actions running
   against a nearly-empty package, so gates are never retrofitted and CI
   validates every later commit.
-** TODO Add pyproject and package skeleton
+** DONE Add pyproject and package skeleton
    commit: Add pyproject and empty package skeleton
    - pyproject.toml: Python 3.12+, project metadata, deps stubs, build backend
    - baffin/ with domain/ application/ adapters/ interface/cli/ (empty __init__.py)
