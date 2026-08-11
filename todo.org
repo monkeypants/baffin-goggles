@@ -158,7 +158,7 @@
    commit: Add markdown sidecar store
    - read/write meta/ tree mirroring source; YAML front-matter + caption body
    test: round-trip; template creation when absent; writes only sidecars
-** TODO Add FfmpegVideo processor
+** DONE Add FfmpegVideo processor
    commit: Add ffmpeg video processor
    - poster (mid-frame) + copy clip; strip_gps on copy
    test: poster/<hash>.jpg produced; clip copied; original untouched
