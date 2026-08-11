@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}{{ site.title }}{% endblock %}</title>
+<link rel="stylesheet" href="{{ css_href }}">
+{% block head %}{% endblock %}
+</head>
+<body>
+<header class="site-header"><a href="{{ home_href }}">{{ site.title }}</a></header>
+<main>
+{% block main %}{% endblock %}
+</main>
+<script src="{{ js_href }}" defer></script>
+</body>
+</html>

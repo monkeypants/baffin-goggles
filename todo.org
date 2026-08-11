@@ -129,44 +129,44 @@
 
 * Phase 4 — Adapters (imperative shell)
   Slow / I/O-bound. Focused integration tests with tiny fixture images in temp trees.
-** TODO Add XxHasher with stat->hash memo
+** DONE Add XxHasher with stat->hash memo
    commit: Add xxhash file hasher with stat memo
    - hash_file + (path,size,mtime_ns)->hash memo prefilter
    test: memo hit on unchanged stat; re-hash on changed stat; hash matches bytes
-** TODO Add FsAssetRepository
+** DONE Add FsAssetRepository
    commit: Add filesystem read-only asset repository
    - discover JPEG/MP4/MOV under source root
    test: discovery of fixtures; INVARIANT — source tree byte-for-byte unchanged after run
-** TODO Add ExifMetadataReader
+** DONE Add ExifMetadataReader
    commit: Add EXIF metadata reader
    - captured_at (DateTimeOriginal, fallback mtime), dims, orientation, camera, gps, kind
    test: reads fixture EXIF; mtime fallback when DateTimeOriginal absent
-** TODO Add VipsThumbnailer
+** DONE Add VipsThumbnailer
    commit: Add pyvips thumbnailer
    - downscale + auto-orient + sharpen one pass; strip_gps; optional IPTC/XMP embed
    test: output dims/quality; INVARIANT — GPS absent in output; original untouched
-** TODO Add PillowThumbnailer fallback
+** DONE Add PillowThumbnailer fallback
    commit: Add Pillow thumbnailer fallback
    - same Thumbnailer Protocol, no libvips
    test: parity on dims + GPS-strip against a shared thumbnailer test suite
-** TODO Add FileDerivativeStore with JSON manifest
+** DONE Add FileDerivativeStore with JSON manifest
    commit: Add file derivative store and JSON manifest
    - snapshot() -> StoreState (manifest read + file-existence check), record, orphans
    - .baffin/manifest.json
    test: real HIT/MISS across two runs; snapshot omits keys whose file is missing; orphan detection; diffable manifest
-** TODO Add MarkdownSidecarStore
+** DONE Add MarkdownSidecarStore
    commit: Add markdown sidecar store
    - read/write meta/ tree mirroring source; YAML front-matter + caption body
    test: round-trip; template creation when absent; writes only sidecars
-** TODO Add FfmpegVideo processor
+** DONE Add FfmpegVideo processor
    commit: Add ffmpeg video processor
    - poster (mid-frame) + copy clip; strip_gps on copy
    test: poster/<hash>.jpg produced; clip copied; original untouched
-** TODO Add Jinja2Renderer
+** DONE Add Jinja2Renderer
    commit: Add Jinja2 site renderer
    - index timeline + per-group pages + sitemap.xml; copy app.css/app.js verbatim
    test: HTML complete and navigable with NO JS (wget/lynx crawl); relative in-site links
-** TODO Add progressive-enhancement JS layer
+** DONE Add progressive-enhancement JS layer
    commit: Add lightbox and keyboard navigation enhancement
    - app.js adds lightbox + <-/->/Esc + lazy-load; JS-off breaks nothing
    test: HTML unchanged in function without JS; srcset present across thumb/low/med
