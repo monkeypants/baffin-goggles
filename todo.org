@@ -172,7 +172,7 @@
    test: HTML unchanged in function without JS; srcset present across thumb/low/med
 
 * Phase 5 — Configuration & CLI wiring
-** TODO Add Pydantic Settings for baffin.toml
+** DONE Add Pydantic Settings for baffin.toml
    commit: Add configuration model and loader
    - Pydantic Settings parsed at edge, handed inward as plain config
    - resolution order: CLI flag > env var > baffin.toml > default
