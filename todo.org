@@ -154,7 +154,7 @@
    - snapshot() -> StoreState (manifest read + file-existence check), record, orphans
    - .baffin/manifest.json
    test: real HIT/MISS across two runs; snapshot omits keys whose file is missing; orphan detection; diffable manifest
-** TODO Add MarkdownSidecarStore
+** DONE Add MarkdownSidecarStore
    commit: Add markdown sidecar store
    - read/write meta/ tree mirroring source; YAML front-matter + caption body
    test: round-trip; template creation when absent; writes only sidecars
