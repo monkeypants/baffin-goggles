@@ -129,7 +129,7 @@
 
 * Phase 4 — Adapters (imperative shell)
   Slow / I/O-bound. Focused integration tests with tiny fixture images in temp trees.
-** TODO Add XxHasher with stat->hash memo
+** DONE Add XxHasher with stat->hash memo
    commit: Add xxhash file hasher with stat memo
    - hash_file + (path,size,mtime_ns)->hash memo prefilter
    test: memo hit on unchanged stat; re-hash on changed stat; hash matches bytes

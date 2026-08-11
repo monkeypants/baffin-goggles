@@ -6,7 +6,9 @@ requires-python = ">=3.12"
 authors = [{ name = "Chris Gough", email = "chris.gough@gosource.com.au" }]
 # Runtime dependencies are added per-adapter in later phases; the domain is
 # framework-free (stdlib only).
-dependencies = []
+dependencies = [
+    "xxhash>=3.8.1",
+]
 
 [build-system]
 requires = ["hatchling"]
@@ -43,6 +45,11 @@ python_version = "3.12"
 strict = true
 files = ["baffin"]
 warn_unused_configs = true
+
+# Third-party adapters without type stubs.
+[[tool.mypy.overrides]]
+module = ["xxhash"]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
