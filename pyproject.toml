@@ -1,0 +1,73 @@
+[project]
+name = "baffin-gallery"
+version = "0.1.0"
+description = "Point it at a folder of camera originals; get a chronological static gallery you can share as a link."
+requires-python = ">=3.12"
+authors = [{ name = "Chris Gough", email = "chris.gough@gosource.com.au" }]
+# Runtime dependencies are added per-adapter in later phases; the domain is
+# framework-free (stdlib only).
+dependencies = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+# Distribution is "baffin-gallery"; the importable package is "baffin".
+packages = ["baffin"]
+
+[dependency-groups]
+dev = [
+    "ruff",
+    "mypy",
+    "pytest",
+    "import-linter",
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+# Spec/docs carry intentionally aligned example code; don't reformat them.
+extend-exclude = ["*.md"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "SIM", "RUF"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["baffin"]
+warn_unused_configs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--strict-markers --import-mode=importlib"
+markers = [
+    "manual: excluded from the default gate; run explicitly",
+    "wip: work in progress; excluded from the default gate",
+]
+
+[tool.importlinter]
+root_package = "baffin"
+
+[[tool.importlinter.contracts]]
+name = "Clean architecture layers"
+type = "layers"
+layers = [
+    "baffin.interface",
+    "baffin.adapters",
+    "baffin.application",
+    "baffin.domain",
+]
+
+[[tool.importlinter.contracts]]
+name = "Delivery-agnostic core"
+type = "forbidden"
+source_modules = [
+    "baffin.application",
+    "baffin.domain",
+]
+forbidden_modules = [
+    "baffin.interface.cli",
+    "baffin.interface.web",
+]
