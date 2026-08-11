@@ -177,7 +177,7 @@
    - Pydantic Settings parsed at edge, handed inward as plain config
    - resolution order: CLI flag > env var > baffin.toml > default
    test: parse sample baffin.toml; validation errors; precedence
-** TODO Add CLI app shell and doctor
+** DONE Add CLI app shell and doctor
    commit: Add Typer app and doctor command
    - baffin doctor: verify libvips/ffmpeg presence+versions and config sanity
    test: doctor reports deps; exits nonzero on missing dep (mocked)
