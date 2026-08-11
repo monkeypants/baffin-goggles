@@ -166,7 +166,7 @@
    commit: Add Jinja2 site renderer
    - index timeline + per-group pages + sitemap.xml; copy app.css/app.js verbatim
    test: HTML complete and navigable with NO JS (wget/lynx crawl); relative in-site links
-** TODO Add progressive-enhancement JS layer
+** DONE Add progressive-enhancement JS layer
    commit: Add lightbox and keyboard navigation enhancement
    - app.js adds lightbox + <-/->/Esc + lazy-load; JS-off breaks nothing
    test: HTML unchanged in function without JS; srcset present across thumb/low/med
