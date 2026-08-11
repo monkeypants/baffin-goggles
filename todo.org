@@ -181,7 +181,7 @@
    commit: Add Typer app and doctor command
    - baffin doctor: verify libvips/ffmpeg presence+versions and config sanity
    test: doctor reports deps; exits nonzero on missing dep (mocked)
-** TODO Add scan command
+** DONE Add scan command
    commit: Add scan CLI command
    - assembles adapters, invokes ScanGallery, prints HIT/MISS plan
    test: CLI runner over fixtures reports expected plan

@@ -8,10 +8,16 @@ from __future__ import annotations
 
 import shutil
 import subprocess
+from pathlib import Path
+from typing import Annotated
 
 import typer
 
 from baffin.adapters.settings import BaffinSettings
+from baffin.interface.cli.wiring import build_scanner, load_config
+
+SourceOpt = Annotated[Path | None, typer.Option(help="Source folder of originals.")]
+OutputOpt = Annotated[Path | None, typer.Option(help="Output site directory.")]
 
 app = typer.Typer(
     help="baffin — publish a folder of photos as a static gallery.",
@@ -74,3 +80,15 @@ def doctor() -> None:
     if not healthy:
         raise typer.Exit(code=1)
     typer.echo("All good.")
+
+
+@app.command()
+def scan(source: SourceOpt = None, output: OutputOpt = None) -> None:
+    """Dry run: report assets, groups, and the cache HIT/MISS plan."""
+    config = load_config(source=source, output=output)
+    result = build_scanner(config).execute(config)
+    typer.echo(f"Assets: {len(result.assets)}")
+    typer.echo(f"Groups: {len(result.groups)}")
+    typer.echo(f"Plan:   {result.hits} HIT / {result.misses} MISS")
+    for label, error in result.report.skipped:
+        typer.echo(f"skipped {label}: {error}")
