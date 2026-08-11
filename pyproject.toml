@@ -7,6 +7,8 @@ authors = [{ name = "Chris Gough", email = "chris.gough@gosource.com.au" }]
 # Runtime dependencies are added per-adapter in later phases; the domain is
 # framework-free (stdlib only).
 dependencies = [
+    "pillow>=12.3.0",
+    "pyexiv2>=2.16.0",
     "xxhash>=3.8.1",
 ]
 
@@ -48,7 +50,7 @@ warn_unused_configs = true
 
 # Third-party adapters without type stubs.
 [[tool.mypy.overrides]]
-module = ["xxhash"]
+module = ["xxhash", "pyexiv2"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
