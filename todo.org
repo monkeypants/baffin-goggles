@@ -206,7 +206,7 @@
    commit: Add clean CLI command
    - prune orphans; --all wipes cache
    test: orphans removed after include_full toggled off; --all empties cache
-** TODO Add meta command group
+** DONE Add meta command group
    commit: Add meta CLI commands
    - meta show / edit ($EDITOR) / set (--title/--caption/--credit/--alt, --all bulk)
    test: set writes sidecar; show reads it; originals untouched

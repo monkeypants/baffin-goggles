@@ -14,6 +14,7 @@ from typing import Annotated
 import typer
 
 from baffin.adapters.settings import BaffinSettings
+from baffin.interface.cli.meta import meta_app
 from baffin.interface.cli.pipeline import run_build
 from baffin.interface.cli.wiring import build_cleaner, build_scanner, load_config
 
@@ -28,6 +29,9 @@ app = typer.Typer(
     no_args_is_help=True,
     add_completion=False,
 )
+
+
+app.add_typer(meta_app, name="meta")
 
 
 @app.callback()
