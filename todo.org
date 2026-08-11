@@ -110,7 +110,7 @@
    commit: Add in-memory fakes for the ports
    - test doubles: fake repo, hasher, store, renderer, thumbnailer, sidecar store
    test: fakes satisfy the Protocols (mypy) and back the use-case tests below
-** TODO Add ScanGallery use case
+** DONE Add ScanGallery use case
    commit: Add ScanGallery dry-run use case
    - scan -> plan -> diff; report model + HIT/MISS plan, no generation
    test: against fakes — correct plan and counts, no side effects
