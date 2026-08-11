@@ -49,17 +49,17 @@
 
 * Phase 1 — Domain (pure frozen dataclasses)
   No I/O, no framework imports. Only behaviour here is a cache key.
-** TODO Add core value objects
+** DONE Add core value objects
    commit: Add domain value objects
    - AssetKind, SourceRef, CameraInfo, GpsFix, AssetMeta, Derivative, Group, Site, Peer
    - RawMetadata (raw read: dims/kind/EXIF — distinct from authored AssetMeta)
    - StoreState (immutable cache snapshot the pure diff consumes)
    test: unit tests assert frozen/immutability and field shapes; RawMetadata vs AssetMeta kept distinct
-** TODO Add Asset aggregate
+** DONE Add Asset aggregate
    commit: Add Asset domain type
    - Asset(ref, content_hash, kind, captured_at, width, height, orientation, camera, gps)
    test: construction + immutability tests
-** TODO Add DerivativeSpec with cache_key
+** DONE Add DerivativeSpec with cache_key
    commit: Add DerivativeSpec and content-hash cache key
    - DerivativeSpec(name, max_edge, quality); cache_key = hash(content_hash + spec)
    test: cache_key stable across runs, distinct per hash, changes when spec changes
