@@ -9,6 +9,7 @@ authors = [{ name = "Chris Gough", email = "chris.gough@gosource.com.au" }]
 dependencies = [
     "pillow>=12.3.0",
     "pyexiv2>=2.16.0",
+    "pyvips>=3.1.1",
     "xxhash>=3.8.1",
 ]
 
@@ -50,7 +51,7 @@ warn_unused_configs = true
 
 # Third-party adapters without type stubs.
 [[tool.mypy.overrides]]
-module = ["xxhash", "pyexiv2"]
+module = ["xxhash", "pyexiv2", "pyvips"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

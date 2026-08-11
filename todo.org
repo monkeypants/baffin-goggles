@@ -141,7 +141,7 @@
    commit: Add EXIF metadata reader
    - captured_at (DateTimeOriginal, fallback mtime), dims, orientation, camera, gps, kind
    test: reads fixture EXIF; mtime fallback when DateTimeOriginal absent
-** TODO Add VipsThumbnailer
+** DONE Add VipsThumbnailer
    commit: Add pyvips thumbnailer
    - downscale + auto-orient + sharpen one pass; strip_gps; optional IPTC/XMP embed
    test: output dims/quality; INVARIANT — GPS absent in output; original untouched

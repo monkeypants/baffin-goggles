@@ -1,0 +1,58 @@
+"""pyvips thumbnailer (SPEC §7): downscale + auto-orient + sharpen, one pass.
+
+GPS is stripped from every derivative by default; authored IPTC/XMP is embedded
+afterward. The original is only ever read.
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+from typing import TYPE_CHECKING
+
+import pyvips
+
+from baffin.adapters.embedding import embed_meta
+from baffin.application.errors import DerivativeFailed
+from baffin.domain import AssetMeta, Derivative, DerivativeSpec, SourceRef
+
+
+class VipsThumbnailer:
+    def render(
+        self,
+        src: SourceRef,
+        spec: DerivativeSpec,
+        dst: Path,
+        *,
+        strip_gps: bool,
+        embed: AssetMeta | None,
+    ) -> Derivative:
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            if spec.max_edge is None:
+                image = pyvips.Image.new_from_file(
+                    str(src.path), access="sequential"
+                ).autorot()
+            else:
+                image = pyvips.Image.thumbnail(
+                    str(src.path), spec.max_edge, height=spec.max_edge, size="down"
+                )
+            image = image.sharpen()
+            image.write_to_file(str(dst), Q=spec.quality, strip=strip_gps)
+        except pyvips.Error as exc:
+            raise DerivativeFailed(str(src.path)) from exc
+
+        if embed is not None:
+            embed_meta(dst, embed)
+        return Derivative(
+            asset_hash=dst.stem,
+            spec_name=spec.name,
+            rel_path=dst,
+            width=image.width,
+            height=image.height,
+        )
+
+
+if TYPE_CHECKING:
+    from baffin.application.ports import Thumbnailer
+
+    _conforms: Thumbnailer = VipsThumbnailer()
