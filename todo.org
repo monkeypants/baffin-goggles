@@ -100,7 +100,7 @@
    - memo owner: Hasher owns the stat->hash memo (injected .baffin/ handle)
    - cache boundary: DerivativeStore.snapshot() -> StoreState feeds pure diff_plan
    test: error hierarchy importable; a contract test module encodes skip-vs-strict
-** TODO Add Protocol ports
+** DONE Add Protocol ports
    commit: Add application port protocols
    - AssetRepository, MetadataReader (-> RawMetadata), SidecarStore, Hasher,
      Thumbnailer, VideoProcessor, DerivativeStore (snapshot/record/orphans), SiteRenderer
