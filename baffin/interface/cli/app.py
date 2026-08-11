@@ -14,10 +14,13 @@ from typing import Annotated
 import typer
 
 from baffin.adapters.settings import BaffinSettings
-from baffin.interface.cli.wiring import build_scanner, load_config
+from baffin.interface.cli.wiring import build_builder, build_scanner, load_config
 
 SourceOpt = Annotated[Path | None, typer.Option(help="Source folder of originals.")]
 OutputOpt = Annotated[Path | None, typer.Option(help="Output site directory.")]
+FullOpt = Annotated[bool, typer.Option(help="Publish full-res scrubbed copies.")]
+ForceOpt = Annotated[bool, typer.Option(help="Bypass caches; regenerate all.")]
+JobsOpt = Annotated[int, typer.Option(help="Parallel workers.")]
 
 app = typer.Typer(
     help="baffin — publish a folder of photos as a static gallery.",
@@ -90,5 +93,27 @@ def scan(source: SourceOpt = None, output: OutputOpt = None) -> None:
     typer.echo(f"Assets: {len(result.assets)}")
     typer.echo(f"Groups: {len(result.groups)}")
     typer.echo(f"Plan:   {result.hits} HIT / {result.misses} MISS")
+    for label, error in result.report.skipped:
+        typer.echo(f"skipped {label}: {error}")
+
+
+@app.command()
+def build(
+    source: SourceOpt = None,
+    output: OutputOpt = None,
+    full: FullOpt = False,
+    force: ForceOpt = False,
+    jobs: JobsOpt = 1,
+) -> None:
+    """Lazily build the gallery, generating only what the cache is missing."""
+    config = load_config(
+        source=source, output=output, include_full=True if full else None
+    )
+    if force:
+        shutil.rmtree(config.output / ".baffin", ignore_errors=True)
+
+    result = build_builder(config).execute(config)
+    typer.echo(f"Generated {len(result.generated)} derivative(s)")
+    typer.echo(f"Groups:    {len(result.site.groups)}")
     for label, error in result.report.skipped:
         typer.echo(f"skipped {label}: {error}")

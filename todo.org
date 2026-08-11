@@ -185,7 +185,7 @@
    commit: Add scan CLI command
    - assembles adapters, invokes ScanGallery, prints HIT/MISS plan
    test: CLI runner over fixtures reports expected plan
-** TODO Add build command
+** DONE Add build command
    commit: Add build CLI command
    - --force, --jobs N, --source, --output, --full
    test: fixtures -> build -> assert site layout (§6)
