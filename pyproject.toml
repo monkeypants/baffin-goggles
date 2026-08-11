@@ -33,6 +33,11 @@ extend-exclude = ["*.md"]
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "UP", "B", "SIM", "RUF"]
 
+[tool.ruff.lint.per-file-ignores]
+# Port error names are fixed by SPEC §5 (SourceUnreadable, DerivativeFailed, …);
+# the N818 "Error suffix" convention doesn't apply.
+"baffin/application/errors.py" = ["N818"]
+
 [tool.mypy]
 python_version = "3.12"
 strict = true
@@ -71,3 +76,14 @@ forbidden_modules = [
     "baffin.interface.cli",
     "baffin.interface.web",
 ]
+
+[[tool.importlinter.contracts]]
+name = "Test doubles stay out of production"
+type = "forbidden"
+source_modules = [
+    "baffin.domain",
+    "baffin.application",
+    "baffin.adapters",
+    "baffin.interface",
+]
+forbidden_modules = ["baffin.testing"]

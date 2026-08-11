@@ -90,7 +90,7 @@
 
 * Phase 3 — Application ports & use cases
   Orchestration over Protocol ports + functional core. Tested with fakes only.
-** TODO Define port contracts and error hierarchy      :PREP:
+** DONE Define port contracts and error hierarchy      :PREP:
    commit: Add port error hierarchy and contract fixtures
    Closes the §5 under-specifications before any port is implemented:
    - error types: SourceUnreadable, MetadataUnreadable, DerivativeFailed
@@ -100,29 +100,29 @@
    - memo owner: Hasher owns the stat->hash memo (injected .baffin/ handle)
    - cache boundary: DerivativeStore.snapshot() -> StoreState feeds pure diff_plan
    test: error hierarchy importable; a contract test module encodes skip-vs-strict
-** TODO Add Protocol ports
+** DONE Add Protocol ports
    commit: Add application port protocols
    - AssetRepository, MetadataReader (-> RawMetadata), SidecarStore, Hasher,
      Thumbnailer, VideoProcessor, DerivativeStore (snapshot/record/orphans), SiteRenderer
    - source-side identity is SourceRef; output side is Path
    test: mypy structural conformance; in-memory fakes implement each port
-** TODO Add in-memory fake adapters for tests
+** DONE Add in-memory fake adapters for tests
    commit: Add in-memory fakes for the ports
    - test doubles: fake repo, hasher, store, renderer, thumbnailer, sidecar store
    test: fakes satisfy the Protocols (mypy) and back the use-case tests below
-** TODO Add ScanGallery use case
+** DONE Add ScanGallery use case
    commit: Add ScanGallery dry-run use case
    - scan -> plan -> diff; report model + HIT/MISS plan, no generation
    test: against fakes — correct plan and counts, no side effects
-** TODO Add BuildGallery use case
+** DONE Add BuildGallery use case
    commit: Add BuildGallery use case
    - scan -> hash -> read meta -> model -> group -> plan -> diff -> generate MISSES -> render
    test: against fakes — only misses generated; render always invoked; manifest recorded
-** TODO Add CleanGallery use case
+** DONE Add CleanGallery use case
    commit: Add CleanGallery use case
    - prune orphaned derivatives / stale manifest entries; --all wipes cache
    test: against fakes — orphans identified and removed; live keys retained
-** TODO Add EditAssetMeta use case
+** DONE Add EditAssetMeta use case
    commit: Add EditAssetMeta use case
    - read -> merge -> write one asset's sidecar; never touches image bytes
    test: against fakes — merge semantics; only sidecar store written
