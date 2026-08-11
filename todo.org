@@ -74,7 +74,7 @@
    commit: Add chronological grouping over the timeline
    - adaptive: <=~30 day span -> by-day (trip-day labels); longer -> year->month
    test: table-driven — day/month boundary, trip-day labelling, ordering, empty input, flat
-** TODO Add plan_derivatives
+** DONE Add plan_derivatives
    commit: Add derivative planning over assets and specs
    - pure expansion of (asset x specs) into planned derivative keys
    test: full plan for N assets x M specs; include_full toggle adds/removes only full tier
