@@ -22,7 +22,7 @@
    - pyproject.toml: Python 3.12+, project metadata, deps stubs, build backend
    - baffin/ with domain/ application/ adapters/ interface/cli/ (empty __init__.py)
    test: `uv run python -c "import baffin"` succeeds; tree imports clean
-** TODO Add ruff + mypy strict config
+** DONE Add ruff + mypy strict config
    commit: Add ruff and mypy strict configuration
    - ruff lint + format config, mypy --strict targeting baffin/
    test: `uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy` all pass on empty tree

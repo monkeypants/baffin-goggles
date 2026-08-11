@@ -23,3 +23,18 @@ dev = [
     "pytest",
     "import-linter",
 ]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+# Spec/docs carry intentionally aligned example code; don't reformat them.
+extend-exclude = ["*.md"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "SIM", "RUF"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["baffin"]
+warn_unused_configs = true
