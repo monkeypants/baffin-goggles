@@ -189,7 +189,7 @@
    commit: Add build CLI command
    - --force, --jobs N, --source, --output, --full
    test: fixtures -> build -> assert site layout (§6)
-** TODO Add lazy-build end-to-end proof              :MILESTONE:
+** DONE Add lazy-build end-to-end proof              :MILESTONE:
    commit: Add lazy-build end-to-end test
    - build; re-run asserts ALL cache hits; edit a template asserts ZERO image bytes rewritten
    test: the §8 promise, verified end to end in CI
