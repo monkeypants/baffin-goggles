@@ -36,7 +36,7 @@
    - layered contract: domain < application < adapters < interface
    - independence contract: interface/cli & interface/web unimportable by application/domain
    test: `uv run lint-imports` passes trivially against skeleton
-** TODO Add Makefile with unified check target
+** DONE Add Makefile with unified check target
    commit: Add Makefile check target
    - check: ruff + ruff format --check + lint-imports + mypy + pytest
    - placeholder build/serve/clean targets
