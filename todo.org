@@ -133,7 +133,7 @@
    commit: Add xxhash file hasher with stat memo
    - hash_file + (path,size,mtime_ns)->hash memo prefilter
    test: memo hit on unchanged stat; re-hash on changed stat; hash matches bytes
-** TODO Add FsAssetRepository
+** DONE Add FsAssetRepository
    commit: Add filesystem read-only asset repository
    - discover JPEG/MP4/MOV under source root
    test: discovery of fixtures; INVARIANT — source tree byte-for-byte unchanged after run
