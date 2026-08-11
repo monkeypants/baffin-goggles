@@ -83,7 +83,7 @@
    - diff_plan(plan, store_state: StoreState) -> BuildPlan of HITs vs MISSes
    - pure over the snapshot; file-existence is pre-checked into StoreState by the shell
    test: unchanged -> skip; changed spec -> only that tier misses; moved/duplicate bytes -> hit
-** TODO Add url_for portable URL builder
+** DONE Add url_for portable URL builder
    commit: Add portable relative URL builder
    - url_for(...) yields relative in-site links; base_url only for OG/sitemap
    test: portability across domain root, /baffin/ subpath, and file://
