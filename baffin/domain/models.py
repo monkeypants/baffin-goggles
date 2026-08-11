@@ -104,3 +104,42 @@ class Peer:
 
     name: str
     url: str
+
+
+@dataclass(frozen=True)
+class Asset:
+    """A single source item plus its durable identity and technical metadata.
+
+    ``content_hash`` (xxhash of the bytes) is the durable identity; ``ref`` is
+    only where the bytes currently live in the read-only source.
+    """
+
+    ref: SourceRef
+    content_hash: str
+    kind: AssetKind
+    captured_at: datetime
+    width: int
+    height: int
+    orientation: int
+    camera: CameraInfo | None = None
+    gps: GpsFix | None = None
+
+
+@dataclass(frozen=True)
+class Group:
+    """A chronological bucket in the timeline (SPEC §4, §9)."""
+
+    key: str  # "2025-07-14" | "day-03" | "2025/07"
+    label: str  # "Day 3 — 14 Jul"
+    span: tuple[datetime, datetime]
+    assets: tuple[Asset, ...]
+
+
+@dataclass(frozen=True)
+class Site:
+    """The whole renderable model: an ordered timeline of groups."""
+
+    title: str
+    base_url: str
+    peers: tuple[Peer, ...]
+    groups: tuple[Group, ...]

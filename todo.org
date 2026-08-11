@@ -55,7 +55,7 @@
    - RawMetadata (raw read: dims/kind/EXIF — distinct from authored AssetMeta)
    - StoreState (immutable cache snapshot the pure diff consumes)
    test: unit tests assert frozen/immutability and field shapes; RawMetadata vs AssetMeta kept distinct
-** TODO Add Asset aggregate
+** DONE Add Asset aggregate
    commit: Add Asset domain type
    - Asset(ref, content_hash, kind, captured_at, width, height, orientation, camera, gps)
    test: construction + immutability tests
