@@ -122,7 +122,7 @@
    commit: Add CleanGallery use case
    - prune orphaned derivatives / stale manifest entries; --all wipes cache
    test: against fakes — orphans identified and removed; live keys retained
-** TODO Add EditAssetMeta use case
+** DONE Add EditAssetMeta use case
    commit: Add EditAssetMeta use case
    - read -> merge -> write one asset's sidecar; never touches image bytes
    test: against fakes — merge semantics; only sidecar store written
