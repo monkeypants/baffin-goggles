@@ -202,7 +202,7 @@
    commit: Add process-pool generation of misses
    - ProcessPoolExecutor over AssetProcessor, workers ~ CPU, VIPS_CONCURRENCY=1 per worker
    test: parallel vs serial produce identical output; --jobs honoured
-** TODO Add clean command
+** DONE Add clean command
    commit: Add clean CLI command
    - prune orphans; --all wipes cache
    test: orphans removed after include_full toggled off; --all empties cache

@@ -15,7 +15,7 @@ import typer
 
 from baffin.adapters.settings import BaffinSettings
 from baffin.interface.cli.pipeline import run_build
-from baffin.interface.cli.wiring import build_scanner, load_config
+from baffin.interface.cli.wiring import build_cleaner, build_scanner, load_config
 
 SourceOpt = Annotated[Path | None, typer.Option(help="Source folder of originals.")]
 OutputOpt = Annotated[Path | None, typer.Option(help="Output site directory.")]
@@ -118,3 +118,15 @@ def build(
     typer.echo(f"Groups:    {summary.groups}")
     for label, error in summary.skipped:
         typer.echo(f"skipped {label}: {error}")
+
+
+@app.command()
+def clean(
+    source: SourceOpt = None,
+    output: OutputOpt = None,
+    wipe: Annotated[bool, typer.Option("--all", help="Wipe the whole cache.")] = False,
+) -> None:
+    """Prune orphaned derivatives; --all wipes the cache."""
+    config = load_config(source=source, output=output)
+    result = build_cleaner(config).execute(config, wipe=wipe)
+    typer.echo(f"Removed {len(result.removed)} derivative(s)")
