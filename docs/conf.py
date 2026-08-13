@@ -11,7 +11,6 @@ project = "baffin"
 author = "Chris Gough"
 
 extensions = [
-    "myst_parser",
     "autoapi.extension",
     "sphinx.ext.napoleon",
     "sphinx.ext.doctest",
@@ -36,10 +35,6 @@ autodoc_typehints = "description"
 # --- Theme ---
 html_theme = "furo"
 html_title = "baffin"
-
-# --- MyST ---
-myst_enable_extensions = ["colon_fence", "deflist"]
-source_suffix = {".md": "markdown", ".rst": "restructuredtext"}
 
 # --- PlantUML (diagrams render into the build; requires plantuml on PATH) ---
 plantuml = "plantuml"
