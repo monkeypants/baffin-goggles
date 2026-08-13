@@ -7,6 +7,7 @@ check:
 	uv run lint-imports
 	uv run mypy
 	uv run pytest -m "not manual and not wip"
+	uv run pytest --doctest-modules baffin -q
 
 # Placeholders wired up in later phases (CLI).
 build:

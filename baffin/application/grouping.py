@@ -43,6 +43,13 @@ def group_timeline(
     Pure: sorts by ``captured_at``, resolves the effective mode, buckets, and
     orders the resulting groups per ``policy.order``. Assets within a group stay
     oldest-first for stable reading regardless of group order.
+
+    >>> from datetime import datetime
+    >>> from baffin.testing.builders import an_asset
+    >>> trip = [an_asset("a", captured_at=datetime(2025, 7, 12, 9)),
+    ...         an_asset("b", captured_at=datetime(2025, 7, 14, 9))]
+    >>> [g.key for g in group_timeline(trip, GroupingPolicy())]
+    ['day-01', 'day-03']
     """
     items = sorted(assets, key=lambda a: a.captured_at)
     if not items:

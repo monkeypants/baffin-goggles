@@ -224,7 +224,7 @@
    - rule-flavoured test names; module docstrings as chapter intros
    - name assemble_assets with its own spec test (skip-vs-strict at that seam)
    test: make check green; the pure-layer tests share one cosmology
-** TODO Add doctests to the functional core
+** DONE Add doctests to the functional core
    commit: Add doctests to the functional core
    - runnable >>> examples on cache_key, url_for, group_timeline,
      plan_derivatives, diff_plan
