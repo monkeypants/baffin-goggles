@@ -236,7 +236,7 @@
    - -W + nitpicky; nitpick_ignore for Literal aliases (AssetKind, SpecName,
      GroupMode, Order); docs dep group; make docs
    test: `make docs` green with -W
-** TODO Add PlantUML architecture diagrams
+** DONE Add PlantUML architecture diagrams
    commit: Add PlantUML architecture diagrams
    - install plantuml; sphinxcontrib-plantuml wired
    - layered dependency rule (== import-linter contract), ports/adapters/fakes

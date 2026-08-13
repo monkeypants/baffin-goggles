@@ -14,5 +14,6 @@ the tests are the executable specification.
 ```{toctree}
 :maxdepth: 2
 
+architecture
 reference/index
 ```

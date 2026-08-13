@@ -15,6 +15,7 @@ extensions = [
     "autoapi.extension",
     "sphinx.ext.napoleon",
     "sphinx.ext.doctest",
+    "sphinxcontrib.plantuml",
 ]
 
 # --- AutoAPI: document both the package and the tests (the executable spec) ---
@@ -39,6 +40,10 @@ html_title = "baffin"
 # --- MyST ---
 myst_enable_extensions = ["colon_fence", "deflist"]
 source_suffix = {".md": "markdown", ".rst": "restructuredtext"}
+
+# --- PlantUML (diagrams render into the build; requires plantuml on PATH) ---
+plantuml = "plantuml"
+plantuml_output_format = "svg"
 
 # --- Nitpicky: every cross-reference must resolve ---
 nitpicky = True
