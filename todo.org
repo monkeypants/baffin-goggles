@@ -247,7 +247,7 @@
    - authored chapters weaving prose + autodoc + featured tests/doctests
    - SPEC.md trimmed to the "why": vision, principles, privacy, roadmap, decisions
    test: make docs green; SPEC's mechanical sections are gone, cross-linked
-** TODO Add README and quickstart
+** DONE Add README and quickstart
    commit: Add README and quickstart
    - install (brew deps), doctor, build, serve; sample baffin.toml
    test: documented commands run against the fixture set
