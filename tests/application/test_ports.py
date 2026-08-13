@@ -4,6 +4,10 @@ from baffin.application import ports
 
 
 def test_all_ports_are_protocols() -> None:
+    """The ports are swappable seams, not concrete classes. This asserts only
+    that they are Protocols — structural conformance of adapters and fakes is
+    mypy's job (see the TYPE_CHECKING block in baffin.testing.fakes), not this
+    test's."""
     names = [
         "AssetRepository",
         "MetadataReader",
