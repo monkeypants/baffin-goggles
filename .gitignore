@@ -16,3 +16,7 @@ dist/
 # baffin output / cache
 site/
 .baffin/
+
+# docs build
+docs/_build/
+docs/reference/

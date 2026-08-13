@@ -230,7 +230,7 @@
      plan_derivatives, diff_plan
    - make check gains `pytest --doctest-modules baffin`
    test: doctests pass under make check
-** TODO Add Sphinx skeleton with AutoAPI and doctest
+** DONE Add Sphinx skeleton with AutoAPI and doctest
    commit: Add Sphinx docs build
    - docs/ + conf.py: AutoAPI over baffin + tests, MyST, Napoleon, doctest
    - -W + nitpicky; nitpick_ignore for Literal aliases (AssetKind, SpecName,

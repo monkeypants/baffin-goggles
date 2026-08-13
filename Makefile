@@ -1,4 +1,4 @@
-.PHONY: check build serve clean
+.PHONY: check build serve clean docs
 
 # Unified quality gate: lint, format, architecture, types, tests.
 check:
@@ -18,3 +18,6 @@ serve:
 
 clean:
 	@echo "clean: not implemented yet"
+
+docs:
+	uv run --group docs sphinx-build -b html -W --keep-going docs docs/_build/html
