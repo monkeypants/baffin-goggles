@@ -79,7 +79,7 @@ def run_build(config: GalleryConfig, *, jobs: int = 1) -> BuildSummary:
 
 
 def render_only(config: GalleryConfig) -> None:
-    """Re-render templates over the existing model — no derivatives generated."""
+    """Re-render templates over the existing model; no derivatives generated."""
     Jinja2Renderer().render(_model(config), config.output)
 
 

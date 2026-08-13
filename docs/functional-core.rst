@@ -2,9 +2,9 @@ The functional core
 ===================
 
 The core is pure functions over the domain: grouping, planning, cache diffing,
-and URL building. No I/O, no mocks — plain dataclasses in, plain dataclasses out.
-This is where most of the logic and most of the tests live; the :doc:`use-cases`
-orchestrate these functions over the ports.
+and URL building. No I/O, no mocks; plain dataclasses in and out. Most of the
+logic and tests live here. The :doc:`use-cases` orchestrate these functions over
+the ports.
 
 Chronological grouping
 ----------------------
@@ -25,7 +25,7 @@ Planning and diffing
 :py:func:`~baffin.application.planning.plan_derivatives` expands assets × specs
 into content-addressed tiers; :py:func:`~baffin.application.planning.diff_plan`
 splits that plan into HITs to skip and MISSes to generate, purely against an
-immutable snapshot — the decision the :doc:`lazy build <lazy-build>` acts on.
+immutable snapshot. The :doc:`lazy build <lazy-build>` acts on that decision.
 Because the key is the content hash, a moved file is a hit:
 
 .. literalinclude:: ../tests/application/test_diff_plan.py
@@ -36,7 +36,7 @@ Portable URLs
 
 :py:func:`~baffin.application.urls.url_for` yields links relative to the current
 page, so the same HTML works served at a domain root, under ``/baffin/``, or from
-``file://`` — one string, every mount point:
+``file://``:
 
 .. literalinclude:: ../tests/application/test_urls.py
    :pyobject: test_relative_link_is_portable_across_mount_points

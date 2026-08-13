@@ -1,19 +1,19 @@
 Architecture
 ============
 
-baffin is a clean-architecture application: one delivery-agnostic core, thin
-adapters at the edge. Three views make the shape concrete.
+baffin is a clean-architecture application: a delivery-agnostic core with thin
+adapters at the edge. Three views follow.
 
 The dependency rule
 -------------------
 
-Dependencies point inward only: ``interface → adapters → application → domain``,
-and the domain imports nothing outward. This is not a drawing of intent — it is
-the `import-linter <https://import-linter.readthedocs.io/>`_ layered contract,
-enforced on every ``make check``, rendered as a picture.
+Dependencies point inward only: ``interface → adapters → application → domain``.
+The domain imports nothing outward.
+`import-linter <https://import-linter.readthedocs.io/>`_ enforces this on every
+``make check``, so the diagram below is the contract itself.
 
 .. uml::
-   :caption: Layers — each depends only on those below it.
+   :caption: Layers: each depends only on those below.
 
    @startuml
    skinparam componentStyle rectangle
@@ -36,16 +36,15 @@ enforced on every ``make check``, rendered as a picture.
 Ports and their implementations
 -------------------------------
 
-The seams between core and shell are ``typing.Protocol`` ports (they live in
-:py:mod:`baffin.application.ports`). Each has a real adapter and an in-memory
-fake; the core depends only on the Protocol, so the two are interchangeable —
-which is what lets the use cases be tested with no I/O. The diagram below traces
-the :py:class:`~baffin.application.ports.Thumbnailer` seam through its
-:py:class:`~baffin.adapters.thumbnails.VipsThumbnailer` and
+The seams between core and shell are ``typing.Protocol`` ports in
+:py:mod:`baffin.application.ports`. Each has a real adapter and an in-memory
+fake; the core depends only on the Protocol, so the use cases test with no I/O.
+The diagram traces the :py:class:`~baffin.application.ports.Thumbnailer` seam
+through its :py:class:`~baffin.adapters.thumbnails.VipsThumbnailer` and
 :py:class:`~baffin.adapters.thumbnails.PillowThumbnailer` adapters.
 
 .. uml::
-   :caption: One seam, three implementations (the Thumbnailer port).
+   :caption: The Thumbnailer port and its implementations.
 
    @startuml
    skinparam shadowing false
@@ -66,16 +65,15 @@ the :py:class:`~baffin.application.ports.Thumbnailer` seam through its
 The lazy build
 --------------
 
-The core plans purely; the shell fans generation out. Hashing is memoised on
-``stat`` (the :py:class:`~baffin.application.ports.Hasher` port), only cache
-misses are generated in a process pool of
-:py:class:`~baffin.adapters.processor.AssetProcessor` units, results are recorded
-through the :py:class:`~baffin.application.ports.DerivativeStore`, and the HTML
-always re-renders — so editing a template rewrites zero image bytes (see
-:doc:`lazy-build`).
+The core plans; the shell generates. Hashing is memoised on ``stat`` (the
+:py:class:`~baffin.application.ports.Hasher`), only cache misses run in a process
+pool of :py:class:`~baffin.adapters.processor.AssetProcessor` units, results are
+recorded through the :py:class:`~baffin.application.ports.DerivativeStore`, and
+the HTML re-renders every build. Editing a template rewrites zero image bytes
+(:doc:`lazy-build`).
 
 .. uml::
-   :caption: build — plan in the core, generate misses in the shell.
+   :caption: build: plan in the core, generate misses in the shell.
 
    @startuml
    skinparam shadowing false
@@ -97,5 +95,5 @@ always re-renders — so editing a template rewrites zero image bytes (see
    Core --> CLI: BuildPlan (hits, misses)
    CLI -> Pool: generate misses only
    Pool -> Store: record(key, derivative)
-   CLI -> Renderer: render()   (always — HTML is cheap)
+   CLI -> Renderer: render()   (always; HTML is cheap)
    @enduml

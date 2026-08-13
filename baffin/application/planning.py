@@ -3,7 +3,7 @@ functional core.
 
 ``plan_derivatives`` expands assets x specs into content-addressed planned
 derivatives; ``diff_plan`` splits that plan into cache HITs and MISSes against a
-:class:`~baffin.domain.StoreState` snapshot. No I/O — the shell pre-checks file
+:class:`~baffin.domain.StoreState` snapshot. No I/O; the shell pre-checks file
 existence into the snapshot so this stays pure.
 """
 

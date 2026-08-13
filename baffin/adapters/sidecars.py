@@ -2,7 +2,7 @@
 body.
 
 Sidecars live in a ``meta/`` tree mirroring the source layout by relative path,
-so the camera folder stays pristine. This adapter writes *only* sidecar files —
+so the camera folder stays pristine. This adapter writes *only* sidecar files,
 never a photo's bytes.
 """
 

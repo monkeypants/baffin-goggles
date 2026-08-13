@@ -2,7 +2,7 @@
 no transcode.
 
 Shells out to ffmpeg/ffprobe (must be on PATH). The clip is stream-copied, and
-its metadata — GPS included — is dropped by default.
+its metadata (GPS included) is dropped by default.
 """
 
 from __future__ import annotations

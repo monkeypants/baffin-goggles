@@ -2,8 +2,8 @@
 submission unit.
 
 Runs hash -> read -> render for ONE asset and returns its derivatives. It is a
-shell-side composite, deliberately NOT an application port — the core plans, the
-shell executes. Its inputs and outputs are picklable and its adapters are
+shell-side composite, not an application port: the core plans, the shell
+executes. Its inputs and outputs are picklable and its adapters are
 re-constructable in a worker (``from_config``), so a ProcessPoolExecutor can fan
 it out.
 """

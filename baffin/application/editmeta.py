@@ -2,7 +2,7 @@
 :doc:`/use-cases`).
 
 Read → merge → write a single sidecar. It depends on nothing but the
-``SidecarStore``, so it *cannot* touch image bytes — the same use case backs the
+``SidecarStore``, so it *cannot* touch image bytes; the same use case backs the
 v1 CLI and the reserved v2 web form.
 """
 

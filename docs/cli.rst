@@ -27,8 +27,7 @@ Configuration resolves CLI flag > env var > ``baffin.toml`` > default (parsed by
 :py:class:`~baffin.adapters.settings.BaffinSettings` at the edge, handed inward
 as a plain :py:class:`~baffin.application.config.GalleryConfig`).
 
-Assembling the real adapters and running the plan-then-generate build in the
-shell is covered end to end:
+Assembling the real adapters and running the build end to end:
 
 .. literalinclude:: ../tests/interface/test_build_cli.py
    :pyobject: test_build_emits_the_expected_site_layout

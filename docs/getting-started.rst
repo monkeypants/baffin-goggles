@@ -2,9 +2,8 @@ Getting started
 ===============
 
 Point ``baffin`` at a folder of camera originals; get a chronological static
-gallery you can share as a link. This chapter takes you from a clean checkout to
-a served gallery. For *why* it works the way it does, read :doc:`rationale`; for
-*how*, the chapters after it.
+gallery you can share as a link. This chapter gets you from checkout to a served
+gallery. For *why* it works this way, read :doc:`rationale`.
 
 System dependencies
 -------------------
@@ -20,13 +19,13 @@ macOS (Homebrew)
    brew install vips ffmpeg inih
    brew install plantuml   # only to build the docs
 
-- **vips** (libvips) — the default ``pyvips`` thumbnailer. Without it, only the
-  Pillow fallback works (see :doc:`architecture`).
-- **ffmpeg** — video poster frames and clip copies. Must be on ``PATH``.
-- **inih** — provides ``libINIReader``, which the ``pyexiv2`` wheel's bundled
+- **vips** (libvips): the default ``pyvips`` thumbnailer. Without it, only the
+  Pillow fallback works.
+- **ffmpeg**: video poster frames and clip copies. Must be on ``PATH``.
+- **inih**: provides ``libINIReader``, which the ``pyexiv2`` wheel's bundled
   ``libexiv2`` links against on macOS. Without it, ``import pyexiv2`` fails to
   load its dylib.
-- **plantuml** — renders the architecture diagrams. Only needed for ``make docs``.
+- **plantuml**: renders the architecture diagrams. Only needed for ``make docs``.
 
 Linux (Debian/Ubuntu)
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -49,9 +48,9 @@ First gallery
    uv run baffin serve --source photos --output site --watch
 
 ``build`` is lazy: a second run regenerates nothing, and editing a template
-rewrites zero image bytes — the promise verified end to end in :doc:`lazy-build`.
-``serve --watch`` re-renders templates on change without touching images.
-Per-image captions are optional (:doc:`use-cases`):
+rewrites zero image bytes (:doc:`lazy-build`). ``serve --watch`` re-renders
+templates on change without touching images. Per-image captions are optional
+(:doc:`use-cases`):
 
 .. code-block:: sh
 
@@ -59,7 +58,7 @@ Per-image captions are optional (:doc:`use-cases`):
 
 The full command surface is :doc:`cli`.
 
-Configuration — ``baffin.toml``
+Configuration: ``baffin.toml``
 -------------------------------
 
 Resolution order: CLI flag > env var (``BAFFIN_*``) > ``baffin.toml`` > default.
@@ -79,6 +78,5 @@ Resolution order: CLI flag > env var (``BAFFIN_*``) > ``baffin.toml`` > default.
    max_edge = 300
    quality = 80
 
-That this exact sample parses is itself a test —
-``test_documented_sample_config_parses`` in the CLI suite. Building on baffin,
-rather than just using it, is :doc:`contributing`.
+The CLI suite parses this exact sample, in
+``test_documented_sample_config_parses``. To contribute, see :doc:`contributing`.

@@ -18,7 +18,7 @@ _DEFAULT_CAPTURED = datetime(2025, 7, 14, 9, 30)
 def a_source_ref(
     name: str = "a.jpg", *, size: int = 10, mtime_ns: int = 20
 ) -> SourceRef:
-    """A source ref under ``photos/`` — the read-only original's handle."""
+    """A source ref under ``photos/``: the read-only original's handle."""
     return SourceRef(path=Path("photos") / name, size=size, mtime_ns=mtime_ns)
 
 

@@ -1,7 +1,7 @@
 """Chronological grouping: policy + the pure ``group_timeline`` (see
 :doc:`/functional-core`).
 
-Pure functional core — imports domain types only, does no I/O.
+Pure functional core; imports domain types only, does no I/O.
 """
 
 from __future__ import annotations

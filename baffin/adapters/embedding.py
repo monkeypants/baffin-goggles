@@ -1,7 +1,7 @@
 """Embed authored sidecar text into an output JPEG's IPTC/XMP.
 
 The "words in, metadata out" invariant (see :ref:`rationale-principles`): shared
-by the thumbnailer adapters, it writes only the derivative copy — originals are
+by the thumbnailer adapters, it writes only the derivative copy; originals are
 never touched.
 """
 

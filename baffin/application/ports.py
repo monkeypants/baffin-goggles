@@ -1,6 +1,6 @@
 """Application ports (see :doc:`/use-cases`): the seams between core and shell.
 
-Every port is a :class:`typing.Protocol` — structural, so adapters and fakes
+Every port is a :class:`typing.Protocol`, structural, so adapters and fakes
 conform without inheritance. The identity currency is :class:`SourceRef` on the
 source side and :class:`~pathlib.Path` on the output side.
 """
@@ -24,7 +24,7 @@ from baffin.domain import (
 
 class AssetRepository(Protocol):
     """Where photos come from. v1: a local read-only folder. v2: an uploaded set
-    landed to a local staging path before discovery — ``SourceRef.path`` is
+    landed to a local staging path before discovery. ``SourceRef.path`` is
     always a readable local handle either way."""
 
     def discover(self, root: Path) -> Iterable[SourceRef]: ...
@@ -37,7 +37,7 @@ class MetadataReader(Protocol):
 
 
 class SidecarStore(Protocol):
-    """Optional per-image metadata beside the original — the ONLY place baffin
+    """Optional per-image metadata beside the original. The only place baffin
     writes into the source tree, and only sidecar files, never the photo bytes."""
 
     def read(self, ref: SourceRef) -> AssetMeta | None: ...
@@ -46,9 +46,8 @@ class SidecarStore(Protocol):
 
 class Hasher(Protocol):
     """xxhash of bytes. Owns the stat->hash memo (see :doc:`/lazy-build`)
-    internally — an
-    unchanged ``(path, size, mtime_ns)`` returns the memoised hash, a changed
-    stat re-hashes — so the port stays a single call."""
+    internally: an unchanged ``(path, size, mtime_ns)`` returns the memoised
+    hash, a changed stat re-hashes. The port stays a single call."""
 
     def hash_file(self, ref: SourceRef) -> str: ...
 
@@ -76,8 +75,8 @@ class VideoProcessor(Protocol):
 
 class DerivativeStore(Protocol):
     """Output dir + manifest. ``snapshot`` reads the manifest AND pre-checks file
-    existence, returning the immutable :class:`StoreState` the pure diff consumes
-    — so HIT/MISS stays a pure function with no per-key I/O in planning."""
+    existence, returning the immutable :class:`StoreState` the pure diff
+    consumes, so HIT/MISS stays a pure function with no per-key I/O in planning."""
 
     def snapshot(self) -> StoreState: ...
     def record(self, key: str, deriv: Derivative) -> None: ...

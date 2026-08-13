@@ -9,7 +9,7 @@ uv run baffin doctor
 uv run baffin build --source photos --output site
 ```
 
-Native prerequisites (libvips, ffmpeg, and — on macOS — inih) and the full
+Native prerequisites (libvips, ffmpeg, and inih on macOS) and the full
 walkthrough are in the **Getting started** chapter of the docs.
 
 ## Docs

@@ -1,25 +1,24 @@
 The domain
 ==========
 
-The domain is plain frozen dataclasses and one piece of behaviour — no I/O, no
-frameworks. The load-bearing type is :py:class:`~baffin.domain.models.Asset`: a
-source item plus its **content hash**, the durable identity that makes the cache
-content-addressed. A rename or a duplicate is the same asset.
+The domain is frozen dataclasses with no I/O and one method. The central type is
+:py:class:`~baffin.domain.models.Asset`: a source item plus its **content
+hash**. The hash is its identity, so a renamed or duplicated file is the same
+asset.
 
-Two metadata types are kept deliberately distinct:
+Two metadata types stay distinct.
 :py:class:`~baffin.domain.models.RawMetadata` is the technical read from an
-original (dimensions, EXIF, GPS), while
-:py:class:`~baffin.domain.models.AssetMeta` is authored sidecar text (title,
-caption, credit, alt). One is machine-read, the other human-written.
+original (dimensions, EXIF, GPS); :py:class:`~baffin.domain.models.AssetMeta` is
+authored sidecar text (title, caption, credit, alt).
 
 The cache key
 -------------
 
-The only behaviour in the domain is
+The domain's one method is
 :py:meth:`~baffin.domain.models.DerivativeSpec.cache_key`. It must be stable
-across runs and machines — the salted builtin ``hash`` cannot back a cache — so it
-is a SHA-256 over the content hash and the spec. This one function is what makes
-the :doc:`lazy build <lazy-build>` content-addressed:
+across runs and machines, so it is a SHA-256 over the content hash and the spec
+rather than the salted builtin ``hash``. This is what makes the
+:doc:`lazy build <lazy-build>` content-addressed:
 
 .. doctest::
 
@@ -29,8 +28,7 @@ the :doc:`lazy build <lazy-build>` content-addressed:
    >>> thumb.cache_key(an_asset("deadbeef")) == thumb.cache_key(an_asset("deadbeef"))
    True
 
-That stability is pinned as a specification — the digest is a literal, so any
-change to the key's formula is caught:
+The digest below is pinned as a literal, so any change to the formula is caught:
 
 .. literalinclude:: ../tests/domain/test_derivative_spec.py
    :pyobject: test_cache_key_is_stable_across_runs

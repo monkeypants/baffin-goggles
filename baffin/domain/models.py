@@ -1,6 +1,6 @@
 """Domain model: plain frozen dataclasses.
 
-No I/O, no framework imports — stdlib only. Types here are pure value objects;
+No I/O, no framework imports; stdlib only. Types here are pure value objects;
 the only behaviour in the domain is ``DerivativeSpec.cache_key``, the seed of the
 lazy build (see :doc:`/lazy-build`).
 """
@@ -54,7 +54,7 @@ class GpsFix:
 class AssetMeta:
     """Per-image metadata from a sidecar; authored text, all optional.
 
-    Describes a single image — NOT narrative/story data. Distinct from
+    Describes a single image, not narrative/story data. Distinct from
     :class:`RawMetadata`, which is the raw technical read from an original.
     Authored and written back by :doc:`/use-cases`.
     """
@@ -67,7 +67,7 @@ class AssetMeta:
 
 @dataclass(frozen=True)
 class RawMetadata:
-    """The raw technical read from an original — the :class:`MetadataReader`
+    """The raw technical read from an original: the :class:`MetadataReader`
     port's output (see :doc:`/use-cases`).
 
     Everything needed to build an :class:`Asset` except ``ref`` and
@@ -99,7 +99,7 @@ class StoreState:
     """Immutable cache snapshot the pure diff consumes (see :doc:`/lazy-build`).
 
     ``present`` holds cache keys that are BOTH recorded in the manifest AND
-    whose file exists on disk — existence is pre-checked by the shell during
+    whose file exists on disk; existence is pre-checked by the shell during
     ``snapshot()`` so ``diff_plan`` stays pure.
     """
 
@@ -168,7 +168,7 @@ class DerivativeSpec:
 
         Uses stdlib SHA-256 over a canonical string (NOT the builtin ``hash``,
         which is per-process salted) so the key is stable across runs and
-        machines — the foundation of the lazy-build cache (see :doc:`/lazy-build`).
+        machines. It is the foundation of the lazy-build cache (see :doc:`/lazy-build`).
         Identical
         bytes under an identical spec always yield the same key; changing any
         spec field (e.g. thumb 300→320) changes only that tier's key.

@@ -1,7 +1,7 @@
 """ScanGallery: the dry run (`baffin scan`; see :doc:`/use-cases`).
 
 Discover → assemble → group → plan → diff, and report the HIT/MISS plan.
-Generates nothing and records nothing — read-only.
+Generates nothing and records nothing; read-only.
 """
 
 from __future__ import annotations

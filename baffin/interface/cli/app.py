@@ -31,7 +31,7 @@ PortOpt = Annotated[int, typer.Option(help="Bind port.")]
 WatchOpt = Annotated[bool, typer.Option(help="Re-render templates on change.")]
 
 app = typer.Typer(
-    help="baffin — publish a folder of photos as a static gallery.",
+    help="baffin: publish a folder of photos as a static gallery.",
     no_args_is_help=True,
     add_completion=False,
 )
@@ -42,7 +42,7 @@ app.add_typer(meta_app, name="meta")
 
 @app.callback()
 def main() -> None:
-    """baffin — publish a folder of photos as a static gallery."""
+    """baffin: publish a folder of photos as a static gallery."""
 
 
 def libvips_version() -> str | None:

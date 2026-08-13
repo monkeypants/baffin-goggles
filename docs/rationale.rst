@@ -8,12 +8,12 @@ Named for the Akshayuk Pass traverse on Baffin Island, where the driving photo
 collection was made.
 
 This chapter keeps only the *why*: vision, principles, privacy, roadmap, and
-decisions of record. The *what/how* — the domain model, the ports, the build
-flow, the CLI — is the rest of these docs, generated from the code and its tests.
-The original specification's section numbers are kept here as headings for
-provenance. Code and tests no longer cite them; docstrings cross-reference the
-owning chapter directly (e.g. :doc:`lazy-build`). The gaps (§4–13, §16–18) are
-the sections now owned by the narrative chapters and the API reference:
+decisions of record. The *what/how* (the domain model, the ports, the build
+flow, the CLI) is the rest of these docs, generated from the code and its tests.
+The specification's original section numbers are kept here as headings for
+provenance; code and tests no longer cite them, and docstrings cross-reference
+the owning chapter directly (e.g. :doc:`lazy-build`). The gaps (§4–13, §16–18)
+are the sections now owned by the narrative chapters and the API reference:
 
 - §4 domain model → :doc:`domain`
 - §5 architecture & ports → :doc:`architecture`, :doc:`use-cases`
