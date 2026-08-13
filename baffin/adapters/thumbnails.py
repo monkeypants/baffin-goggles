@@ -1,4 +1,5 @@
-"""pyvips thumbnailer (SPEC §7): downscale + auto-orient + sharpen, one pass.
+"""pyvips thumbnailer (see :doc:`/lazy-build`): downscale + auto-orient +
+sharpen, one pass.
 
 GPS is stripped from every derivative by default; authored IPTC/XMP is embedded
 afterward. The original is only ever read.
@@ -54,8 +55,9 @@ class VipsThumbnailer:
 
 
 class PillowThumbnailer:
-    """No-libvips fallback (SPEC §16). Never carries source metadata forward, so
-    GPS is dropped by construction; authored IPTC/XMP is re-embedded after."""
+    """No-libvips fallback: the same :class:`Thumbnailer` port without the
+    libvips dependency. Never carries source metadata forward, so GPS is dropped
+    by construction; authored IPTC/XMP is re-embedded after."""
 
     def render(
         self,

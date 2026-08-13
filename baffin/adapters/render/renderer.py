@@ -1,4 +1,5 @@
-"""Jinja2 site renderer (SPEC §10): index timeline, group pages, sitemap.
+"""Jinja2 site renderer (see :doc:`/functional-core`): index timeline, group
+pages, sitemap.
 
 Server-rendered HTML is fully navigable with no JavaScript: every group is a
 real page and every thumbnail links to a real image. In-site links are relative

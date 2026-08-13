@@ -1,4 +1,5 @@
-"""Chronological grouping: policy + the pure ``group_timeline`` (SPEC §9).
+"""Chronological grouping: policy + the pure ``group_timeline`` (see
+:doc:`/functional-core`).
 
 Pure functional core — imports domain types only, does no I/O.
 """
@@ -17,13 +18,14 @@ GroupMode = Literal["adaptive", "day", "month", "year-month", "flat"]
 Order = Literal["oldest-first", "newest-first"]
 
 # Adaptive threshold: a trip spanning at most this many days groups by day;
-# anything longer collapses to year→month (SPEC §9, "~30 days").
+# anything longer collapses to year→month (the "~30 days" rule; see the
+# functional-core chapter).
 ADAPTIVE_DAY_THRESHOLD = 30
 
 
 @dataclass(frozen=True)
 class GroupingPolicy:
-    """How the timeline is bucketed (SPEC §9).
+    """How the timeline is bucketed (see :doc:`/functional-core`).
 
     ``adaptive`` picks by-day for short trips and year→month for long archives.
     ``day1_anchor`` fixes which calendar day counts as "Day 1" for trip-day
@@ -38,7 +40,8 @@ class GroupingPolicy:
 def group_timeline(
     assets: list[Asset] | tuple[Asset, ...], policy: GroupingPolicy
 ) -> tuple[Group, ...]:
-    """Bucket assets into an ordered chronological timeline (SPEC §9).
+    """Bucket assets into an ordered chronological timeline (see
+    :doc:`/functional-core`).
 
     Pure: sorts by ``captured_at``, resolves the effective mode, buckets, and
     orders the resulting groups per ``policy.order``. Assets within a group stay

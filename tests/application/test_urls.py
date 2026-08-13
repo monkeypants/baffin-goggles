@@ -27,7 +27,7 @@ def test_absolute_url_is_for_metadata_only() -> None:
 
 def test_relative_link_is_portable_across_mount_points() -> None:
     """The same relative string resolves correctly under a domain root, a
-    subpath, and file:// — that is the whole point (SPEC §10)."""
+    subpath, and file:// — that is the whole point (see :doc:`/functional-core`)."""
     page = "2025/07/index.html"
     link = url_for("thumb/ab.jpg", current=page)  # base-independent string
 

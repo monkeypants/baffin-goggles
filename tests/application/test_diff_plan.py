@@ -1,4 +1,5 @@
-"""Cache diffing (SPEC §8): a plan is split into HITs to skip and MISSes to
+"""Cache diffing (see :doc:`/functional-core`): a plan is split into HITs to
+skip and MISSes to
 generate, purely against an immutable snapshot. Because the key is the content
 hash, identical bytes are one cache entry even after a move; changing a spec
 misses only that tier.

@@ -1,4 +1,4 @@
-"""xxhash file hasher with a persistent stat->hash memo (SPEC §8.1).
+"""xxhash file hasher with a persistent stat->hash memo (see :doc:`/lazy-build`).
 
 Re-hashing gigabytes every run is wasteful, so ``(path, size, mtime_ns)`` maps
 to a previously computed content hash. An unchanged stat trusts the memo; a

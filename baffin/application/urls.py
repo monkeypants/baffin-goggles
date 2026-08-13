@@ -1,4 +1,5 @@
-"""Portable in-site URLs (SPEC §10): relative links plus absolute-for-metadata.
+"""Portable in-site URLs (see :doc:`/functional-core`): relative links plus
+absolute-for-metadata.
 
 In-site links are **relative** to the page they appear on, so the generated
 site is portable across a domain root, a ``/baffin/`` subpath, or ``file://``

@@ -1,4 +1,4 @@
-"""Application ports (SPEC §5): the seams between core and shell.
+"""Application ports (see :doc:`/use-cases`): the seams between core and shell.
 
 Every port is a :class:`typing.Protocol` — structural, so adapters and fakes
 conform without inheritance. The identity currency is :class:`SourceRef` on the
@@ -45,7 +45,8 @@ class SidecarStore(Protocol):
 
 
 class Hasher(Protocol):
-    """xxhash of bytes. Owns the stat->hash memo (SPEC §8.1) internally — an
+    """xxhash of bytes. Owns the stat->hash memo (see :doc:`/lazy-build`)
+    internally — an
     unchanged ``(path, size, mtime_ns)`` returns the memoised hash, a changed
     stat re-hashes — so the port stays a single call."""
 

@@ -1,4 +1,5 @@
-"""Derivative planning and cache diffing (SPEC §8): pure functional core.
+"""Derivative planning and cache diffing (see :doc:`/functional-core`): pure
+functional core.
 
 ``plan_derivatives`` expands assets x specs into content-addressed planned
 derivatives; ``diff_plan`` splits that plan into cache HITs and MISSes against a
@@ -30,7 +31,8 @@ def plan_derivatives(
     *,
     include_full: bool = False,
 ) -> tuple[PlannedDerivative, ...]:
-    """Expand ``(asset x specs)`` into planned JPEG tiers (SPEC §7).
+    """Expand ``(asset x specs)`` into planned JPEG tiers (see
+    :doc:`/functional-core`).
 
     The ``full`` tier is opt-in: with ``include_full=False`` any spec named
     ``full`` is dropped, so toggling it changes only that tier.

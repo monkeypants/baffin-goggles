@@ -1,4 +1,7 @@
-"""baffin build: fixtures -> build -> the site layout of SPEC §6."""
+"""baffin build: fixtures -> build -> the documented site layout.
+
+See :doc:`/lazy-build`.
+"""
 
 from pathlib import Path
 

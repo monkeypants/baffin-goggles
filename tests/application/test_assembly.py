@@ -1,4 +1,5 @@
-"""Asset assembly (SPEC §8): source refs become domain Assets by hash + read.
+"""Asset assembly (see :doc:`/lazy-build`): source refs become domain Assets by
+hash + read.
 The two fallible steps run under skip-and-report, so one unreadable file is
 skipped and recorded while the run continues; --strict makes it fatal.
 """

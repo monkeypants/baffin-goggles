@@ -1,4 +1,4 @@
-"""The `baffin meta` command group (SPEC §12/§13).
+"""The `baffin meta` command group (see :doc:`/cli`).
 
 show / edit / set, all routed through the EditAssetMeta use case. Authoring
 writes sidecars only, never the photo bytes.

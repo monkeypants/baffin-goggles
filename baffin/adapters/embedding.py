@@ -1,7 +1,8 @@
-"""Embed authored sidecar text into an output JPEG's IPTC/XMP (SPEC §6, §13).
+"""Embed authored sidecar text into an output JPEG's IPTC/XMP.
 
-Shared by the thumbnailer adapters. Writes only the derivative copy — originals
-are never touched.
+The "words in, metadata out" invariant (see :ref:`rationale-principles`): shared
+by the thumbnailer adapters, it writes only the derivative copy — originals are
+never touched.
 """
 
 from __future__ import annotations

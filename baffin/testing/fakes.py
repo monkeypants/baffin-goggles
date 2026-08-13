@@ -1,4 +1,4 @@
-"""In-memory fakes for every application port (SPEC §5).
+"""In-memory fakes for every application port (see :doc:`/use-cases`).
 
 Each fake is a fast, deterministic, disk-free stand-in that records what it was
 asked to do, so use-case tests can assert behaviour and side effects. Structural

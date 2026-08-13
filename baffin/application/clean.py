@@ -1,4 +1,5 @@
-"""CleanGallery: prune orphaned derivatives (SPEC §12, `baffin clean`).
+"""CleanGallery: prune orphaned derivatives (`baffin clean`; see
+:doc:`/use-cases`).
 
 An orphan is a stored derivative whose key is no longer in the live plan — e.g.
 a tier turned off, or a source that's gone. ``--all`` treats *everything* as an

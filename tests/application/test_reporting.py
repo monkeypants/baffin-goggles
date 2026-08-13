@@ -1,4 +1,4 @@
-"""The skip-vs-strict build policy contract (SPEC §5)."""
+"""The skip-vs-strict build policy contract (see :doc:`/use-cases`)."""
 
 import pytest
 

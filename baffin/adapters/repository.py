@@ -1,7 +1,8 @@
-"""Read-only filesystem asset repository (SPEC §2, §3.2).
+"""Read-only filesystem asset repository.
 
 Discovers JPEG/MP4/MOV under a source root. It only ever *stats* files — the
-camera folder stays byte-for-byte pristine.
+camera folder stays byte-for-byte pristine, honouring the immutable-originals
+invariant (see :ref:`rationale-principles`).
 """
 
 from __future__ import annotations

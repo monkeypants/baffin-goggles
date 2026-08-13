@@ -1,4 +1,5 @@
-"""Per-asset processor composite (SPEC §8): the process-pool submission unit.
+"""Per-asset processor composite (see :doc:`/lazy-build`): the process-pool
+submission unit.
 
 Runs hash -> read -> render for ONE asset and returns its derivatives. It is a
 shell-side composite, deliberately NOT an application port — the core plans, the

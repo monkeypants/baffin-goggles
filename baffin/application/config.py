@@ -1,4 +1,4 @@
-"""Plain in-app configuration (SPEC §11).
+"""Plain in-app configuration (see :doc:`/cli`).
 
 Parsed and validated at the edge (Pydantic, Phase 5), then handed inward as this
 framework-free object. The core never sees a TOML file or an env var.

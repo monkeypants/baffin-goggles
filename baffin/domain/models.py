@@ -1,7 +1,8 @@
-"""Domain model: plain frozen dataclasses (SPEC §4).
+"""Domain model: plain frozen dataclasses.
 
 No I/O, no framework imports — stdlib only. Types here are pure value objects;
-the only behaviour in the domain is ``DerivativeSpec.cache_key`` (SPEC §3.7).
+the only behaviour in the domain is ``DerivativeSpec.cache_key``, the seed of the
+lazy build (see :doc:`/lazy-build`).
 """
 
 from __future__ import annotations
@@ -39,7 +40,10 @@ class CameraInfo:
 
 @dataclass(frozen=True)
 class GpsFix:
-    """A GPS reading from an original; stripped from outputs by default (§14)."""
+    """A GPS reading from an original; stripped from outputs by default.
+
+    See :ref:`rationale-privacy`.
+    """
 
     lat: float
     lon: float
@@ -48,10 +52,11 @@ class GpsFix:
 
 @dataclass(frozen=True)
 class AssetMeta:
-    """Per-image metadata from a sidecar (§13); authored text, all optional.
+    """Per-image metadata from a sidecar; authored text, all optional.
 
     Describes a single image — NOT narrative/story data. Distinct from
     :class:`RawMetadata`, which is the raw technical read from an original.
+    Authored and written back by :doc:`/use-cases`.
     """
 
     title: str | None = None
@@ -62,7 +67,8 @@ class AssetMeta:
 
 @dataclass(frozen=True)
 class RawMetadata:
-    """The raw technical read from an original (§5 ``MetadataReader``).
+    """The raw technical read from an original — the :class:`MetadataReader`
+    port's output (see :doc:`/use-cases`).
 
     Everything needed to build an :class:`Asset` except ``ref`` and
     ``content_hash``. Distinct from the authored :class:`AssetMeta` sidecar.
@@ -90,7 +96,7 @@ class Derivative:
 
 @dataclass(frozen=True)
 class StoreState:
-    """Immutable cache snapshot the pure diff consumes (§5, §8).
+    """Immutable cache snapshot the pure diff consumes (see :doc:`/lazy-build`).
 
     ``present`` holds cache keys that are BOTH recorded in the manifest AND
     whose file exists on disk — existence is pre-checked by the shell during
@@ -102,7 +108,8 @@ class StoreState:
 
 @dataclass(frozen=True)
 class Peer:
-    """A fellow traveller's gallery (reserved cross-linking; §15)."""
+    """A fellow traveller's gallery (reserved cross-linking; see
+    :ref:`rationale-peers`)."""
 
     name: str
     url: str
@@ -129,7 +136,7 @@ class Asset:
 
 @dataclass(frozen=True)
 class Group:
-    """A chronological bucket in the timeline (SPEC §4, §9)."""
+    """A chronological bucket in the timeline (see :doc:`/functional-core`)."""
 
     key: str  # "2025-07-14" | "day-03" | "2025/07"
     label: str  # "Day 3 — 14 Jul"
@@ -149,8 +156,8 @@ class Site:
 
 @dataclass(frozen=True)
 class DerivativeSpec:
-    """One output tier (SPEC §7). ``max_edge`` is the longest edge in px;
-    ``None`` means original size (the ``full`` tier)."""
+    """One output tier (see :doc:`/lazy-build`). ``max_edge`` is the longest edge
+    in px; ``None`` means original size (the ``full`` tier)."""
 
     name: SpecName
     max_edge: int | None
@@ -161,7 +168,8 @@ class DerivativeSpec:
 
         Uses stdlib SHA-256 over a canonical string (NOT the builtin ``hash``,
         which is per-process salted) so the key is stable across runs and
-        machines — the foundation of the lazy-build cache (SPEC §8). Identical
+        machines — the foundation of the lazy-build cache (see :doc:`/lazy-build`).
+        Identical
         bytes under an identical spec always yield the same key; changing any
         spec field (e.g. thumb 300→320) changes only that tier's key.
 

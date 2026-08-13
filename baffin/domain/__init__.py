@@ -1,4 +1,7 @@
-"""Domain layer: pure frozen dataclasses and the cache-key logic (SPEC §4)."""
+"""Domain layer: pure frozen dataclasses and the cache-key logic.
+
+See :doc:`/domain`.
+"""
 
 from baffin.domain.models import (
     Asset,

@@ -1,4 +1,4 @@
-"""Typer application shell and the doctor command (SPEC §12).
+"""Typer application shell and the doctor command (see :doc:`/cli`).
 
 Each command is a thin translation from argv into a use case; doctor checks the
 system dependencies and reports the resolved configuration.

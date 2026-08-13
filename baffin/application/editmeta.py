@@ -1,4 +1,5 @@
-"""EditAssetMeta: author one asset's sidecar (SPEC §12/§13, `baffin meta`).
+"""EditAssetMeta: author one asset's sidecar (`baffin meta`; see
+:doc:`/use-cases`).
 
 Read → merge → write a single sidecar. It depends on nothing but the
 ``SidecarStore``, so it *cannot* touch image bytes — the same use case backs the

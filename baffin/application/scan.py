@@ -1,4 +1,4 @@
-"""ScanGallery: the dry run (SPEC §12 `baffin scan`).
+"""ScanGallery: the dry run (`baffin scan`; see :doc:`/use-cases`).
 
 Discover → assemble → group → plan → diff, and report the HIT/MISS plan.
 Generates nothing and records nothing — read-only.

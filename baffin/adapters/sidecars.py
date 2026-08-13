@@ -1,4 +1,5 @@
-"""Markdown sidecar store (SPEC §13): YAML front-matter + caption body.
+"""Markdown sidecar store (see :doc:`/use-cases`): YAML front-matter + caption
+body.
 
 Sidecars live in a ``meta/`` tree mirroring the source layout by relative path,
 so the camera folder stays pristine. This adapter writes *only* sidecar files —

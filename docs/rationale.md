@@ -9,8 +9,9 @@ collection was made.
 This chapter keeps only the *why*: vision, principles, privacy, roadmap, and
 decisions of record. The *what/how* — the domain model, the ports, the build
 flow, the CLI — is the rest of these docs, generated from the code and its tests.
-The original specification's section numbers are preserved here for stable
-cross-references (code still cites e.g. "SPEC §8"); the gaps (§4–13, §16–18) are
+The original specification's section numbers are kept here as headings for
+provenance. Code and tests no longer cite them; docstrings cross-reference the
+owning chapter directly (e.g. {doc}`lazy-build`). The gaps (§4–13, §16–18) are
 the sections now owned by the narrative chapters and the API reference:
 
 - §4 domain model → {doc}`domain`
@@ -21,6 +22,7 @@ the sections now owned by the narrative chapters and the API reference:
 
 ---
 
+(rationale-vision)=
 ## 1. Vision
 
 `baffin` is the **raw-dump publisher**: it turns a folder of camera originals into
@@ -46,6 +48,7 @@ rewrite — and is the entire justification for the layering.
 
 ---
 
+(rationale-scope)=
 ## 2. Scope
 
 ### In scope — v1 (CLI)
@@ -81,6 +84,7 @@ rewrite — and is the entire justification for the layering.
 
 ---
 
+(rationale-principles)=
 ## 3. Principles & invariants
 
 1. **The application core is delivery-agnostic.** It knows nothing about a
@@ -110,6 +114,7 @@ rewrite — and is the entire justification for the layering.
 
 ---
 
+(rationale-privacy)=
 ## 14. Privacy / EXIF
 
 - `captured_at` and optional camera settings read from originals.
@@ -120,6 +125,7 @@ rewrite — and is the entire justification for the layering.
 
 ---
 
+(rationale-peers)=
 ## 15. Peers / cross-linking (reserved)
 
 `[[peers]]` renders a "fellow travellers" nav of absolute links to other people's
@@ -129,6 +135,7 @@ field is reserved now so v1 output can link out by hand in the meantime.
 
 ---
 
+(rationale-roadmap)=
 ## 19. Roadmap
 
 | Phase | Adds | Seam it plugs into |
@@ -143,6 +150,7 @@ second application.
 
 ---
 
+(rationale-decisions)=
 ## 20. Decisions of record & open questions
 
 **Decided:**

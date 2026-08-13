@@ -1,4 +1,4 @@
-"""Parallel generation matches serial byte-for-byte (SPEC §8)."""
+"""Parallel generation matches serial byte-for-byte (see :doc:`/lazy-build`)."""
 
 import hashlib
 from pathlib import Path

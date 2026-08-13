@@ -1,4 +1,4 @@
-"""Port error hierarchy (SPEC §5 contract notes).
+"""Port error hierarchy (see :doc:`/use-cases`).
 
 Protocols can't type their exceptions, so the contract lives here in prose and
 types. Read/generate ports raise one of these; ``BuildGallery`` catches them

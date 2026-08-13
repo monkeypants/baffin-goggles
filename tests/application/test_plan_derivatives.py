@@ -1,4 +1,5 @@
-"""Derivative planning (SPEC §7): a pure expansion of every asset by every
+"""Derivative planning (see :doc:`/functional-core`): a pure expansion of every
+asset by every
 active spec into content-addressed tiers. The full tier is opt-in, so toggling
 ``include_full`` adds or drops only that one tier.
 """

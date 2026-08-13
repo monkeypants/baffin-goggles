@@ -1,4 +1,5 @@
-"""ffmpeg video processor (SPEC §7): poster frame + copied clip, no transcode.
+"""ffmpeg video processor (see :doc:`/lazy-build`): poster frame + copied clip,
+no transcode.
 
 Shells out to ffmpeg/ffprobe (must be on PATH). The clip is stream-copied, and
 its metadata — GPS included — is dropped by default.

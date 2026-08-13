@@ -66,7 +66,8 @@ def test_derivative_and_peer_field_shapes() -> None:
 
 def test_raw_metadata_and_asset_meta_are_distinct() -> None:
     """RawMetadata (technical read) and AssetMeta (authored text) must not be
-    conflated — they are different types with different fields (§4, §5)."""
+    conflated — they are different types with different fields (see
+    :doc:`/domain`)."""
     raw = RawMetadata(
         kind="photo",
         captured_at=datetime(2025, 7, 14, 9, 30),

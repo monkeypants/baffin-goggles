@@ -1,4 +1,4 @@
-"""The JS layer enhances but is never load-bearing (SPEC §10)."""
+"""The JS layer enhances but is never load-bearing (see :doc:`/functional-core`)."""
 
 import re
 from datetime import datetime

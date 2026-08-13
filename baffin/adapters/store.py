@@ -1,4 +1,4 @@
-"""File derivative store + JSON manifest (SPEC §6, §8, decisions of record).
+"""File derivative store + JSON manifest (see :doc:`/lazy-build`).
 
 The manifest (``.baffin/manifest.json``) maps cache key → derivative record.
 ``snapshot`` reads it AND pre-checks that each file still exists on disk, so the

@@ -1,4 +1,4 @@
-"""BuildGallery: the lazy build (SPEC §8, `baffin build`).
+"""BuildGallery: the lazy build (`baffin build`; see :doc:`/lazy-build`).
 
 Discover → assemble → group → plan → diff, generate only the MISSes, then
 always render (HTML is cheap). Generation is per-asset skip-and-report; the

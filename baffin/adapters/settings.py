@@ -1,4 +1,4 @@
-"""Configuration model and loader (SPEC §11).
+"""Configuration model and loader (see :doc:`/cli`).
 
 Pydantic Settings parse and validate ``baffin.toml`` / env vars at the edge, then
 hand a plain :class:`GalleryConfig` inward. Resolution order (highest first):
