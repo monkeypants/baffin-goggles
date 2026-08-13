@@ -215,12 +215,43 @@
    - serve output/ locally; --watch re-renders templates on change
    test: serves site; template change triggers re-render, not image regen
 
-* Phase 6 — Docs & release hygiene
-** TODO Add docs build wired to CI
+* Phase 6 — Docs as a literate, test-driven spec
+  Re-planned: autodoc of code + tests, with doctests as the runnable examples,
+  should make SPEC.md's mechanical half redundant. Tests are the medium.
+** DONE Tidy tests for living documentation
+   commit: Tidy tests for use as living documentation
+   - one canonical an_asset() builder (baffin/testing/builders.py); kill dupes
+   - rule-flavoured test names; module docstrings as chapter intros
+   - name assemble_assets with its own spec test (skip-vs-strict at that seam)
+   test: make check green; the pure-layer tests share one cosmology
+** DONE Add doctests to the functional core
+   commit: Add doctests to the functional core
+   - runnable >>> examples on cache_key, url_for, group_timeline,
+     plan_derivatives, diff_plan
+   - make check gains `pytest --doctest-modules baffin`
+   test: doctests pass under make check
+** DONE Add Sphinx skeleton with AutoAPI and doctest
    commit: Add Sphinx docs build
-   - make docs (sphinx-build -W --keep-going); nitpick_ignore seeded for type aliases
-   test: `make docs` green; CI builds docs on public-API/docstring changes
-** TODO Add README and quickstart
+   - docs/ + conf.py: AutoAPI over baffin + tests, MyST, Napoleon, doctest
+   - -W + nitpicky; nitpick_ignore for Literal aliases (AssetKind, SpecName,
+     GroupMode, Order); docs dep group; make docs
+   test: `make docs` green with -W
+** DONE Add PlantUML architecture diagrams
+   commit: Add PlantUML architecture diagrams
+   - install plantuml; sphinxcontrib-plantuml wired
+   - layered dependency rule (== import-linter contract), ports/adapters/fakes
+     seam, the lazy-build sequence (§8)
+   test: make docs renders the diagrams
+** DONE Add narrative chapters and eat the spec
+   commit: Add narrative docs chapters and trim the spec
+   - authored chapters weaving prose + autodoc + featured tests/doctests
+   - SPEC.md trimmed to the "why": vision, principles, privacy, roadmap, decisions
+   test: make docs green; SPEC's mechanical sections are gone, cross-linked
+** DONE Add README and quickstart
    commit: Add README and quickstart
-   - install, doctor, build, serve; sample baffin.toml
+   - install (brew deps), doctor, build, serve; sample baffin.toml
    test: documented commands run against the fixture set
+** DONE Wire docs build into CI
+   commit: Wire docs build into CI
+   - ci.yml installs plantuml; builds docs with -W on API/docstring/docs changes
+   test: workflow YAML valid; make docs green locally

@@ -1,40 +1,28 @@
-"""DerivativeSpec.cache_key: deterministic, content- and spec-sensitive (SPEC §8)."""
+"""The derivative cache key (SPEC §8). It is a SHA-256 over the content hash
+plus the spec — deterministic across runs and machines, unlike the salted
+builtin ``hash`` — so it can back a cache. Distinct content or spec yields a
+distinct key.
+"""
 
-from datetime import datetime
-from pathlib import Path
-
-from baffin.domain import Asset, DerivativeSpec, SourceRef
-
-
-def _asset(content_hash: str) -> Asset:
-    return Asset(
-        ref=SourceRef(path=Path("photos/a.jpg"), size=10, mtime_ns=20),
-        content_hash=content_hash,
-        kind="photo",
-        captured_at=datetime(2025, 7, 14, 9, 30),
-        width=6000,
-        height=4000,
-        orientation=1,
-    )
-
+from baffin.domain import DerivativeSpec
+from baffin.testing.builders import an_asset
 
 THUMB = DerivativeSpec(name="thumb", max_edge=300, quality=80)
 
 
 def test_cache_key_is_stable_across_runs() -> None:
-    """Pinned digest: proves SHA-256 over a canonical string, not the builtin
-    per-process-salted hash() — the key must be identical run to run."""
-    key = THUMB.cache_key(_asset("hash-a"))
+    key = THUMB.cache_key(an_asset("hash-a"))
+    # Pinned digest: proves SHA-256 over a canonical string, not salted hash().
     assert key == "7a5d20c407dee678a9a382d24afdad08628ae95363d9433ee8b922ea3bd2b6f9"
-    assert key == THUMB.cache_key(_asset("hash-a"))  # repeatable within a run
+    assert key == THUMB.cache_key(an_asset("hash-a"))  # repeatable within a run
 
 
 def test_cache_key_distinct_per_content_hash() -> None:
-    assert THUMB.cache_key(_asset("hash-a")) != THUMB.cache_key(_asset("hash-b"))
+    assert THUMB.cache_key(an_asset("hash-a")) != THUMB.cache_key(an_asset("hash-b"))
 
 
 def test_cache_key_changes_when_any_spec_field_changes() -> None:
-    asset = _asset("hash-a")
+    asset = an_asset("hash-a")
     base = THUMB.cache_key(asset)
     assert DerivativeSpec("thumb", 320, 80).cache_key(asset) != base  # max_edge
     assert DerivativeSpec("thumb", 300, 82).cache_key(asset) != base  # quality
@@ -43,6 +31,6 @@ def test_cache_key_changes_when_any_spec_field_changes() -> None:
 
 def test_cache_key_handles_full_tier_none_max_edge() -> None:
     full = DerivativeSpec(name="full", max_edge=None, quality=95)
-    key = full.cache_key(_asset("hash-a"))
+    key = full.cache_key(an_asset("hash-a"))
     assert len(key) == 64  # sha256 hexdigest
-    assert key != THUMB.cache_key(_asset("hash-a"))
+    assert key != THUMB.cache_key(an_asset("hash-a"))

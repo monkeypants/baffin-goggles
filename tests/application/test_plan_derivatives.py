@@ -1,10 +1,13 @@
-"""plan_derivatives: full NxM expansion and the include_full toggle."""
+"""Derivative planning (SPEC §7): a pure expansion of every asset by every
+active spec into content-addressed tiers. The full tier is opt-in, so toggling
+``include_full`` adds or drops only that one tier.
+"""
 
-from datetime import datetime
 from pathlib import Path
 
 from baffin.application.planning import plan_derivatives
-from baffin.domain import Asset, DerivativeSpec, SourceRef
+from baffin.domain import DerivativeSpec
+from baffin.testing.builders import an_asset
 
 THUMB = DerivativeSpec("thumb", 300, 80)
 MED = DerivativeSpec("med", 1600, 82)
@@ -12,22 +15,10 @@ FULL = DerivativeSpec("full", None, 95)
 SPECS = [THUMB, MED, FULL]
 
 
-def _asset(tag: str) -> Asset:
-    return Asset(
-        ref=SourceRef(path=Path(f"photos/{tag}.jpg"), size=1, mtime_ns=1),
-        content_hash=tag,
-        kind="photo",
-        captured_at=datetime(2025, 7, 14, 9),
-        width=100,
-        height=100,
-        orientation=1,
-    )
-
-
 def test_expands_every_asset_by_every_active_spec() -> None:
-    assets = [_asset("a"), _asset("b")]
+    assets = [an_asset("a"), an_asset("b")]
     plan = plan_derivatives(assets, [THUMB, MED])  # full absent entirely
-    assert len(plan) == 4  # 2 assets x 2 specs
+    assert len(plan) == 4  # 2 assets, 2 specs
     assert {p.rel_path for p in plan} == {
         Path("thumb/a.jpg"),
         Path("med/a.jpg"),
@@ -38,7 +29,7 @@ def test_expands_every_asset_by_every_active_spec() -> None:
 
 
 def test_include_full_toggle_touches_only_the_full_tier() -> None:
-    assets = [_asset("a")]
+    assets = [an_asset("a")]
     without = plan_derivatives(assets, SPECS, include_full=False)
     with_full = plan_derivatives(assets, SPECS, include_full=True)
 

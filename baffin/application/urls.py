@@ -16,6 +16,12 @@ def url_for(target: str, *, current: str = "index.html") -> str:
     Both are site-relative POSIX paths (e.g. ``"thumb/ab.jpg"``,
     ``"2025/07/index.html"``). The result carries no leading slash and no host,
     so the same HTML resolves correctly wherever the site is mounted.
+
+    >>> from baffin.application.urls import url_for
+    >>> url_for("thumb/ab.jpg", current="index.html")
+    'thumb/ab.jpg'
+    >>> url_for("thumb/ab.jpg", current="2025/07/index.html")
+    '../../thumb/ab.jpg'
     """
     start = posixpath.dirname(current) or "."
     return posixpath.relpath(target, start)

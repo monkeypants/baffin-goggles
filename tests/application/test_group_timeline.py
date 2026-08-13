@@ -1,22 +1,13 @@
-"""group_timeline: adaptive/day/month boundaries, labelling, ordering, edges."""
+"""Chronological grouping (SPEC §9). The adaptive policy groups a short trip by
+day with trip-day labels, and a long archive by year then month; the 30-day span
+is the boundary between them. day/month/year-month/flat can also be pinned, and
+ordering flips the group sequence.
+"""
 
 from datetime import date, datetime
-from pathlib import Path
 
 from baffin.application.grouping import GroupingPolicy, group_timeline
-from baffin.domain import Asset, SourceRef
-
-
-def _asset(when: datetime, tag: str) -> Asset:
-    return Asset(
-        ref=SourceRef(path=Path(f"photos/{tag}.jpg"), size=1, mtime_ns=1),
-        content_hash=tag,
-        kind="photo",
-        captured_at=when,
-        width=100,
-        height=100,
-        orientation=1,
-    )
+from baffin.testing.builders import an_asset
 
 
 def test_empty_input_yields_no_groups() -> None:
@@ -25,8 +16,8 @@ def test_empty_input_yields_no_groups() -> None:
 
 def test_flat_mode_is_one_bucket() -> None:
     assets = [
-        _asset(datetime(2025, 7, 14, 9), "a"),
-        _asset(datetime(2025, 9, 1, 9), "b"),
+        an_asset("a", captured_at=datetime(2025, 7, 14, 9)),
+        an_asset("b", captured_at=datetime(2025, 9, 1, 9)),
     ]
     (group,) = group_timeline(assets, GroupingPolicy(mode="flat"))
     assert group.key == "all"
@@ -36,9 +27,9 @@ def test_flat_mode_is_one_bucket() -> None:
 
 def test_adaptive_short_trip_groups_by_day_with_trip_labels() -> None:
     assets = [
-        _asset(datetime(2025, 7, 12, 8), "a"),  # Day 1
-        _asset(datetime(2025, 7, 12, 18), "b"),  # Day 1
-        _asset(datetime(2025, 7, 14, 10), "c"),  # Day 3
+        an_asset("a", captured_at=datetime(2025, 7, 12, 8)),  # Day 1
+        an_asset("b", captured_at=datetime(2025, 7, 12, 18)),  # Day 1
+        an_asset("c", captured_at=datetime(2025, 7, 14, 10)),  # Day 3
     ]
     groups = group_timeline(assets, GroupingPolicy(mode="adaptive"))
     assert [g.key for g in groups] == ["day-01", "day-03"]
@@ -48,7 +39,7 @@ def test_adaptive_short_trip_groups_by_day_with_trip_labels() -> None:
 
 
 def test_day1_anchor_shifts_trip_numbering() -> None:
-    assets = [_asset(datetime(2025, 7, 14, 10), "c")]
+    assets = [an_asset("c", captured_at=datetime(2025, 7, 14, 10))]
     groups = group_timeline(
         assets, GroupingPolicy(mode="day", day1_anchor=date(2025, 7, 12))
     )
@@ -58,8 +49,8 @@ def test_day1_anchor_shifts_trip_numbering() -> None:
 
 def test_adaptive_boundary_30_days_is_still_by_day() -> None:
     assets = [
-        _asset(datetime(2025, 7, 1, 9), "a"),
-        _asset(datetime(2025, 7, 31, 9), "b"),  # 30-day span
+        an_asset("a", captured_at=datetime(2025, 7, 1, 9)),
+        an_asset("b", captured_at=datetime(2025, 7, 31, 9)),  # 30-day span
     ]
     groups = group_timeline(assets, GroupingPolicy(mode="adaptive"))
     assert all(g.key.startswith("day-") for g in groups)
@@ -67,16 +58,16 @@ def test_adaptive_boundary_30_days_is_still_by_day() -> None:
 
 def test_adaptive_long_archive_groups_by_year_month() -> None:
     assets = [
-        _asset(datetime(2025, 7, 1, 9), "a"),
-        _asset(datetime(2025, 9, 1, 9), "b"),  # 62-day span → year→month
+        an_asset("a", captured_at=datetime(2025, 7, 1, 9)),
+        an_asset("b", captured_at=datetime(2025, 9, 1, 9)),  # 62-day span
     ]
     groups = group_timeline(assets, GroupingPolicy(mode="adaptive"))
     assert [g.key for g in groups] == ["2025/07", "2025/09"]
     assert groups[0].label == "July 2025"
 
 
-def test_month_mode_uses_flat_key_year_month_uses_path() -> None:
-    assets = [_asset(datetime(2025, 7, 14, 9), "a")]
+def test_month_and_year_month_differ_only_in_key_separator() -> None:
+    assets = [an_asset("a", captured_at=datetime(2025, 7, 14, 9))]
     (flat,) = group_timeline(assets, GroupingPolicy(mode="month"))
     (nested,) = group_timeline(assets, GroupingPolicy(mode="year-month"))
     assert flat.key == "2025-07"
@@ -86,8 +77,8 @@ def test_month_mode_uses_flat_key_year_month_uses_path() -> None:
 
 def test_newest_first_reverses_group_order() -> None:
     assets = [
-        _asset(datetime(2025, 7, 12, 9), "a"),
-        _asset(datetime(2025, 7, 14, 9), "c"),
+        an_asset("a", captured_at=datetime(2025, 7, 12, 9)),
+        an_asset("c", captured_at=datetime(2025, 7, 14, 9)),
     ]
     oldest = group_timeline(assets, GroupingPolicy(mode="day", order="oldest-first"))
     newest = group_timeline(assets, GroupingPolicy(mode="day", order="newest-first"))
