@@ -2,7 +2,7 @@ The CLI
 =======
 
 The ``baffin`` command is a thin Typer adapter: each command translates argv into
-a use-case call and translates the result back out. Nothing in
+a :doc:`use-case <use-cases>` call and translates the result back out. Nothing in
 :py:mod:`baffin.interface.cli.app` leaks into the core.
 
 .. list-table::

@@ -18,7 +18,8 @@ The cache key
 The only behaviour in the domain is
 :py:meth:`~baffin.domain.models.DerivativeSpec.cache_key`. It must be stable
 across runs and machines — the salted builtin ``hash`` cannot back a cache — so it
-is a SHA-256 over the content hash and the spec:
+is a SHA-256 over the content hash and the spec. This one function is what makes
+the :doc:`lazy build <lazy-build>` content-addressed:
 
 .. doctest::
 

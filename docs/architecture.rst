@@ -36,9 +36,13 @@ enforced on every ``make check``, rendered as a picture.
 Ports and their implementations
 -------------------------------
 
-The seams between core and shell are ``typing.Protocol`` ports. Each has a real
-adapter and an in-memory fake; the core depends only on the Protocol, so the two
-are interchangeable — which is what lets the use cases be tested with no I/O.
+The seams between core and shell are ``typing.Protocol`` ports (they live in
+:py:mod:`baffin.application.ports`). Each has a real adapter and an in-memory
+fake; the core depends only on the Protocol, so the two are interchangeable —
+which is what lets the use cases be tested with no I/O. The diagram below traces
+the :py:class:`~baffin.application.ports.Thumbnailer` seam through its
+:py:class:`~baffin.adapters.thumbnails.VipsThumbnailer` and
+:py:class:`~baffin.adapters.thumbnails.PillowThumbnailer` adapters.
 
 .. uml::
    :caption: One seam, three implementations (the Thumbnailer port).
@@ -63,8 +67,12 @@ The lazy build
 --------------
 
 The core plans purely; the shell fans generation out. Hashing is memoised on
-``stat``, only cache misses are generated (in a process pool), and the HTML always
-re-renders — so editing a template rewrites zero image bytes (see :doc:`lazy-build`).
+``stat`` (the :py:class:`~baffin.application.ports.Hasher` port), only cache
+misses are generated in a process pool of
+:py:class:`~baffin.adapters.processor.AssetProcessor` units, results are recorded
+through the :py:class:`~baffin.application.ports.DerivativeStore`, and the HTML
+always re-renders — so editing a template rewrites zero image bytes (see
+:doc:`lazy-build`).
 
 .. uml::
    :caption: build — plan in the core, generate misses in the shell.
