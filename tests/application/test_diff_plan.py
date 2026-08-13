@@ -1,8 +1,9 @@
-"""Cache diffing (see :doc:`/functional-core`): a plan is split into HITs to
-skip and MISSes to
-generate, purely against an immutable snapshot. Because the key is the content
-hash, identical bytes are one cache entry even after a move; changing a spec
-misses only that tier.
+"""Cache diffing (see :doc:`/functional-core`):
+a plan is split into HITs to skip and MISSes to generate,
+purely against an immutable snapshot.
+Because the key is the content hash,
+identical bytes are one cache entry even after a move;
+changing a spec misses only that tier.
 """
 
 from baffin.application.planning import diff_plan, plan_derivatives

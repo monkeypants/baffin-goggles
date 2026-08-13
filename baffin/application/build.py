@@ -1,11 +1,13 @@
 """BuildGallery: the lazy build (`baffin build`; see :doc:`/lazy-build`).
 
-Discover → assemble → group → plan → diff, generate only the MISSes, then
-always render (HTML is cheap). Generation is per-asset skip-and-report; the
-manifest records every derivative produced.
+Discover → assemble → group → plan → diff,
+generate only the MISSes, then always render (HTML is cheap).
+Generation is per-asset skip-and-report;
+the manifest records every derivative produced.
 
-Video poster/clip generation branches by kind in the Phase-5 ``AssetProcessor``
-composite; this use case drives the photo-tier path via the ``Thumbnailer``.
+Video poster/clip generation branches by kind
+in the Phase-5 ``AssetProcessor`` composite;
+this use case drives the photo-tier path via the ``Thumbnailer``.
 """
 
 from __future__ import annotations

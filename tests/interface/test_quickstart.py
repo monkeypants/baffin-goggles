@@ -1,5 +1,7 @@
-"""The documented surface works: the help lists every command, and the sample
-baffin.toml from the Getting Started chapter parses into the expected config.
+"""The documented surface works:
+the help lists every command,
+and the sample baffin.toml from the Getting Started chapter
+parses into the expected config.
 """
 
 from pathlib import Path

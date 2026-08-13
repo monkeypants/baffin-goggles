@@ -1,7 +1,8 @@
-"""Asset assembly (see :doc:`/lazy-build`): source refs become domain Assets by
-hash + read.
-The two fallible steps run under skip-and-report, so one unreadable file is
-skipped and recorded while the run continues; --strict makes it fatal.
+"""Asset assembly (see :doc:`/lazy-build`):
+source refs become domain Assets by hash + read.
+The two fallible steps run under skip-and-report,
+so one unreadable file is skipped and recorded while the run continues;
+--strict makes it fatal.
 """
 
 from pathlib import Path

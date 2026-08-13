@@ -1,8 +1,8 @@
 """Shell build pipeline: plan in the core, fan generation out in the shell.
 
-Assembles assets, plans and diffs against the cache (pure), then generates only
-the misses via the AssetProcessor (serial or pooled) and renders. Videos branch
-by kind inside the processor.
+Assembles assets, plans and diffs against the cache (pure),
+then generates only the misses via the AssetProcessor (serial or pooled) and renders.
+Videos branch by kind inside the processor.
 """
 
 from __future__ import annotations

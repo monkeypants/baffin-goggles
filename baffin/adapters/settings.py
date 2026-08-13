@@ -1,7 +1,8 @@
 """Configuration model and loader (see :doc:`/cli`).
 
-Pydantic Settings parse and validate ``baffin.toml`` / env vars at the edge, then
-hand a plain :class:`GalleryConfig` inward. Resolution order (highest first):
+Pydantic Settings parse and validate ``baffin.toml`` / env vars at the edge,
+then hand a plain :class:`GalleryConfig` inward.
+Resolution order (highest first):
 CLI/init args → env vars (``BAFFIN_*``) → ``baffin.toml`` → defaults.
 """
 
@@ -24,17 +25,26 @@ from baffin.domain import DerivativeSpec, Peer
 
 
 class DerivativeSetting(BaseModel):
+    """One ``[[derivatives]]`` entry from ``baffin.toml``:
+    a tier's name, max edge, and quality."""
+
     name: Literal["thumb", "low", "med", "full"]
     max_edge: int | None
     quality: int
 
 
 class PeerSetting(BaseModel):
+    """One ``[[peers]]`` entry from ``baffin.toml``
+    (reserved cross-linking; see :ref:`rationale-peers`)."""
+
     name: str
     url: str
 
 
 class BaffinSettings(BaseSettings):
+    """Typed ``baffin.toml`` / env-var settings,
+    resolved at the edge into a :class:`GalleryConfig`."""
+
     model_config = SettingsConfigDict(
         env_prefix="baffin_", toml_file="baffin.toml", extra="ignore"
     )

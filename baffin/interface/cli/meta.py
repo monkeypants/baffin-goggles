@@ -1,7 +1,7 @@
 """The `baffin meta` command group (see :doc:`/cli`).
 
-show / edit / set, all routed through the EditAssetMeta use case. Authoring
-writes sidecars only, never the photo bytes.
+show / edit / set, all routed through the EditAssetMeta use case.
+Authoring writes sidecars only, never the photo bytes.
 """
 
 from __future__ import annotations

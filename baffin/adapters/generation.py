@@ -1,7 +1,7 @@
 """Generation of misses, serial or over a process pool (see :doc:`/lazy-build`).
 
-The pool fans out the coarse per-asset ``AssetProcessor`` unit, pinning libvips
-to one thread per worker to avoid CPU oversubscription.
+The pool fans out the coarse per-asset ``AssetProcessor`` unit,
+pinning libvips to one thread per worker to avoid CPU oversubscription.
 """
 
 from __future__ import annotations

@@ -1,8 +1,10 @@
 """Canonical builders for the test cosmology.
 
-One place to meet an :class:`~baffin.domain.Asset`: a photo from the Akshayuk
-Pass trip, captured 14 Jul 2025, whose content hash is its tag. Tests vary only
-what they care about via keyword overrides, so the same world recurs everywhere.
+One place to meet an :class:`~baffin.domain.Asset`:
+a photo from the Akshayuk Pass trip, captured 14 Jul 2025,
+whose content hash is its tag.
+Tests vary only what they care about via keyword overrides,
+so the same world recurs everywhere.
 """
 
 from __future__ import annotations
@@ -35,8 +37,10 @@ def an_asset(
     content_hash: str | None = None,
     at_path: str | None = None,
 ) -> Asset:
-    """Build an Asset. ``content_hash`` defaults to ``tag``; ``at_path`` moves
-    the source without changing identity (to demonstrate move == cache hit)."""
+    """Build an Asset.
+    ``content_hash`` defaults to ``tag``;
+    ``at_path`` moves the source without changing identity
+    (to demonstrate move == cache hit)."""
     ref = (
         SourceRef(path=Path(at_path), size=10, mtime_ns=20)
         if at_path is not None

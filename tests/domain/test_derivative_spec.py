@@ -1,8 +1,8 @@
-"""The derivative cache key (see :doc:`/lazy-build`). It is a SHA-256 over the
-content hash
-plus the spec — deterministic across runs and machines, unlike the salted
-builtin ``hash`` — so it can back a cache. Distinct content or spec yields a
-distinct key.
+"""The derivative cache key (see :doc:`/lazy-build`).
+It is a SHA-256 over the content hash plus the spec
+— deterministic across runs and machines, unlike the salted builtin ``hash`` —
+so it can back a cache.
+Distinct content or spec yields a distinct key.
 """
 
 from baffin.domain import DerivativeSpec

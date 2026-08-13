@@ -1,9 +1,10 @@
 """In-memory fakes for every application port (see :doc:`/use-cases`).
 
-Each fake is a fast, deterministic, disk-free stand-in that records what it was
-asked to do, so use-case tests can assert behaviour and side effects. Structural
-conformance to the Protocols is verified by mypy in the ``TYPE_CHECKING`` block
-at the bottom.
+Each fake is a fast, deterministic, disk-free stand-in
+that records what it was asked to do,
+so use-case tests can assert behaviour and side effects.
+Structural conformance to the Protocols is verified by mypy
+in the ``TYPE_CHECKING`` block at the bottom.
 """
 
 from __future__ import annotations

@@ -1,7 +1,8 @@
-"""Chronological grouping: policy + the pure ``group_timeline`` (see
-:doc:`/functional-core`).
+"""Chronological grouping:
+policy + the pure ``group_timeline`` (see :doc:`/functional-core`).
 
-Pure functional core; imports domain types only, does no I/O.
+Pure functional core;
+imports domain types only, does no I/O.
 """
 
 from __future__ import annotations
@@ -28,8 +29,8 @@ class GroupingPolicy:
     """How the timeline is bucketed (see :doc:`/functional-core`).
 
     ``adaptive`` picks by-day for short trips and year→month for long archives.
-    ``day1_anchor`` fixes which calendar day counts as "Day 1" for trip-day
-    labels; when ``None`` the earliest asset's day anchors it.
+    ``day1_anchor`` fixes which calendar day counts as "Day 1" for trip-day labels;
+    when ``None`` the earliest asset's day anchors it.
     """
 
     mode: GroupMode = "adaptive"
@@ -40,12 +41,13 @@ class GroupingPolicy:
 def group_timeline(
     assets: list[Asset] | tuple[Asset, ...], policy: GroupingPolicy
 ) -> tuple[Group, ...]:
-    """Bucket assets into an ordered chronological timeline (see
-    :doc:`/functional-core`).
+    """Bucket assets into an ordered chronological timeline
+    (see :doc:`/functional-core`).
 
-    Pure: sorts by ``captured_at``, resolves the effective mode, buckets, and
-    orders the resulting groups per ``policy.order``. Assets within a group stay
-    oldest-first for stable reading regardless of group order.
+    Pure: sorts by ``captured_at``, resolves the effective mode, buckets,
+    and orders the resulting groups per ``policy.order``.
+    Assets within a group stay oldest-first for stable reading
+    regardless of group order.
 
     >>> from datetime import datetime
     >>> from baffin.application.grouping import GroupingPolicy, group_timeline

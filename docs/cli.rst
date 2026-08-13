@@ -1,9 +1,9 @@
 The CLI
 =======
 
-The ``baffin`` command is a thin Typer adapter: each command translates argv into
-a :doc:`use-case <use-cases>` call and translates the result back out. Nothing in
-:py:mod:`baffin.interface.cli.app` leaks into the core.
+The ``baffin`` command is a thin Typer adapter:
+each command translates argv into a :doc:`use-case <use-cases>` call and translates the result back out.
+Nothing in :py:mod:`baffin.interface.cli.app` leaks into the core.
 
 .. list-table::
    :header-rows: 1
@@ -23,9 +23,9 @@ a :doc:`use-case <use-cases>` call and translates the result back out. Nothing i
    * - ``baffin doctor``
      - Check libvips/ffmpeg and the resolved config.
 
-Configuration resolves CLI flag > env var > ``baffin.toml`` > default (parsed by
-:py:class:`~baffin.adapters.settings.BaffinSettings` at the edge, handed inward
-as a plain :py:class:`~baffin.application.config.GalleryConfig`).
+Configuration resolves CLI flag > env var > ``baffin.toml`` > default
+(parsed by :py:class:`~baffin.adapters.settings.BaffinSettings` at the edge,
+handed inward as a plain :py:class:`~baffin.application.config.GalleryConfig`).
 
 Assembling the real adapters and running the build end to end:
 

@@ -1,10 +1,11 @@
-"""Jinja2 site renderer (see :doc:`/functional-core`): index timeline, group
-pages, sitemap.
+"""Jinja2 site renderer (see :doc:`/functional-core`):
+index timeline, group pages, sitemap.
 
-Server-rendered HTML is fully navigable with no JavaScript: every group is a
-real page and every thumbnail links to a real image. In-site links are relative
-(via ``url_for``), so the site is portable; ``base_url`` is used only for the
-sitemap.
+Server-rendered HTML is fully navigable with no JavaScript:
+every group is a real page and every thumbnail links to a real image.
+In-site links are relative (via ``url_for``),
+so the site is portable;
+``base_url`` is used only for the sitemap.
 """
 
 from __future__ import annotations

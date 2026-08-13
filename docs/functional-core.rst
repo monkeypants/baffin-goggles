@@ -1,17 +1,19 @@
 The functional core
 ===================
 
-The core is pure functions over the domain: grouping, planning, cache diffing,
-and URL building. No I/O, no mocks; plain dataclasses in and out. Most of the
-logic and tests live here. The :doc:`use-cases` orchestrate these functions over
-the ports.
+The core is pure functions over the domain:
+grouping, planning, cache diffing, and URL building.
+No I/O, no mocks;
+plain dataclasses in and out.
+Most of the logic and tests live here.
+The :doc:`use-cases` orchestrate these functions over the ports.
 
 Chronological grouping
 ----------------------
 
-:py:func:`~baffin.application.grouping.group_timeline` buckets assets by
-``captured_at``. The adaptive policy groups a short trip by day (with trip-day
-labels) and a long archive by year then month; the 30-day span is the boundary.
+:py:func:`~baffin.application.grouping.group_timeline` buckets assets by ``captured_at``.
+The adaptive policy groups a short trip by day (with trip-day labels) and a long archive by year then month;
+the 30-day span is the boundary.
 
 .. literalinclude:: ../tests/application/test_group_timeline.py
    :pyobject: test_adaptive_boundary_30_days_is_still_by_day
@@ -22,10 +24,10 @@ labels) and a long archive by year then month; the 30-day span is the boundary.
 Planning and diffing
 --------------------
 
-:py:func:`~baffin.application.planning.plan_derivatives` expands assets × specs
-into content-addressed tiers; :py:func:`~baffin.application.planning.diff_plan`
-splits that plan into HITs to skip and MISSes to generate, purely against an
-immutable snapshot. The :doc:`lazy build <lazy-build>` acts on that decision.
+:py:func:`~baffin.application.planning.plan_derivatives` expands assets × specs into content-addressed tiers;
+:py:func:`~baffin.application.planning.diff_plan` splits that plan into HITs to skip and MISSes to generate,
+purely against an immutable snapshot.
+The :doc:`lazy build <lazy-build>` acts on that decision.
 Because the key is the content hash, a moved file is a hit:
 
 .. literalinclude:: ../tests/application/test_diff_plan.py
@@ -34,9 +36,8 @@ Because the key is the content hash, a moved file is a hit:
 Portable URLs
 -------------
 
-:py:func:`~baffin.application.urls.url_for` yields links relative to the current
-page, so the same HTML works served at a domain root, under ``/baffin/``, or from
-``file://``:
+:py:func:`~baffin.application.urls.url_for` yields links relative to the current page,
+so the same HTML works served at a domain root, under ``/baffin/``, or from ``file://``:
 
 .. literalinclude:: ../tests/application/test_urls.py
    :pyobject: test_relative_link_is_portable_across_mount_points

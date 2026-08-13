@@ -1,9 +1,9 @@
-"""EditAssetMeta: author one asset's sidecar (`baffin meta`; see
-:doc:`/use-cases`).
+"""EditAssetMeta: author one asset's sidecar (`baffin meta`; see :doc:`/use-cases`).
 
-Read → merge → write a single sidecar. It depends on nothing but the
-``SidecarStore``, so it *cannot* touch image bytes; the same use case backs the
-v1 CLI and the reserved v2 web form.
+Read → merge → write a single sidecar.
+It depends on nothing but the ``SidecarStore``,
+so it *cannot* touch image bytes;
+the same use case backs the v1 CLI and the reserved v2 web form.
 """
 
 from __future__ import annotations

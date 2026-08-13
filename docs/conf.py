@@ -1,8 +1,8 @@
 """Sphinx configuration for baffin's docs.
 
-The docs are literate and test-driven: AutoAPI renders code and tests, Napoleon
-reads the docstrings, and the doctest builder runs the examples embedded in the
-functional core.
+The docs are literate and test-driven:
+AutoAPI renders the code and tests,
+and the doctest builder runs the examples embedded in the functional core.
 """
 
 from __future__ import annotations
@@ -12,7 +12,6 @@ author = "Chris Gough"
 
 extensions = [
     "autoapi.extension",
-    "sphinx.ext.napoleon",
     "sphinx.ext.doctest",
     "sphinxcontrib.plantuml",
 ]
@@ -36,6 +35,11 @@ autoapi_options = [
 ]
 autoapi_python_class_content = "both"
 autodoc_typehints = "description"
+# Don't inline a base class's docstring into an undocumented subclass: our
+# pydantic models would otherwise dump pydantic's BaseModel docstring (Google
+# "Attributes:" sections + Markdown) into the reference. With Napoleon gone,
+# that raw text no longer parses cleanly; and it was never our content to show.
+autodoc_inherit_docstrings = False
 
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "reference/index.rst"]
 
