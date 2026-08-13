@@ -20,4 +20,5 @@ clean:
 	@echo "clean: not implemented yet"
 
 docs:
+	uv run --group docs sphinx-build -b doctest -W --keep-going docs docs/_build/doctest
 	uv run --group docs sphinx-build -b html -W --keep-going docs docs/_build/html

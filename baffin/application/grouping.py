@@ -45,6 +45,7 @@ def group_timeline(
     oldest-first for stable reading regardless of group order.
 
     >>> from datetime import datetime
+    >>> from baffin.application.grouping import GroupingPolicy, group_timeline
     >>> from baffin.testing.builders import an_asset
     >>> trip = [an_asset("a", captured_at=datetime(2025, 7, 12, 9)),
     ...         an_asset("b", captured_at=datetime(2025, 7, 14, 9))]

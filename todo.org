@@ -242,7 +242,7 @@
    - layered dependency rule (== import-linter contract), ports/adapters/fakes
      seam, the lazy-build sequence (§8)
    test: make docs renders the diagrams
-** TODO Add narrative chapters and trim SPEC
+** DONE Add narrative chapters and eat the spec
    commit: Add narrative docs chapters and trim the spec
    - authored chapters weaving prose + autodoc + featured tests/doctests
    - SPEC.md trimmed to the "why": vision, principles, privacy, roadmap, decisions

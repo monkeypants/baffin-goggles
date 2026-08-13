@@ -35,6 +35,8 @@ def plan_derivatives(
     The ``full`` tier is opt-in: with ``include_full=False`` any spec named
     ``full`` is dropped, so toggling it changes only that tier.
 
+    >>> from baffin.application.planning import plan_derivatives
+    >>> from baffin.domain import DerivativeSpec
     >>> from baffin.testing.builders import an_asset
     >>> specs = [DerivativeSpec("thumb", 300, 80), DerivativeSpec("full", None, 95)]
     >>> [p.rel_path.as_posix() for p in plan_derivatives([an_asset("x")], specs)]
@@ -76,6 +78,8 @@ def diff_plan(
     identical key, so a moved or duplicated source is a hit; changing a spec
     changes only that tier's key, so only that tier misses.
 
+    >>> from baffin.application.planning import diff_plan, plan_derivatives
+    >>> from baffin.domain import DerivativeSpec, StoreState
     >>> from baffin.testing.builders import an_asset
     >>> plan = plan_derivatives([an_asset("x")], [DerivativeSpec("thumb", 300, 80)])
     >>> warm = StoreState(present=frozenset(p.cache_key for p in plan))

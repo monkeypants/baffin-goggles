@@ -17,6 +17,7 @@ def url_for(target: str, *, current: str = "index.html") -> str:
     ``"2025/07/index.html"``). The result carries no leading slash and no host,
     so the same HTML resolves correctly wherever the site is mounted.
 
+    >>> from baffin.application.urls import url_for
     >>> url_for("thumb/ab.jpg", current="index.html")
     'thumb/ab.jpg'
     >>> url_for("thumb/ab.jpg", current="2025/07/index.html")

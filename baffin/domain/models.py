@@ -165,6 +165,9 @@ class DerivativeSpec:
         bytes under an identical spec always yield the same key; changing any
         spec field (e.g. thumb 300→320) changes only that tier's key.
 
+        >>> from datetime import datetime
+        >>> from pathlib import Path
+        >>> from baffin.domain import Asset, DerivativeSpec, SourceRef
         >>> asset = Asset(SourceRef(Path("a.jpg"), 10, 20), "deadbeef",
         ...               "photo", datetime(2025, 7, 14), 100, 100, 1)
         >>> thumb = DerivativeSpec("thumb", 300, 80)

@@ -3,7 +3,8 @@
 Point it at a folder of camera originals; get a chronological static gallery you
 can share as a link. It never edits your photos, and needs no curation.
 
-See [`SPEC.md`](SPEC.md) for the full design; a quickstart lands with the CLI.
+See the docs for the full design — `make docs`, then open
+`docs/_build/html/index.html`. The tests are the executable specification.
 
 ## System dependencies
 
