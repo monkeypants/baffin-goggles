@@ -251,7 +251,7 @@
    commit: Add README and quickstart
    - install (brew deps), doctor, build, serve; sample baffin.toml
    test: documented commands run against the fixture set
-** TODO Wire docs build into CI
+** DONE Wire docs build into CI
    commit: Wire docs build into CI
    - ci.yml installs plantuml; builds docs with -W on API/docstring/docs changes
    test: workflow YAML valid; make docs green locally
