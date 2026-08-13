@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Literal
 
 AssetKind = Literal["photo", "video"]
+SpecName = Literal["thumb", "low", "med", "full", "poster"]
 
 
 @dataclass(frozen=True)
@@ -151,7 +152,7 @@ class DerivativeSpec:
     """One output tier (SPEC §7). ``max_edge`` is the longest edge in px;
     ``None`` means original size (the ``full`` tier)."""
 
-    name: Literal["thumb", "low", "med", "full"]
+    name: SpecName
     max_edge: int | None
     quality: int
 

@@ -13,6 +13,7 @@ from baffin.domain.models import (
     RawMetadata,
     Site,
     SourceRef,
+    SpecName,
     StoreState,
 )
 
@@ -29,5 +30,6 @@ __all__ = [
     "RawMetadata",
     "Site",
     "SourceRef",
+    "SpecName",
     "StoreState",
 ]

@@ -172,45 +172,45 @@
    test: HTML unchanged in function without JS; srcset present across thumb/low/med
 
 * Phase 5 — Configuration & CLI wiring
-** TODO Add Pydantic Settings for baffin.toml
+** DONE Add Pydantic Settings for baffin.toml
    commit: Add configuration model and loader
    - Pydantic Settings parsed at edge, handed inward as plain config
    - resolution order: CLI flag > env var > baffin.toml > default
    test: parse sample baffin.toml; validation errors; precedence
-** TODO Add CLI app shell and doctor
+** DONE Add CLI app shell and doctor
    commit: Add Typer app and doctor command
    - baffin doctor: verify libvips/ffmpeg presence+versions and config sanity
    test: doctor reports deps; exits nonzero on missing dep (mocked)
-** TODO Add scan command
+** DONE Add scan command
    commit: Add scan CLI command
    - assembles adapters, invokes ScanGallery, prints HIT/MISS plan
    test: CLI runner over fixtures reports expected plan
-** TODO Add build command
+** DONE Add build command
    commit: Add build CLI command
    - --force, --jobs N, --source, --output, --full
    test: fixtures -> build -> assert site layout (§6)
-** TODO Add lazy-build end-to-end proof              :MILESTONE:
+** DONE Add lazy-build end-to-end proof              :MILESTONE:
    commit: Add lazy-build end-to-end test
    - build; re-run asserts ALL cache hits; edit a template asserts ZERO image bytes rewritten
    test: the §8 promise, verified end to end in CI
-** TODO Add AssetProcessor per-asset composite
+** DONE Add AssetProcessor per-asset composite
    commit: Add per-asset processor composite
    - shell-side composite: hash -> read -> render for one asset; NOT a port
    - picklable inputs/outputs; adapters re-constructable in a worker
    test: serial composite produces expected Derivatives; picklability of args/results asserted
-** TODO Add parallel generation over process pool
+** DONE Add parallel generation over process pool
    commit: Add process-pool generation of misses
    - ProcessPoolExecutor over AssetProcessor, workers ~ CPU, VIPS_CONCURRENCY=1 per worker
    test: parallel vs serial produce identical output; --jobs honoured
-** TODO Add clean command
+** DONE Add clean command
    commit: Add clean CLI command
    - prune orphans; --all wipes cache
    test: orphans removed after include_full toggled off; --all empties cache
-** TODO Add meta command group
+** DONE Add meta command group
    commit: Add meta CLI commands
    - meta show / edit ($EDITOR) / set (--title/--caption/--credit/--alt, --all bulk)
    test: set writes sidecar; show reads it; originals untouched
-** TODO Add serve command with watch
+** DONE Add serve command with watch
    commit: Add serve CLI command with template watch
    - serve output/ locally; --watch re-renders templates on change
    test: serves site; template change triggers re-render, not image regen
