@@ -8,6 +8,7 @@ by kind inside the processor.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path
 
 from baffin.adapters.generation import generate
 from baffin.adapters.processor import AssetJob, AssetProcessor
@@ -20,6 +21,20 @@ from baffin.application.grouping import group_timeline
 from baffin.application.planning import diff_plan, plan_derivatives
 from baffin.application.reporting import BuildReport
 from baffin.domain import DerivativeSpec, Site, SourceRef
+
+
+def _model(config: GalleryConfig) -> Site:
+    processor = AssetProcessor.from_config(config)
+    refs = FsAssetRepository().discover(config.source)
+    assets = assemble_assets(
+        refs,
+        processor.hasher,
+        processor.reader,
+        report=BuildReport(),
+        strict=config.strict,
+    )
+    groups = group_timeline(assets, config.grouping)
+    return Site(title=config.title, base_url=config.base_url, peers=(), groups=groups)
 
 
 @dataclass(frozen=True)
@@ -61,3 +76,16 @@ def run_build(config: GalleryConfig, *, jobs: int = 1) -> BuildSummary:
         groups=len(groups),
         skipped=tuple((label, str(error)) for label, error in report.skipped),
     )
+
+
+def render_only(config: GalleryConfig) -> None:
+    """Re-render templates over the existing model — no derivatives generated."""
+    Jinja2Renderer().render(_model(config), config.output)
+
+
+def watch_templates(config: GalleryConfig, template_dir: Path) -> None:
+    """Block, re-rendering the site whenever a template changes (never regen)."""
+    from watchfiles import watch
+
+    for _ in watch(template_dir):
+        render_only(config)

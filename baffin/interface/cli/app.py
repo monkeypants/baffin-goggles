@@ -6,8 +6,11 @@ system dependencies and reports the resolved configuration.
 
 from __future__ import annotations
 
+import functools
+import http.server
 import shutil
 import subprocess
+import threading
 from pathlib import Path
 from typing import Annotated
 
@@ -15,7 +18,7 @@ import typer
 
 from baffin.adapters.settings import BaffinSettings
 from baffin.interface.cli.meta import meta_app
-from baffin.interface.cli.pipeline import run_build
+from baffin.interface.cli.pipeline import run_build, watch_templates
 from baffin.interface.cli.wiring import build_cleaner, build_scanner, load_config
 
 SourceOpt = Annotated[Path | None, typer.Option(help="Source folder of originals.")]
@@ -23,6 +26,9 @@ OutputOpt = Annotated[Path | None, typer.Option(help="Output site directory.")]
 FullOpt = Annotated[bool, typer.Option(help="Publish full-res scrubbed copies.")]
 ForceOpt = Annotated[bool, typer.Option(help="Bypass caches; regenerate all.")]
 JobsOpt = Annotated[int, typer.Option(help="Parallel workers.")]
+HostOpt = Annotated[str, typer.Option(help="Bind address.")]
+PortOpt = Annotated[int, typer.Option(help="Bind port.")]
+WatchOpt = Annotated[bool, typer.Option(help="Re-render templates on change.")]
 
 app = typer.Typer(
     help="baffin — publish a folder of photos as a static gallery.",
@@ -134,3 +140,38 @@ def clean(
     config = load_config(source=source, output=output)
     result = build_cleaner(config).execute(config, wipe=wipe)
     typer.echo(f"Removed {len(result.removed)} derivative(s)")
+
+
+def _template_dir() -> Path:
+    from baffin.adapters.render import renderer
+
+    return Path(renderer.__file__).parent / "templates"
+
+
+def _serve_directory(directory: Path, host: str, port: int) -> None:  # pragma: no cover
+    handler = functools.partial(
+        http.server.SimpleHTTPRequestHandler, directory=str(directory)
+    )
+    with http.server.ThreadingHTTPServer((host, port), handler) as httpd:
+        httpd.serve_forever()
+
+
+@app.command()
+def serve(
+    source: SourceOpt = None,
+    output: OutputOpt = None,
+    host: HostOpt = "127.0.0.1",
+    port: PortOpt = 8000,
+    watch: WatchOpt = False,
+) -> None:
+    """Build then serve the site locally; --watch re-renders templates."""
+    config = load_config(source=source, output=output)
+    run_build(config)
+    if watch:
+        threading.Thread(
+            target=watch_templates,
+            args=(config, _template_dir()),
+            daemon=True,
+        ).start()
+    typer.echo(f"Serving {config.output} at http://{host}:{port}")
+    _serve_directory(config.output, host, port)

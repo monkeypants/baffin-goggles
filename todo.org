@@ -210,7 +210,7 @@
    commit: Add meta CLI commands
    - meta show / edit ($EDITOR) / set (--title/--caption/--credit/--alt, --all bulk)
    test: set writes sidecar; show reads it; originals untouched
-** TODO Add serve command with watch
+** DONE Add serve command with watch
    commit: Add serve CLI command with template watch
    - serve output/ locally; --watch re-renders templates on change
    test: serves site; template change triggers re-render, not image regen
