@@ -1,11 +1,11 @@
 """EXIF metadata reader: pyexiv2 for tags, Pillow for dimensions.
 
-The :class:`MetadataReader` port (see :doc:`/use-cases`). Yields a
-:class:`RawMetadata`, the raw technical read, distinct from the authored
-sidecar. ``captured_at`` comes from EXIF ``DateTimeOriginal`` and falls back to
-the file's mtime. Videos get a minimal record (a real probe is a future
-extension); GPS is read here and stripped from outputs later (see
-:ref:`rationale-privacy`).
+The :class:`MetadataReader` port (see :doc:`/use-cases`).
+Yields a :class:`RawMetadata`, the raw technical read,
+distinct from the authored sidecar.
+``captured_at`` comes from EXIF ``DateTimeOriginal`` and falls back to the file's mtime.
+Videos get a minimal record (a real probe is a future extension);
+GPS is read here and stripped from outputs later (see :ref:`rationale-privacy`).
 """
 
 from __future__ import annotations

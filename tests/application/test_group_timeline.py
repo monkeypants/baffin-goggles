@@ -1,8 +1,9 @@
-"""Chronological grouping (see :doc:`/functional-core`). The adaptive policy
-groups a short trip by
-day with trip-day labels, and a long archive by year then month; the 30-day span
-is the boundary between them. day/month/year-month/flat can also be pinned, and
-ordering flips the group sequence.
+"""Chronological grouping (see :doc:`/functional-core`).
+The adaptive policy groups a short trip by day with trip-day labels,
+and a long archive by year then month;
+the 30-day span is the boundary between them.
+day/month/year-month/flat can also be pinned,
+and ordering flips the group sequence.
 """
 
 from datetime import date, datetime

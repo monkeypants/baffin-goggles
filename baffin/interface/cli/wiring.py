@@ -1,8 +1,9 @@
 """Compose concrete adapters for the CLI (the composition root).
 
-Resolves configuration and assembles the imperative-shell adapters that back the
-application use cases. This is the only place the CLI knows which adapter is
-which; everything downstream sees ports.
+Resolves configuration and assembles the imperative-shell adapters
+that back the application use cases.
+This is the only place the CLI knows which adapter is which;
+everything downstream sees ports.
 """
 
 from __future__ import annotations

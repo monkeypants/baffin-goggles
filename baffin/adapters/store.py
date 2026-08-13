@@ -1,8 +1,8 @@
 """File derivative store + JSON manifest (see :doc:`/lazy-build`).
 
 The manifest (``.baffin/manifest.json``) maps cache key → derivative record.
-``snapshot`` reads it AND pre-checks that each file still exists on disk, so the
-pure ``diff_plan`` gets a truthful :class:`StoreState` and never does I/O itself.
+``snapshot`` reads it AND pre-checks that each file still exists on disk,
+so the pure ``diff_plan`` gets a truthful :class:`StoreState` and never does I/O itself.
 """
 
 from __future__ import annotations

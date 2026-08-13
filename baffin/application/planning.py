@@ -1,10 +1,11 @@
-"""Derivative planning and cache diffing (see :doc:`/functional-core`): pure
-functional core.
+"""Derivative planning and cache diffing (see :doc:`/functional-core`):
+pure functional core.
 
-``plan_derivatives`` expands assets x specs into content-addressed planned
-derivatives; ``diff_plan`` splits that plan into cache HITs and MISSes against a
-:class:`~baffin.domain.StoreState` snapshot. No I/O; the shell pre-checks file
-existence into the snapshot so this stays pure.
+``plan_derivatives`` expands assets x specs into content-addressed planned derivatives;
+``diff_plan`` splits that plan into cache HITs and MISSes
+against a :class:`~baffin.domain.StoreState` snapshot.
+No I/O;
+the shell pre-checks file existence into the snapshot so this stays pure.
 """
 
 from __future__ import annotations
@@ -31,11 +32,11 @@ def plan_derivatives(
     *,
     include_full: bool = False,
 ) -> tuple[PlannedDerivative, ...]:
-    """Expand ``(asset x specs)`` into planned JPEG tiers (see
-    :doc:`/functional-core`).
+    """Expand ``(asset x specs)`` into planned JPEG tiers (see :doc:`/functional-core`).
 
-    The ``full`` tier is opt-in: with ``include_full=False`` any spec named
-    ``full`` is dropped, so toggling it changes only that tier.
+    The ``full`` tier is opt-in:
+    with ``include_full=False`` any spec named ``full`` is dropped,
+    so toggling it changes only that tier.
 
     >>> from baffin.application.planning import plan_derivatives
     >>> from baffin.domain import DerivativeSpec
@@ -75,10 +76,11 @@ def diff_plan(
 ) -> BuildPlan:
     """Split a plan into cache HITs and MISSes over an immutable snapshot.
 
-    Pure: a key is a HIT iff it is ``present`` in the snapshot (manifest-recorded
-    AND file-on-disk, pre-checked by the shell). Identical bytes yield an
-    identical key, so a moved or duplicated source is a hit; changing a spec
-    changes only that tier's key, so only that tier misses.
+    Pure: a key is a HIT iff it is ``present`` in the snapshot
+    (manifest-recorded AND file-on-disk, pre-checked by the shell).
+    Identical bytes yield an identical key,
+    so a moved or duplicated source is a hit;
+    changing a spec changes only that tier's key, so only that tier misses.
 
     >>> from baffin.application.planning import diff_plan, plan_derivatives
     >>> from baffin.domain import DerivativeSpec, StoreState
