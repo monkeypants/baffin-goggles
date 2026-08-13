@@ -22,7 +22,12 @@ autoapi_dirs = ["../baffin", "../tests"]
 autoapi_type = "python"
 autoapi_root = "reference"
 autoapi_keep_files = False
-autoapi_add_toctree_entry = True
+# We curate the reference landing (docs/reference.rst) instead of AutoAPI's flat
+# alphabetical index: the package is presented by layer, the test suite under its
+# own caption. So suppress the auto toctree entry and exclude the generated flat
+# index from the build (it would otherwise be an orphan under -W, and would drag
+# the phone-book listing back into the sidebar).
+autoapi_add_toctree_entry = False
 autoapi_options = [
     "members",
     "undoc-members",
@@ -31,6 +36,8 @@ autoapi_options = [
 ]
 autoapi_python_class_content = "both"
 autodoc_typehints = "description"
+
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "reference/index.rst"]
 
 # --- Theme ---
 html_theme = "furo"

@@ -1,5 +1,5 @@
-"""The documented surface works: the help lists every command, and the README's
-sample baffin.toml parses into the expected config.
+"""The documented surface works: the help lists every command, and the sample
+baffin.toml from the Getting Started chapter parses into the expected config.
 """
 
 from pathlib import Path
@@ -12,7 +12,7 @@ from baffin.interface.cli.app import app
 
 runner = CliRunner()
 
-# The sample from the README's Configuration section.
+# The sample from the Getting Started chapter (docs/getting-started.rst).
 SAMPLE_TOML = """\
 title    = "Akshayuk Pass — Chris"
 base_url = "https://chris.example.com/baffin/"
@@ -36,7 +36,7 @@ def test_help_lists_every_documented_command() -> None:
         assert command in result.stdout
 
 
-def test_readme_sample_config_parses(
+def test_documented_sample_config_parses(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     (tmp_path / "baffin.toml").write_text(SAMPLE_TOML)
