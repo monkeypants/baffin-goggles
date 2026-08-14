@@ -73,6 +73,10 @@ main { padding: 1rem; max-width: 1200px; margin: 0 auto; }
   display: flex;
   align-items: center;
   justify-content: center;
+  /* Fill the row: the grid's `align-items: center` would otherwise size the
+     figure to its content height, so it could never overflow vertically and
+     the full image would pan sideways only. */
+  align-self: stretch;
   min-height: 0;
   cursor: zoom-out;
 }
