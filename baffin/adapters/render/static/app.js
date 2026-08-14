@@ -90,6 +90,7 @@
 
     var index = -1;
     var preferred = null; // remember the label (S/M/Full) across photos
+    var moved = false; // a pan drag just happened; suppress the trailing click
 
     // "Full" shows the image at natural size (1:1) in a pannable figure; the
     // smaller tiers fit the viewport. That is what makes the tiers look
@@ -173,9 +174,15 @@
       });
     });
 
-    // Clicking the backdrop closes; clicks on controls/image do not.
+    // Clicking the backdrop closes; clicks on controls/image do not, and a
+    // click that merely ends a pan drag must not close either.
     overlay.addEventListener("click", function (event) {
-      if (event.target === overlay || event.target === figure) {
+      if (moved) {
+        moved = false;
+        return;
+      }
+      var fitMode = !figure.classList.contains("is-actual");
+      if (event.target === overlay || (event.target === figure && fitMode)) {
         closeBox();
       }
     });
@@ -192,7 +199,8 @@
       show(index + 1);
     });
 
-    // Drag to pan when viewing the full image at 1:1.
+    // Drag to pan when viewing the full image at 1:1. `moved` records that a
+    // drag happened, so the trailing click doesn't close the lightbox.
     var dragging = false;
     var startX = 0;
     var startY = 0;
@@ -213,6 +221,9 @@
     figure.addEventListener("pointermove", function (event) {
       if (!dragging) {
         return;
+      }
+      if (event.clientX !== startX || event.clientY !== startY) {
+        moved = true;
       }
       figure.scrollLeft = startLeft - (event.clientX - startX);
       figure.scrollTop = startTop - (event.clientY - startY);
