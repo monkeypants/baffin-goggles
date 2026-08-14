@@ -92,6 +92,15 @@
     var preferred = null; // remember the label (S/M/Full) across photos
     var moved = false; // a pan drag just happened; suppress the trailing click
 
+    // Panning is possible in any mode where the image overflows its figure,
+    // not just the full tier.
+    function pannable() {
+      return (
+        figure.scrollWidth > figure.clientWidth ||
+        figure.scrollHeight > figure.clientHeight
+      );
+    }
+
     // "Full" shows the image at natural size (1:1) in a pannable figure; the
     // smaller tiers fit the viewport. That is what makes the tiers look
     // different — otherwise both are scaled down to the same on-screen size.
@@ -181,8 +190,7 @@
         moved = false;
         return;
       }
-      var fitMode = !figure.classList.contains("is-actual");
-      if (event.target === overlay || (event.target === figure && fitMode)) {
+      if (event.target === overlay || (event.target === figure && !pannable())) {
         closeBox();
       }
     });
@@ -207,7 +215,7 @@
     var startLeft = 0;
     var startTop = 0;
     figure.addEventListener("pointerdown", function (event) {
-      if (!figure.classList.contains("is-actual")) {
+      if (!pannable()) {
         return;
       }
       dragging = true;
