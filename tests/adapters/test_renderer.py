@@ -114,6 +114,18 @@ def test_site_is_navigable_without_js(tmp_path: Path) -> None:
             assert (tmp_path / target).exists(), href
 
 
+def test_group_pages_link_prev_and_next(tmp_path: Path) -> None:
+    Jinja2Renderer().render(_site(), tmp_path)
+    # First group (day-01): links forward to the month group, nothing back.
+    day = (tmp_path / "day-01" / "index.html").read_text()
+    assert 'href="../2025/07/index.html"' in day
+    assert 'class="group-nav-prev"></span>' in day  # empty: no previous group
+    # Last group (2025/07): links back to day-01, nothing forward.
+    month = (tmp_path / "2025" / "07" / "index.html").read_text()
+    assert 'href="../../day-01/index.html"' in month
+    assert 'class="group-nav-next"></span>' in month  # empty: no next group
+
+
 def test_srcset_spans_thumb_low_med_for_photos(tmp_path: Path) -> None:
     Jinja2Renderer().render(_site(), tmp_path)
     html = (tmp_path / "day-01" / "index.html").read_text()

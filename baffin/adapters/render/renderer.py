@@ -48,7 +48,8 @@ class Jinja2Renderer:
                 "groups": [self._summary(g, "index.html") for g in site.groups],
             },
         )
-        for group in site.groups:
+        groups = site.groups
+        for i, group in enumerate(groups):
             page = f"{group.key}/index.html"
             self._write(
                 out / group.key / "index.html",
@@ -60,6 +61,12 @@ class Jinja2Renderer:
                         self._asset_view(a, page, site.photo_tiers)
                         for a in group.assets
                     ],
+                    "prev": self._group_link(groups[i - 1], page) if i > 0 else None,
+                    "next": (
+                        self._group_link(groups[i + 1], page)
+                        if i + 1 < len(groups)
+                        else None
+                    ),
                 },
             )
         self._write(
@@ -85,6 +92,12 @@ class Jinja2Renderer:
             "css_href": url_for("assets/app.css", current=page),
             "js_href": url_for("assets/app.js", current=page),
             "home_href": url_for("index.html", current=page),
+        }
+
+    def _group_link(self, group: Group, page: str) -> dict[str, str]:
+        return {
+            "href": url_for(f"{group.key}/index.html", current=page),
+            "label": group.label,
         }
 
     def _summary(self, group: Group, page: str) -> dict[str, Any]:
