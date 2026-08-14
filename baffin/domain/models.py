@@ -150,12 +150,18 @@ class Group:
 
 @dataclass(frozen=True)
 class Site:
-    """The whole renderable model: an ordered timeline of groups."""
+    """The whole renderable model: an ordered timeline of groups.
+
+    ``photo_tiers`` are the photo derivative specs actually built
+    (``full`` included only when the build opted in),
+    so the renderer knows which resolutions the viewer can offer.
+    """
 
     title: str
     base_url: str
     peers: tuple[Peer, ...]
     groups: tuple[Group, ...]
+    photo_tiers: tuple[DerivativeSpec, ...] = ()
 
 
 @dataclass(frozen=True)

@@ -34,7 +34,13 @@ def _model(config: GalleryConfig) -> Site:
         strict=config.strict,
     )
     groups = group_timeline(assets, config.grouping)
-    return Site(title=config.title, base_url=config.base_url, peers=(), groups=groups)
+    return Site(
+        title=config.title,
+        base_url=config.base_url,
+        peers=(),
+        groups=groups,
+        photo_tiers=config.active_photo_specs,
+    )
 
 
 @dataclass(frozen=True)
@@ -69,7 +75,13 @@ def run_build(config: GalleryConfig, *, jobs: int = 1) -> BuildSummary:
             store.record(gen.cache_key, gen.derivative)
             generated += 1
 
-    site = Site(title=config.title, base_url=config.base_url, peers=(), groups=groups)
+    site = Site(
+        title=config.title,
+        base_url=config.base_url,
+        peers=(),
+        groups=groups,
+        photo_tiers=config.active_photo_specs,
+    )
     Jinja2Renderer().render(site, config.output)
     return BuildSummary(
         generated=generated,

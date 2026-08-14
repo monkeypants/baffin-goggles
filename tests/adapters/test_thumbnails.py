@@ -1,6 +1,7 @@
 """Shared thumbnailer suite: Vips and Pillow must agree on dims + GPS strip."""
 
 import hashlib
+import os
 from collections.abc import Callable
 from pathlib import Path
 
@@ -45,6 +46,27 @@ def test_full_tier_keeps_original_dimensions(
     dst = tmp_path / "full" / "hash.jpg"
     deriv = thumbnailer.render(_ref(src), FULL, dst, strip_gps=True, embed=None)
     assert (deriv.width, deriv.height) == (640, 480)
+
+
+def test_full_tier_handles_a_rotated_original(
+    thumbnailer: Thumbnailer, tmp_path: Path
+) -> None:
+    # Regression: the full tier read with sequential access, which autorot()
+    # + sharpen() break with "out of order read" on a rotated JPEG. A tall,
+    # detailed original tagged Orientation=6 (display-rotated 90°) exercises it.
+    src = tmp_path / "portrait.jpg"
+    Image.frombytes("RGB", (1200, 1800), os.urandom(1200 * 1800 * 3)).save(
+        src, "JPEG", quality=92
+    )
+    with pyexiv2.Image(str(src)) as handle:
+        handle.modify_exif({"Exif.Image.Orientation": "6"})
+
+    dst = tmp_path / "full" / "hash.jpg"
+    deriv = thumbnailer.render(_ref(src), FULL, dst, strip_gps=True, embed=None)
+
+    # Orientation 6 swaps the displayed dimensions; the full tier must not crash.
+    assert (deriv.width, deriv.height) == (1800, 1200)
+    assert Image.open(dst).size == (1800, 1200)
 
 
 def test_gps_is_stripped_from_output(

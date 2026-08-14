@@ -75,7 +75,11 @@ class BuildGallery:
                 generated.append(miss.cache_key)
 
         site = Site(
-            title=config.title, base_url=config.base_url, peers=(), groups=groups
+            title=config.title,
+            base_url=config.base_url,
+            peers=(),
+            groups=groups,
+            photo_tiers=config.active_photo_specs,
         )
         self.renderer.render(site, config.output)  # always: HTML is cheap
         return BuildResult(
