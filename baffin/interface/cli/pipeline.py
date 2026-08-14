@@ -70,7 +70,9 @@ def run_build(config: GalleryConfig, *, jobs: int = 1) -> BuildSummary:
     job_list = [AssetJob(ref=ref, specs=tuple(specs)) for ref, specs in grouped.items()]
 
     generated = 0
-    for result in generate(processor, job_list, workers=jobs):
+    for result in generate(
+        processor, job_list, workers=jobs, report=report, strict=config.strict
+    ):
         for gen in result.generated:
             store.record(gen.cache_key, gen.derivative)
             generated += 1
