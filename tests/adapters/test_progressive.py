@@ -52,8 +52,8 @@ def test_app_js_wires_lightbox_and_keyboard_nav(tmp_path: Path) -> None:
         "lb-next",
         "lb-tier",
         "download",
-        # full renders at 1:1 in a pannable figure
-        "is-actual",
+        # native tiers render at 1:1 in a pannable figure
+        "is-native",
         "pointermove",
     ]
     for token in tokens:

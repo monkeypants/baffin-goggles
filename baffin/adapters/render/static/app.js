@@ -1,6 +1,12 @@
-// Progressive enhancement: a lightbox with on-screen controls and keyboard nav.
-// With JS off, every thumbnail is already a plain link to a real image, so
-// nothing here is load-bearing — this only upgrades the experience.
+// Progressive enhancement: a lightbox with a resolution switcher, panning, and
+// keyboard navigation. With JS off, every thumbnail is already a plain link to
+// a real image, so nothing here is load-bearing — this only upgrades things.
+//
+// Display model: the box opens in "Fit" (image scaled to the window, no
+// scroll). The switcher offers Fit plus each built tier (S / M / Full);
+// selecting a tier shows that file at native pixel size — centered when it
+// fits, pannable on both axes when it overflows. The page behind the box is
+// scroll-locked while it is open.
 "use strict";
 
 (function () {
@@ -23,30 +29,20 @@
     return node;
   }
 
-  function tiersFor(link) {
+  // The switcher entries for a cell: a "Fit" view over the default image, then
+  // one native-size entry per built tier (S / M / Full).
+  function entriesFor(link) {
+    var tiers = [];
     try {
-      return JSON.parse(link.dataset.tiers || "[]");
+      tiers = JSON.parse(link.dataset.tiers || "[]");
     } catch (e) {
-      return [];
+      tiers = [];
     }
-  }
-
-  function tierByLabel(tiers, label) {
-    for (var i = 0; i < tiers.length; i++) {
-      if (tiers[i].label === label) {
-        return tiers[i];
-      }
-    }
-    return null;
-  }
-
-  function tierByUrl(tiers, url) {
-    for (var i = 0; i < tiers.length; i++) {
-      if (tiers[i].url === url) {
-        return tiers[i];
-      }
-    }
-    return null;
+    var entries = [{ label: "Fit", url: link.getAttribute("href"), native: false }];
+    tiers.forEach(function (tier) {
+      entries.push({ label: tier.label, url: tier.url, native: true });
+    });
+    return entries;
   }
 
   ready(function () {
@@ -89,11 +85,10 @@
     document.body.appendChild(overlay);
 
     var index = -1;
-    var preferred = null; // remember the label (S/M/Full) across photos
+    var preferred = "Fit"; // remember the chosen view across photos
     var moved = false; // a pan drag just happened; suppress the trailing click
+    var lockedAt = 0; // page scroll position captured while the box is open
 
-    // Panning is possible in any mode where the image overflows its figure,
-    // not just the full tier.
     function pannable() {
       return (
         figure.scrollWidth > figure.clientWidth ||
@@ -101,74 +96,92 @@
       );
     }
 
-    // "Full" shows the image at natural size (1:1) in a pannable figure; the
-    // smaller tiers fit the viewport. That is what makes the tiers look
-    // different — otherwise both are scaled down to the same on-screen size.
-    function applyMode(label) {
-      var actual = label === "Full";
-      figure.classList.toggle("is-actual", actual);
-    }
-
+    // Native images larger than the viewport open centered rather than pinned
+    // to a corner.
     function centerPan() {
-      if (figure.classList.contains("is-actual")) {
+      if (figure.classList.contains("is-native")) {
         figure.scrollLeft = (figure.scrollWidth - figure.clientWidth) / 2;
         figure.scrollTop = (figure.scrollHeight - figure.clientHeight) / 2;
       }
     }
     image.addEventListener("load", centerPan);
 
-    function display(tier, fallbackUrl) {
-      image.src = tier ? tier.url : fallbackUrl;
-      applyMode(tier ? tier.label : null);
+    function applyEntry(entry) {
+      figure.classList.toggle("is-native", entry.native);
+      image.src = entry.url;
     }
 
-    function buildTierbar(tiers, activeLabel) {
+    function buildSwitcher(entries, activeLabel) {
       tierbar.textContent = "";
-      tiers.forEach(function (tier) {
-        var btn = el("button", "lb-tier", tier.label);
-        if (tier.label === activeLabel) {
+      entries.forEach(function (entry) {
+        var btn = el("button", "lb-tier", entry.label);
+        if (entry.label === activeLabel) {
           btn.classList.add("is-active");
         }
         btn.addEventListener("click", function (event) {
           event.stopPropagation();
-          preferred = tier.label;
-          display(tier, tier.url);
+          preferred = entry.label;
+          applyEntry(entry);
           Array.prototype.forEach.call(tierbar.children, function (c) {
             c.classList.toggle("is-active", c === btn);
           });
         });
         tierbar.appendChild(btn);
       });
-      tierbar.hidden = tiers.length === 0;
     }
 
     function show(i) {
       index = (i + links.length) % links.length;
       var link = links[index];
-      var tiers = tiersFor(link);
-      var href = link.getAttribute("href");
-      // Prefer the last-picked label; else the tier matching the default link.
-      var chosen = null;
-      if (preferred) {
-        chosen = tierByLabel(tiers, preferred);
-      }
-      if (!chosen) {
-        chosen = tierByUrl(tiers, href);
-      }
+      var entries = entriesFor(link);
+      var chosen = entries[0]; // Fit, unless a remembered view is available
+      entries.forEach(function (entry) {
+        if (entry.label === preferred) {
+          chosen = entry;
+        }
+      });
       counter.textContent = index + 1 + " / " + links.length;
-      buildTierbar(tiers, chosen ? chosen.label : null);
-      display(chosen, href);
+      buildSwitcher(entries, chosen.label);
+      applyEntry(chosen);
       if (link.dataset.full) {
         download.href = link.dataset.full;
         download.hidden = false;
       } else {
         download.hidden = true;
       }
+      openBox();
+    }
+
+    // Lock the page behind the box without losing the reader's place: pin the
+    // body at its current offset (plain `overflow: hidden` on the root would
+    // jump the page to the top), and restore the position on close.
+    function lockScroll(on) {
+      var body = document.body;
+      if (on) {
+        lockedAt = window.scrollY || document.documentElement.scrollTop || 0;
+        body.style.position = "fixed";
+        body.style.top = -lockedAt + "px";
+        body.style.left = "0";
+        body.style.right = "0";
+        body.style.overflow = "hidden";
+      } else {
+        body.style.position = "";
+        body.style.top = "";
+        body.style.left = "";
+        body.style.right = "";
+        body.style.overflow = "";
+        window.scrollTo(0, lockedAt);
+      }
+    }
+
+    function openBox() {
       overlay.hidden = false;
+      lockScroll(true);
     }
 
     function closeBox() {
       overlay.hidden = true;
+      lockScroll(false);
       index = -1;
     }
 
@@ -183,8 +196,8 @@
       });
     });
 
-    // Clicking the backdrop closes; clicks on controls/image do not, and a
-    // click that merely ends a pan drag must not close either.
+    // The backdrop dismisses; controls and the image do not, and a click that
+    // merely ends a pan drag must not dismiss either.
     overlay.addEventListener("click", function (event) {
       if (moved) {
         moved = false;
@@ -207,15 +220,15 @@
       show(index + 1);
     });
 
-    // Drag to pan when viewing the full image at 1:1. `moved` records that a
-    // drag happened, so the trailing click doesn't close the lightbox.
+    // Drag to pan a native image. Active whenever the figure is a native-size
+    // scroll container, so it works the moment the image overflows.
     var dragging = false;
     var startX = 0;
     var startY = 0;
     var startLeft = 0;
     var startTop = 0;
     figure.addEventListener("pointerdown", function (event) {
-      if (!pannable()) {
+      if (!figure.classList.contains("is-native")) {
         return;
       }
       dragging = true;
