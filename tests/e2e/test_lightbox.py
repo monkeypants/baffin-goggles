@@ -1,11 +1,23 @@
-"""End-to-end lightbox behaviour, driven through a real headless browser.
+"""Prescriptive end-to-end spec for the lightbox, driven through a real browser.
 
-Token-presence assertions over ``app.js`` cannot tell whether panning, close,
-or tier switching actually work — those are layout behaviours that only exist
-once a browser computes the box model. These tests render a gallery to disk and
-drive it over ``file://`` with Playwright, so they exercise the real thing.
+These tests describe how viewing and navigation must behave — they are the
+specification, not smoke checks. Token-presence assertions over ``app.js``
+cannot see layout; panning, scrolling, and fit-vs-native sizing only exist once
+a browser computes the box model, so we render a gallery to disk and drive it
+over ``file://`` with Playwright.
 
-Run with ``make e2e`` (needs the ``e2e`` group and ``playwright install``).
+The spec (Native-size tiers + Fit default):
+
+* The lightbox opens in **Fit**: the image is scaled to the window and never
+  scrolls.
+* The switcher offers **Fit** plus every built tier (**S / M / Full**).
+* Selecting a tier shows that file at its **native pixel size**: centered when
+  it fits, **pannable on both axes** (drag or wheel) when it overflows.
+* While the lightbox is open the **page background never scrolls**.
+* Prev/next buttons and Left/Right arrows move between photos; Esc and the close
+  button dismiss; a drag that pans must not dismiss.
+
+Run with ``make e2e``.
 """
 
 import os
@@ -20,20 +32,26 @@ from baffin.domain import Asset, DerivativeSpec, Group, Site, SourceRef
 
 pytestmark = pytest.mark.browser
 
+_VIEWPORT = {"width": 1280, "height": 720}
 _SPECS = (
     DerivativeSpec("thumb", 300, 80),
     DerivativeSpec("low", 800, 82),
     DerivativeSpec("med", 1600, 85),
     DerivativeSpec("full", None, 95),
 )
-# Full is far larger than Playwright's default 1280x720 viewport, so it
-# overflows and must be panned; the smaller tiers fit.
+# Relative to the ~1280x720 viewport: S fits (centered, no scroll), M overflows,
+# Full overflows hard. Distinct native widths prove the tiers really differ.
 _SIZES = {
     "thumb": (300, 200),
     "low": (800, 533),
     "med": (1600, 1067),
     "full": (3000, 2000),
 }
+_DAY1 = [f"a{i:02d}" for i in range(60)]  # a tall grid, so the page can scroll
+_DAY2 = ["b00"]
+# Only these get the heavy low/med/full files; the rest are thumbnail-only (the
+# grid just needs to be tall). Tests only open the first few.
+_DETAILED = set(_DAY1[:3])
 
 
 def _asset(tag: str) -> Asset:
@@ -55,100 +73,183 @@ def gallery_dir(tmp_path_factory: pytest.TempPathFactory) -> Path:
         key="day-01",
         label="Day 1",
         span=(datetime(2025, 7, 12), datetime(2025, 7, 12)),
-        assets=(_asset("aaa"), _asset("bbb")),
+        assets=tuple(_asset(t) for t in _DAY1),
     )
     day2 = Group(
         key="day-02",
         label="Day 2",
         span=(datetime(2025, 7, 13), datetime(2025, 7, 13)),
-        assets=(_asset("ccc"),),
+        assets=tuple(_asset(t) for t in _DAY2),
     )
     site = Site(
         title="Trip", base_url="", peers=(), groups=(day1, day2), photo_tiers=_SPECS
     )
     Jinja2Renderer().render(site, out)
-    for tag in ("aaa", "bbb", "ccc"):
-        for tier, (w, h) in _SIZES.items():
+    for tag in _DAY1 + _DAY2:
+        tiers = _SIZES if tag in _DETAILED else {"thumb": _SIZES["thumb"]}
+        for tier, (w, h) in tiers.items():
             path = out / tier / f"{tag}.jpg"
             path.parent.mkdir(parents=True, exist_ok=True)
             Image.frombytes("RGB", (w, h), os.urandom(w * h * 3)).save(path, "JPEG")
     return out
 
 
-def _open(page, gallery_dir: Path, rel: str = "day-01/index.html") -> None:
+def _open_gallery(page, gallery_dir: Path, rel: str = "day-01/index.html"):
+    page.set_viewport_size(_VIEWPORT)
     page.goto((gallery_dir / rel).as_uri())
 
 
-_OVERFLOWS = (
-    "() => { const f = document.querySelector('.lb-figure');"
-    " return f.scrollWidth > f.clientWidth; }"
-)
-
-
-def test_full_tier_pans_both_axes_and_stays_open(page, gallery_dir: Path) -> None:
-    _open(page, gallery_dir)
+def _open_lightbox(page, gallery_dir: Path):
+    _open_gallery(page, gallery_dir)
     page.locator("a.cell").first.click()
-    page.get_by_role("button", name="Full").click()
-    page.wait_for_function(_OVERFLOWS)  # full image loaded and overflowing
+    assert page.locator(".lightbox").is_visible()
 
-    fig = page.locator(".lb-figure")
-    before = fig.evaluate("el => [el.scrollLeft, el.scrollTop]")
-    box = fig.bounding_box()
+
+def _select(page, label: str):
+    page.get_by_role("button", name=label, exact=True).click()
+
+
+def _overflows(page) -> bool:
+    return page.locator(".lb-figure").evaluate(
+        "el => el.scrollWidth > el.clientWidth || el.scrollHeight > el.clientHeight"
+    )
+
+
+def _natural_width(page) -> int:
+    return page.locator(".lb-figure img").evaluate("el => el.naturalWidth")
+
+
+def _wait_natural(page, width: int) -> None:
+    page.wait_for_function(
+        "w => document.querySelector('.lb-figure img').naturalWidth === w",
+        arg=width,
+    )
+
+
+def _drag(page, dx: int, dy: int):
+    box = page.locator(".lb-figure").bounding_box()
     cx, cy = box["x"] + box["width"] / 2, box["y"] + box["height"] / 2
     page.mouse.move(cx, cy)
     page.mouse.down()
-    page.mouse.move(cx - 200, cy - 200, steps=10)
+    page.mouse.move(cx + dx, cy + dy, steps=10)
     page.mouse.up()
-    after = fig.evaluate("el => [el.scrollLeft, el.scrollTop]")
 
+
+# --- Fit default ----------------------------------------------------------
+
+
+def test_opens_in_fit_and_fit_never_scrolls(page, gallery_dir: Path) -> None:
+    _open_lightbox(page, gallery_dir)
+    assert (
+        page.get_by_role("button", name="Fit", exact=True)
+        .get_attribute("class")
+        .find("is-active")
+        >= 0
+    )
+    page.wait_for_selector(".lb-figure img")
+    assert _overflows(page) is False
+
+
+def test_switcher_offers_fit_and_each_built_tier(page, gallery_dir: Path) -> None:
+    _open_lightbox(page, gallery_dir)
+    labels = page.locator(".lb-tiers button").all_inner_texts()
+    assert labels == ["Fit", "S", "M", "Full"]
+
+
+# --- Native-size tiers ----------------------------------------------------
+
+
+def test_tiers_load_distinct_resolutions(page, gallery_dir: Path) -> None:
+    # The heart of the "M looks like S" complaint: each tier must load a
+    # different-resolution file and show it at that size.
+    _open_lightbox(page, gallery_dir)
+    _select(page, "S")
+    _wait_natural(page, 800)
+    small = _natural_width(page)
+    _select(page, "M")
+    _wait_natural(page, 1600)
+    medium = _natural_width(page)
+    _select(page, "Full")
+    _wait_natural(page, 3000)
+    full = _natural_width(page)
+    assert small < medium < full == 3000
+
+
+def test_small_tier_that_fits_is_centered_and_not_scrollable(
+    page, gallery_dir: Path
+) -> None:
+    _open_lightbox(page, gallery_dir)
+    _select(page, "S")
+    page.wait_for_selector(".lb-figure.is-native")
+    assert _overflows(page) is False  # 800px fits the viewport
+
+
+def test_full_shows_native_size_and_pans_both_axes(page, gallery_dir: Path) -> None:
+    _open_lightbox(page, gallery_dir)
+    _select(page, "Full")
+    page.wait_for_function(
+        "() => { const f = document.querySelector('.lb-figure');"
+        " return f.scrollWidth > f.clientWidth && f.scrollHeight > f.clientHeight; }"
+    )
+    fig = page.locator(".lb-figure")
+    before = fig.evaluate("el => [el.scrollLeft, el.scrollTop]")
+    _drag(page, -220, -220)  # drag up-left pans toward bottom-right
+    after = fig.evaluate("el => [el.scrollLeft, el.scrollTop]")
     assert after[0] > before[0], "horizontal pan did not move"
     assert after[1] > before[1], "vertical pan did not move"
     assert page.locator(".lightbox").is_visible(), "releasing the drag closed it"
 
 
-def test_medium_tier_fits_without_scrolling(page, gallery_dir: Path) -> None:
-    _open(page, gallery_dir)
-    page.locator("a.cell").first.click()  # opens at the default (med) tier
-    page.wait_for_selector(".lb-figure img")
-    fig = page.locator(".lb-figure")
-    overflows = fig.evaluate(
-        "el => el.scrollWidth > el.clientWidth || el.scrollHeight > el.clientHeight"
-    )
-    assert overflows is False
+# --- Background never scrolls --------------------------------------------
 
 
-def test_switching_tiers_toggles_pan_mode(page, gallery_dir: Path) -> None:
-    _open(page, gallery_dir)
+def test_page_background_is_locked_while_open(page, gallery_dir: Path) -> None:
+    _open_gallery(page, gallery_dir)
+    page.evaluate("window.scrollTo(0, 40)")
+    assert page.evaluate("() => window.scrollY") == 40  # the page really scrolls
     page.locator("a.cell").first.click()
-    page.get_by_role("button", name="Full").click()
-    page.wait_for_function(_OVERFLOWS)
-    fig = page.locator(".lb-figure")
-    assert "is-actual" in (fig.get_attribute("class") or "")
-    page.get_by_role("button", name="M", exact=True).click()
-    page.wait_for_selector(".lb-figure:not(.is-actual)")
-    assert "is-actual" not in (fig.get_attribute("class") or "")
+    assert page.evaluate("() => getComputedStyle(document.body).overflow === 'hidden'")
+    locked_y = page.evaluate("() => window.scrollY")
+    page.mouse.wheel(0, 600)  # wheeling must not move the background
+    assert page.evaluate("() => window.scrollY") == locked_y, "background scrolled"
 
 
-def test_keyboard_navigation_and_escape(page, gallery_dir: Path) -> None:
-    _open(page, gallery_dir)
+def test_closing_restores_page_scroll_position(page, gallery_dir: Path) -> None:
+    _open_gallery(page, gallery_dir)
+    page.evaluate("window.scrollTo(0, 40)")
     page.locator("a.cell").first.click()
+    page.locator(".lb-close").click()
+    assert page.locator(".lightbox").is_hidden()
+    assert page.evaluate("() => getComputedStyle(document.body).overflow !== 'hidden'")
+    assert page.evaluate("() => window.scrollY") == 40  # place restored
+
+
+# --- Navigation -----------------------------------------------------------
+
+
+def test_arrows_and_buttons_move_between_photos(page, gallery_dir: Path) -> None:
+    _open_lightbox(page, gallery_dir)
+    total = len(_DAY1)
     counter = page.locator(".lb-counter")
-    assert counter.inner_text().startswith("1 /")
+    assert counter.inner_text() == f"1 / {total}"
     page.keyboard.press("ArrowRight")
-    assert counter.inner_text().startswith("2 /")
+    assert counter.inner_text() == f"2 / {total}"
+    page.locator(".lb-next").click()
+    assert counter.inner_text() == f"3 / {total}"
+    page.locator(".lb-prev").click()
+    assert counter.inner_text() == f"2 / {total}"
+
+
+def test_escape_and_backdrop_and_image_click(page, gallery_dir: Path) -> None:
+    _open_lightbox(page, gallery_dir)
+    page.locator(".lb-figure img").click()  # clicking the image keeps it open
+    assert page.locator(".lightbox").is_visible()
     page.keyboard.press("Escape")
     assert page.locator(".lightbox").is_hidden()
 
 
-def test_clicking_the_image_does_not_close(page, gallery_dir: Path) -> None:
-    _open(page, gallery_dir)
-    page.locator("a.cell").first.click()
-    page.locator(".lb-figure img").click()
-    assert page.locator(".lightbox").is_visible()
-
-
 def test_group_pages_link_prev_and_next(page, gallery_dir: Path) -> None:
-    _open(page, gallery_dir, "day-01/index.html")
+    _open_gallery(page, gallery_dir, "day-01/index.html")
     page.get_by_role("link", name="Day 2").first.click()  # next
     assert page.url.endswith("day-02/index.html")
     page.get_by_role("link", name="Day 1").first.click()  # prev

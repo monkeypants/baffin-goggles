@@ -66,33 +66,36 @@ main { padding: 1rem; max-width: 1200px; margin: 0 auto; }
   --lb-fg: #f2f2f2;
 }
 .lightbox[hidden] { display: none; }
+/* Fit (default): scale the image to the window; never scroll. `align-self:
+   stretch` fills the row so Fit uses the whole area. */
 .lb-figure {
   grid-column: 2;
   grid-row: 2;
   margin: 0;
+  align-self: stretch;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Fill the row: the grid's `align-items: center` would otherwise size the
-     figure to its content height, so it could never overflow vertically and
-     the full image would pan sideways only. */
-  align-self: stretch;
-  min-height: 0;
   cursor: zoom-out;
 }
 .lb-figure img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
 
-/* "Full" tier: show the image at 1:1 and pan by dragging/scrolling.
-   A plain block scroll container overflows on both axes; a flex one only
-   scrolls reliably along its main axis (so vertical panning would die). */
-.lb-figure.is-actual {
-  display: block;
+/* Native-size tiers (S / M / Full): show the file at true pixels — centered
+   when it fits, pannable on both axes when it overflows. `safe center` keeps
+   the top-left reachable once the image is bigger than the viewport (plain
+   `center` would push the overflow out of reach). */
+.lb-figure.is-native {
+  display: grid;
+  place-content: safe center;
   overflow: auto;
   cursor: grab;
   touch-action: none;
 }
-.lb-figure.is-actual:active { cursor: grabbing; }
-.lb-figure.is-actual img {
+.lb-figure.is-native:active { cursor: grabbing; }
+.lb-figure.is-native img {
   max-width: none;
   max-height: none;
   width: auto;
