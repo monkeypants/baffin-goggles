@@ -34,3 +34,8 @@ class GalleryConfig:
     include_full: bool = False
     strict: bool = False
     strip_gps: bool = True
+
+    @property
+    def active_photo_specs(self) -> tuple[DerivativeSpec, ...]:
+        """The photo tiers this build produces (``full`` only when opted in)."""
+        return tuple(s for s in self.specs if s.name != "full" or self.include_full)

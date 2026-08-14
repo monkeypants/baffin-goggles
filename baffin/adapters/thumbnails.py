@@ -32,9 +32,10 @@ class VipsThumbnailer:
         dst.parent.mkdir(parents=True, exist_ok=True)
         try:
             if spec.max_edge is None:
-                image = pyvips.Image.new_from_file(
-                    str(src.path), access="sequential"
-                ).autorot()
+                # Random access (the default): autorot() + sharpen() re-read
+                # lines out of order, which a sequential-access source rejects
+                # ("out of order read") on rotated originals.
+                image = pyvips.Image.new_from_file(str(src.path)).autorot()
             else:
                 image = pyvips.Image.thumbnail(
                     str(src.path), spec.max_edge, height=spec.max_edge, size="down"
