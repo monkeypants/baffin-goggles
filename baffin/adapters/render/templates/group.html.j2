@@ -18,7 +18,8 @@
 {% for a in assets %}
   <a class="cell" href="{{ a.href }}"{% if a.kind == "video" %} data-video="1"{% endif %}
      {%- if a.switch %} data-tiers='{{ a.switch | tojson }}'{% endif %}
-     {%- if a.full %} data-full="{{ a.full }}"{% endif %}>
+     {%- if a.full %} data-full="{{ a.full }}"{% endif %}
+     {%- if a.name %} data-name="{{ a.name }}"{% endif %}>
     <img src="{{ a.thumb }}"
          {% if a.srcset %}srcset="{{ a.srcset }}" sizes="(max-width: 600px) 45vw, 300px"{% endif %}
          {% if a.width %}width="{{ a.width }}" height="{{ a.height }}"{% endif %}

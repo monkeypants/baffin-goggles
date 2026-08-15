@@ -21,6 +21,7 @@ from baffin.adapters.thumbnails import VipsThumbnailer
 from baffin.application.build import BuildGallery
 from baffin.application.clean import CleanGallery
 from baffin.application.config import GalleryConfig
+from baffin.application.origin import ResolveOrigins
 from baffin.application.scan import ScanGallery
 
 
@@ -68,6 +69,10 @@ def build_cleaner(config: GalleryConfig) -> CleanGallery:
         reader=ExifMetadataReader(),
         store=FileDerivativeStore(config.output),
     )
+
+
+def build_origin_resolver(config: GalleryConfig) -> ResolveOrigins:
+    return ResolveOrigins(repo=FsAssetRepository(), hasher=_hasher(config))
 
 
 def sidecar_store(config: GalleryConfig) -> MarkdownSidecarStore:

@@ -66,12 +66,14 @@
     var next = el("button", "lb-nav lb-next", "›");
     var close = el("button", "lb-close", "✕");
     var counter = el("span", "lb-counter");
+    var name = el("span", "lb-name");
     var tierbar = el("div", "lb-tiers");
     var download = el("a", "lb-download", "⭳ Download full size");
     download.setAttribute("download", "");
 
     var bar = el("div", "lb-bar");
     bar.appendChild(counter);
+    bar.appendChild(name);
     bar.appendChild(close);
     var foot = el("div", "lb-foot");
     foot.appendChild(tierbar);
@@ -141,6 +143,7 @@
         }
       });
       counter.textContent = index + 1 + " / " + links.length;
+      name.textContent = link.dataset.name || "";
       buildSwitcher(entries, chosen.label);
       applyEntry(chosen);
       if (link.dataset.full) {

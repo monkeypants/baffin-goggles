@@ -94,6 +94,32 @@ def gallery_dir(tmp_path_factory: pytest.TempPathFactory) -> Path:
     return out
 
 
+@pytest.fixture(scope="session")
+def named_gallery_dir(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    """A gallery built with show_filenames enabled (one photo)."""
+    out = tmp_path_factory.mktemp("named")
+    day = Group(
+        key="day-01",
+        label="Day 1",
+        span=(datetime(2025, 7, 12), datetime(2025, 7, 12)),
+        assets=(_asset("shot01"),),
+    )
+    site = Site(
+        title="Trip",
+        base_url="",
+        peers=(),
+        groups=(day,),
+        photo_tiers=_SPECS,
+        show_filenames=True,
+    )
+    Jinja2Renderer().render(site, out)
+    for tier, (w, h) in _SIZES.items():
+        path = out / tier / "shot01.jpg"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        Image.frombytes("RGB", (w, h), os.urandom(w * h * 3)).save(path, "JPEG")
+    return out
+
+
 def _open_gallery(page, gallery_dir: Path, rel: str = "day-01/index.html"):
     page.set_viewport_size(_VIEWPORT)
     page.goto((gallery_dir / rel).as_uri())
@@ -246,6 +272,17 @@ def test_escape_and_backdrop_and_image_click(page, gallery_dir: Path) -> None:
     assert page.locator(".lightbox").is_visible()
     page.keyboard.press("Escape")
     assert page.locator(".lightbox").is_hidden()
+
+
+def test_original_filename_shows_when_enabled(page, named_gallery_dir: Path) -> None:
+    _open_gallery(page, named_gallery_dir)
+    page.locator("a.cell").first.click()
+    assert page.locator(".lb-name").inner_text() == "shot01.jpg"
+
+
+def test_original_filename_absent_by_default(page, gallery_dir: Path) -> None:
+    _open_lightbox(page, gallery_dir)
+    assert page.locator(".lb-name").inner_text() == ""
 
 
 def test_group_pages_link_prev_and_next(page, gallery_dir: Path) -> None:

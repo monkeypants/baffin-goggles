@@ -40,6 +40,7 @@ def _model(config: GalleryConfig) -> Site:
         peers=(),
         groups=groups,
         photo_tiers=config.active_photo_specs,
+        show_filenames=config.show_filenames,
     )
 
 
@@ -83,6 +84,7 @@ def run_build(config: GalleryConfig, *, jobs: int = 1) -> BuildSummary:
         peers=(),
         groups=groups,
         photo_tiers=config.active_photo_specs,
+        show_filenames=config.show_filenames,
     )
     Jinja2Renderer().render(site, config.output)
     return BuildSummary(

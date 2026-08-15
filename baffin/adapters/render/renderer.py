@@ -58,7 +58,7 @@ class Jinja2Renderer:
                     **self._chrome(site, page),
                     "group": group,
                     "assets": [
-                        self._asset_view(a, page, site.photo_tiers)
+                        self._asset_view(a, page, site.photo_tiers, site.show_filenames)
                         for a in group.assets
                     ],
                     "prev": self._group_link(groups[i - 1], page) if i > 0 else None,
@@ -114,9 +114,14 @@ class Jinja2Renderer:
         return url_for(f"{tier}/{asset.content_hash}.jpg", current=page)
 
     def _asset_view(
-        self, asset: Asset, page: str, tiers: tuple[DerivativeSpec, ...]
+        self,
+        asset: Asset,
+        page: str,
+        tiers: tuple[DerivativeSpec, ...],
+        show_name: bool,
     ) -> dict[str, Any]:
         h = asset.content_hash
+        name = asset.ref.path.name if show_name else ""
         if asset.kind == "video":
             return {
                 "kind": "video",
@@ -125,6 +130,7 @@ class Jinja2Renderer:
                 "srcset": "",
                 "switch": [],
                 "full": "",
+                "name": name,
                 "width": asset.width or 0,
                 "height": asset.height or 0,
                 "alt": "",
@@ -163,6 +169,7 @@ class Jinja2Renderer:
             "srcset": srcset,
             "switch": switch_views,
             "full": url_for(f"full/{h}.jpg", current=page) if full else "",
+            "name": name,
             "width": asset.width,
             "height": asset.height,
             "alt": "",

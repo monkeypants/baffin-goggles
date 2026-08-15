@@ -58,6 +58,7 @@ class BaffinSettings(BaseSettings):
     order: Order = "oldest-first"
     strip_gps: bool = True
     show_camera_settings: bool = False
+    show_filenames: bool = False
     include_full: bool = False
     derivatives: list[DerivativeSetting] = []
     peers: list[PeerSetting] = []
@@ -94,6 +95,7 @@ class BaffinSettings(BaseSettings):
             grouping=GroupingPolicy(mode=self.grouping, order=self.order),
             include_full=self.include_full,
             strip_gps=self.strip_gps,
+            show_filenames=self.show_filenames,
         )
 
     def peer_models(self) -> tuple[Peer, ...]:

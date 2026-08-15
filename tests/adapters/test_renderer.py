@@ -114,6 +114,25 @@ def test_site_is_navigable_without_js(tmp_path: Path) -> None:
             assert (tmp_path / target).exists(), href
 
 
+def test_original_filenames_appear_only_when_enabled(tmp_path: Path) -> None:
+    # Off by default: shared galleries must not leak original names.
+    Jinja2Renderer().render(_site(), tmp_path)
+    assert "data-name" not in (tmp_path / "day-01" / "index.html").read_text()
+
+    base = _site()
+    named = Site(
+        title=base.title,
+        base_url=base.base_url,
+        peers=base.peers,
+        groups=base.groups,
+        photo_tiers=_SPECS,
+        show_filenames=True,
+    )
+    Jinja2Renderer().render(named, tmp_path)
+    html = (tmp_path / "day-01" / "index.html").read_text()
+    assert 'data-name="aaa"' in html  # _asset("aaa") -> ref.path.name == "aaa"
+
+
 def test_group_pages_link_prev_and_next(tmp_path: Path) -> None:
     Jinja2Renderer().render(_site(), tmp_path)
     # First group (day-01): links forward to the month group, nothing back.

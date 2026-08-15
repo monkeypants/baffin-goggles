@@ -112,6 +112,7 @@ main { padding: 1rem; max-width: 1200px; margin: 0 auto; }
   color: var(--lb-fg);
 }
 .lb-counter { font-variant-numeric: tabular-nums; font-size: 0.9rem; }
+.lb-name { font-size: 0.9rem; opacity: 0.85; margin: 0 auto; }
 
 .lb-foot {
   grid-column: 1 / -1;
