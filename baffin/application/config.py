@@ -34,6 +34,7 @@ class GalleryConfig:
     include_full: bool = False
     strict: bool = False
     strip_gps: bool = True
+    show_filenames: bool = False
 
     @property
     def active_photo_specs(self) -> tuple[DerivativeSpec, ...]:

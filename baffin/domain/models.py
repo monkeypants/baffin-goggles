@@ -162,6 +162,7 @@ class Site:
     peers: tuple[Peer, ...]
     groups: tuple[Group, ...]
     photo_tiers: tuple[DerivativeSpec, ...] = ()
+    show_filenames: bool = False
 
 
 @dataclass(frozen=True)

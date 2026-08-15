@@ -80,6 +80,7 @@ class BuildGallery:
             peers=(),
             groups=groups,
             photo_tiers=config.active_photo_specs,
+            show_filenames=config.show_filenames,
         )
         self.renderer.render(site, config.output)  # always: HTML is cheap
         return BuildResult(
