@@ -23,6 +23,21 @@ from baffin.application.reporting import BuildReport
 from baffin.domain import DerivativeSpec, Site, SourceRef
 
 
+def _rendered_tiers(
+    config: GalleryConfig, store: FileDerivativeStore
+) -> tuple[DerivativeSpec, ...]:
+    """The tiers the pages may offer: those the output actually holds.
+
+    ``include_full`` decides what gets *generated*; the derivatives on disk
+    decide what gets *advertised*. Keeping those separate is what stops a
+    rebuild under a quieter config from retracting a tier whose files are still
+    sitting there — the bug that cost a published gallery its download button.
+    """
+    return config.offerable_tiers(
+        store.present_spec_names(spec.name for spec in config.specs)
+    )
+
+
 def _model(config: GalleryConfig) -> Site:
     processor = AssetProcessor.from_config(config)
     refs = FsAssetRepository().discover(config.source)
@@ -39,7 +54,7 @@ def _model(config: GalleryConfig) -> Site:
         base_url=config.base_url,
         peers=(),
         groups=groups,
-        photo_tiers=config.active_photo_specs,
+        photo_tiers=_rendered_tiers(config, FileDerivativeStore(config.output)),
         show_filenames=config.show_filenames,
     )
 
@@ -83,7 +98,7 @@ def run_build(config: GalleryConfig, *, jobs: int = 1) -> BuildSummary:
         base_url=config.base_url,
         peers=(),
         groups=groups,
-        photo_tiers=config.active_photo_specs,
+        photo_tiers=_rendered_tiers(config, store),
         show_filenames=config.show_filenames,
     )
     Jinja2Renderer().render(site, config.output)

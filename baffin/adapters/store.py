@@ -54,6 +54,20 @@ class FileDerivativeStore:
         }
         return StoreState(present=frozenset(present))
 
+    def present_spec_names(self, names: Iterable[str]) -> frozenset[str]:
+        """Which of ``names`` the output actually holds derivatives for.
+
+        The renderer needs this because a tier is only offerable once its files
+        exist. Deriving it from the build flag instead is what let a ``serve``
+        without ``--full`` re-render a ``build --full`` gallery into one whose
+        download button was gone while every full-size file was still on disk.
+        """
+        return frozenset(
+            name
+            for name in names
+            if next((self.output / name).glob("*.jpg"), None) is not None
+        )
+
     def record(self, key: str, deriv: Derivative) -> None:
         manifest = self._load()
         manifest[key] = {

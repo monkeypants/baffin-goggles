@@ -79,7 +79,11 @@ class BuildGallery:
             base_url=config.base_url,
             peers=(),
             groups=groups,
-            photo_tiers=config.active_photo_specs,
+            # What exists, not what was asked for: a rebuild must not retract a
+            # tier whose derivatives are still in the output.
+            photo_tiers=config.offerable_tiers(
+                self.store.present_spec_names(spec.name for spec in config.specs)
+            ),
             show_filenames=config.show_filenames,
         )
         self.renderer.render(site, config.output)  # always: HTML is cheap

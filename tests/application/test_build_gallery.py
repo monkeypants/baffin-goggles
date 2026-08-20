@@ -83,6 +83,44 @@ def test_render_always_runs_even_with_no_misses() -> None:
     assert len(renderer.rendered) == 1
 
 
+def test_site_advertises_the_tiers_the_store_holds_not_the_flag() -> None:
+    """A build with ``include_full=False`` over an output that already has full
+    derivatives must still offer them: the files are there to be served.
+
+    Rendering from the flag instead is what stripped a published gallery's
+    download button while every full-size file sat untouched on disk.
+    """
+    store = FakeDerivativeStore()
+    store.record(
+        "already-built",
+        Derivative(
+            asset_hash="hash-a",
+            spec_name="full",
+            rel_path=Path("full/hash-a.jpg"),
+            width=3000,
+            height=2000,
+        ),
+    )
+
+    result = _build(store=store).execute(_config(include_full=False))
+
+    offered = [spec.name for spec in result.site.photo_tiers]
+    assert "full" in offered
+
+
+def test_a_fresh_build_offers_exactly_the_tiers_it_generated() -> None:
+    without = _build().execute(_config(include_full=False))
+    assert [s.name for s in without.site.photo_tiers] == ["thumb", "low", "med"]
+
+    opted_in = _build().execute(_config(include_full=True))
+    assert [s.name for s in opted_in.site.photo_tiers] == [
+        "thumb",
+        "low",
+        "med",
+        "full",
+    ]
+
+
 class _RaisingThumbnailer:
     def render(
         self,
