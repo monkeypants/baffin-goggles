@@ -120,6 +120,37 @@ def named_gallery_dir(tmp_path_factory: pytest.TempPathFactory) -> Path:
     return out
 
 
+@pytest.fixture(scope="session")
+def full_off_gallery_dir(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    """A gallery built without the ``full`` tier (``include_full = false``).
+
+    The tier drives two visible features, so the off state needs its own
+    fixture: with it absent the switcher must not offer **Full** and the
+    download button must stay hidden.
+    """
+    out = tmp_path_factory.mktemp("full-off")
+    day = Group(
+        key="day-01",
+        label="Day 1",
+        span=(datetime(2025, 7, 12), datetime(2025, 7, 12)),
+        assets=(_asset("a00"),),
+    )
+    site = Site(
+        title="Trip",
+        base_url="",
+        peers=(),
+        groups=(day,),
+        photo_tiers=_SPECS[:3],  # thumb, low, med — no full
+    )
+    Jinja2Renderer().render(site, out)
+    for tier in ("thumb", "low", "med"):
+        w, h = _SIZES[tier]
+        path = out / tier / "a00.jpg"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        Image.frombytes("RGB", (w, h), os.urandom(w * h * 3)).save(path, "JPEG")
+    return out
+
+
 def _open_gallery(page, gallery_dir: Path, rel: str = "day-01/index.html"):
     page.set_viewport_size(_VIEWPORT)
     page.goto((gallery_dir / rel).as_uri())
@@ -180,6 +211,44 @@ def test_switcher_offers_fit_and_each_built_tier(page, gallery_dir: Path) -> Non
     _open_lightbox(page, gallery_dir)
     labels = page.locator(".lb-tiers button").all_inner_texts()
     assert labels == ["Fit", "S", "M", "Full"]
+
+
+# --- The full tier's two visible features ---------------------------------
+#
+# Both are derived from the same tier, and the HTML-level tests can only prove
+# the `data-full` attribute is present. Whether the button is actually *usable*
+# is a JS/CSS question (`app.js` toggles `download.hidden`), so it belongs here.
+
+
+def test_download_button_offers_the_full_size_file(page, gallery_dir: Path) -> None:
+    _open_lightbox(page, gallery_dir)
+    download = page.locator(".lb-download")
+    assert download.is_visible()
+    assert download.get_attribute("href").endswith("full/a00.jpg")
+    assert download.get_attribute("download") is not None  # saves, never navigates
+
+
+def test_download_button_follows_the_photo_while_browsing(
+    page, gallery_dir: Path
+) -> None:
+    # One <a> is reused across photos, so a stale href would silently hand the
+    # viewer the previous picture's file.
+    _open_lightbox(page, gallery_dir)
+    first = page.locator(".lb-download").get_attribute("href")
+    page.keyboard.press("ArrowRight")
+    page.wait_for_function(
+        "h => document.querySelector('.lb-download').getAttribute('href') !== h",
+        arg=first,
+    )
+    assert page.locator(".lb-download").get_attribute("href").endswith("full/a01.jpg")
+
+
+def test_without_the_full_tier_there_is_no_full_option_or_download(
+    page, full_off_gallery_dir: Path
+) -> None:
+    _open_lightbox(page, full_off_gallery_dir)
+    assert page.locator(".lb-tiers button").all_inner_texts() == ["Fit", "S", "M"]
+    assert page.locator(".lb-download").is_hidden()
 
 
 # --- Native-size tiers ----------------------------------------------------

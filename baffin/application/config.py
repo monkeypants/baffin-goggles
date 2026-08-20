@@ -40,3 +40,19 @@ class GalleryConfig:
     def active_photo_specs(self) -> tuple[DerivativeSpec, ...]:
         """The photo tiers this build produces (``full`` only when opted in)."""
         return tuple(s for s in self.specs if s.name != "full" or self.include_full)
+
+    def offerable_tiers(self, present: frozenset[str]) -> tuple[DerivativeSpec, ...]:
+        """The tiers the pages may advertise, given what the output holds.
+
+        :attr:`active_photo_specs` decides what to *generate*;
+        this decides what to *advertise*, from the derivatives that exist.
+        Keeping the two apart is what stops a rebuild under a quieter config
+        from retracting a tier whose files are still on disk.
+
+        >>> from pathlib import Path
+        >>> from baffin.application.config import GalleryConfig
+        >>> config = GalleryConfig(source=Path("photos"), output=Path("site"))
+        >>> [s.name for s in config.offerable_tiers(frozenset({"thumb", "full"}))]
+        ['thumb', 'full']
+        """
+        return tuple(spec for spec in self.specs if spec.name in present)
