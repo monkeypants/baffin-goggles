@@ -193,13 +193,23 @@ def _serve_directory(directory: Path, host: str, port: int) -> None:  # pragma: 
 def serve(
     source: SourceOpt = None,
     output: OutputOpt = None,
+    full: FullOpt = False,
+    jobs: JobsOpt = 1,
     host: HostOpt = "127.0.0.1",
     port: PortOpt = 8000,
     watch: WatchOpt = False,
 ) -> None:
-    """Build then serve the site locally; --watch re-renders templates."""
-    config = load_config(source=source, output=output)
-    run_build(config)
+    """Build then serve the site locally; --watch re-renders templates.
+
+    ``serve`` rebuilds before serving, so it takes the options that control the
+    rebuild: ``--full`` decides what the pages contain (serving without it would
+    re-render a ``build --full`` site without its download button), and
+    ``--jobs`` decides how fast a cold cache fills.
+    """
+    config = load_config(
+        source=source, output=output, include_full=True if full else None
+    )
+    run_build(config, jobs=jobs)
     if watch:
         threading.Thread(
             target=watch_templates,
