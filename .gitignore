@@ -17,6 +17,9 @@ dist/
 site/
 .baffin/
 
+# local working config (personal paths; the suite isolates itself from it)
+baffin.toml
+
 # docs build
 docs/_build/
 docs/reference/
