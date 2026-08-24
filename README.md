@@ -3,6 +3,8 @@
 Point it at a folder of camera originals; get a chronological static gallery you
 can share as a link. It never edits your photos, and needs no curation.
 
+**[Documentation](https://monkeypants.github.io/baffin-goggles/)**
+
 ```sh
 uv sync
 uv run baffin doctor
@@ -14,7 +16,12 @@ walkthrough are in the **Getting started** chapter of the docs.
 
 ## Docs
 
-The docs are the specification, generated from the code and its test suite:
+The docs are the specification, generated from the code and its test suite.
+They are published from `master` to
+<https://monkeypants.github.io/baffin-goggles/> by the `Docs` workflow, built
+with the same pinned toolchain as the tests.
+
+To build them locally:
 
 ```sh
 make docs   # then open docs/_build/html/index.html
