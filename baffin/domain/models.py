@@ -1,8 +1,10 @@
 """Domain model: plain frozen dataclasses.
 
-No I/O, no framework imports; stdlib only. Types here are pure value objects;
-the only behaviour in the domain is ``DerivativeSpec.cache_key``, the seed of the
-lazy build (see :doc:`/lazy-build`).
+No I/O, no framework imports;
+stdlib only.
+Types here are pure value objects;
+the only behaviour in the domain is ``DerivativeSpec.cache_key``,
+the seed of the lazy build (see :doc:`/lazy-build`).
 """
 
 from __future__ import annotations
@@ -54,8 +56,9 @@ class GpsFix:
 class AssetMeta:
     """Per-image metadata from a sidecar; authored text, all optional.
 
-    Describes a single image, not narrative/story data. Distinct from
-    :class:`RawMetadata`, which is the raw technical read from an original.
+    Describes a single image, not narrative/story data.
+    Distinct from :class:`RawMetadata`,
+    which is the raw technical read from an original.
     Authored and written back by :doc:`/use-cases`.
     """
 
@@ -67,11 +70,11 @@ class AssetMeta:
 
 @dataclass(frozen=True)
 class RawMetadata:
-    """The raw technical read from an original: the :class:`MetadataReader`
-    port's output (see :doc:`/use-cases`).
+    """The raw technical read from an original:
+    the :class:`MetadataReader` port's output (see :doc:`/use-cases`).
 
-    Everything needed to build an :class:`Asset` except ``ref`` and
-    ``content_hash``. Distinct from the authored :class:`AssetMeta` sidecar.
+    Everything needed to build an :class:`Asset` except ``ref`` and ``content_hash``.
+    Distinct from the authored :class:`AssetMeta` sidecar.
     """
 
     kind: AssetKind
@@ -98,9 +101,10 @@ class Derivative:
 class StoreState:
     """Immutable cache snapshot the pure diff consumes (see :doc:`/lazy-build`).
 
-    ``present`` holds cache keys that are BOTH recorded in the manifest AND
-    whose file exists on disk; existence is pre-checked by the shell during
-    ``snapshot()`` so ``diff_plan`` stays pure.
+    ``present`` holds cache keys that are BOTH recorded in the manifest
+    AND whose file exists on disk;
+    existence is pre-checked by the shell during ``snapshot()``
+    so ``diff_plan`` stays pure.
     """
 
     present: frozenset[str] = frozenset()
@@ -108,8 +112,8 @@ class StoreState:
 
 @dataclass(frozen=True)
 class Peer:
-    """A fellow traveller's gallery (reserved cross-linking; see
-    :ref:`rationale-peers`)."""
+    """A fellow traveller's gallery
+    (reserved cross-linking; see :ref:`rationale-peers`)."""
 
     name: str
     url: str
@@ -119,8 +123,8 @@ class Peer:
 class Asset:
     """A single source item plus its durable identity and technical metadata.
 
-    ``content_hash`` (xxhash of the bytes) is the durable identity; ``ref`` is
-    only where the bytes currently live in the read-only source.
+    ``content_hash`` (xxhash of the bytes) is the durable identity;
+    ``ref`` is only where the bytes currently live in the read-only source.
     """
 
     ref: SourceRef
@@ -146,18 +150,26 @@ class Group:
 
 @dataclass(frozen=True)
 class Site:
-    """The whole renderable model: an ordered timeline of groups."""
+    """The whole renderable model: an ordered timeline of groups.
+
+    ``photo_tiers`` are the photo derivative specs actually built
+    (``full`` included only when the build opted in),
+    so the renderer knows which resolutions the viewer can offer.
+    """
 
     title: str
     base_url: str
     peers: tuple[Peer, ...]
     groups: tuple[Group, ...]
+    photo_tiers: tuple[DerivativeSpec, ...] = ()
+    show_filenames: bool = False
 
 
 @dataclass(frozen=True)
 class DerivativeSpec:
-    """One output tier (see :doc:`/lazy-build`). ``max_edge`` is the longest edge
-    in px; ``None`` means original size (the ``full`` tier)."""
+    """One output tier (see :doc:`/lazy-build`).
+    ``max_edge`` is the longest edge in px;
+    ``None`` means original size (the ``full`` tier)."""
 
     name: SpecName
     max_edge: int | None
@@ -166,12 +178,12 @@ class DerivativeSpec:
     def cache_key(self, asset: Asset) -> str:
         """Content-addressed derivative cache key: ``hash(content_hash + spec)``.
 
-        Uses stdlib SHA-256 over a canonical string (NOT the builtin ``hash``,
-        which is per-process salted) so the key is stable across runs and
-        machines. It is the foundation of the lazy-build cache (see :doc:`/lazy-build`).
-        Identical
-        bytes under an identical spec always yield the same key; changing any
-        spec field (e.g. thumb 300→320) changes only that tier's key.
+        Uses stdlib SHA-256 over a canonical string
+        (NOT the builtin ``hash``, which is per-process salted)
+        so the key is stable across runs and machines.
+        It is the foundation of the lazy-build cache (see :doc:`/lazy-build`).
+        Identical bytes under an identical spec always yield the same key;
+        changing any spec field (e.g. thumb 300→320) changes only that tier's key.
 
         >>> from datetime import datetime
         >>> from pathlib import Path

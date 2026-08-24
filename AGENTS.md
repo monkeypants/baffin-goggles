@@ -25,6 +25,16 @@ module-level type alias, or anything under `docs/`:
 make docs      # sphinx-build -W (doctest + html); warnings are errors
 ```
 
+`make check` uses the host's libvips. CI runs the same gate inside the image
+from `Dockerfile`, which pins libvips and ffmpeg — derivative cache keys do not
+include the toolchain, so a floating libvips changes output bytes without
+changing a key. Reach for it when a change touches generation, or when a result
+should match CI byte for byte:
+
+```sh
+make check-docker   # the gate, on the pinned Linux toolchain
+```
+
 Do not push, and do not consider a task done, on a red `make check`. Report
 failures with their output rather than working around them.
 

@@ -1,8 +1,8 @@
 """Shell build pipeline: plan in the core, fan generation out in the shell.
 
-Assembles assets, plans and diffs against the cache (pure), then generates only
-the misses via the AssetProcessor (serial or pooled) and renders. Videos branch
-by kind inside the processor.
+Assembles assets, plans and diffs against the cache (pure),
+then generates only the misses via the AssetProcessor (serial or pooled) and renders.
+Videos branch by kind inside the processor.
 """
 
 from __future__ import annotations
@@ -23,6 +23,21 @@ from baffin.application.reporting import BuildReport
 from baffin.domain import DerivativeSpec, Site, SourceRef
 
 
+def _rendered_tiers(
+    config: GalleryConfig, store: FileDerivativeStore
+) -> tuple[DerivativeSpec, ...]:
+    """The tiers the pages may offer: those the output actually holds.
+
+    ``include_full`` decides what gets *generated*; the derivatives on disk
+    decide what gets *advertised*. Keeping those separate is what stops a
+    rebuild under a quieter config from retracting a tier whose files are still
+    sitting there — the bug that cost a published gallery its download button.
+    """
+    return config.offerable_tiers(
+        store.present_spec_names(spec.name for spec in config.specs)
+    )
+
+
 def _model(config: GalleryConfig) -> Site:
     processor = AssetProcessor.from_config(config)
     refs = FsAssetRepository().discover(config.source)
@@ -34,7 +49,14 @@ def _model(config: GalleryConfig) -> Site:
         strict=config.strict,
     )
     groups = group_timeline(assets, config.grouping)
-    return Site(title=config.title, base_url=config.base_url, peers=(), groups=groups)
+    return Site(
+        title=config.title,
+        base_url=config.base_url,
+        peers=(),
+        groups=groups,
+        photo_tiers=_rendered_tiers(config, FileDerivativeStore(config.output)),
+        show_filenames=config.show_filenames,
+    )
 
 
 @dataclass(frozen=True)
@@ -64,12 +86,21 @@ def run_build(config: GalleryConfig, *, jobs: int = 1) -> BuildSummary:
     job_list = [AssetJob(ref=ref, specs=tuple(specs)) for ref, specs in grouped.items()]
 
     generated = 0
-    for result in generate(processor, job_list, workers=jobs):
+    for result in generate(
+        processor, job_list, workers=jobs, report=report, strict=config.strict
+    ):
         for gen in result.generated:
             store.record(gen.cache_key, gen.derivative)
             generated += 1
 
-    site = Site(title=config.title, base_url=config.base_url, peers=(), groups=groups)
+    site = Site(
+        title=config.title,
+        base_url=config.base_url,
+        peers=(),
+        groups=groups,
+        photo_tiers=_rendered_tiers(config, store),
+        show_filenames=config.show_filenames,
+    )
     Jinja2Renderer().render(site, config.output)
     return BuildSummary(
         generated=generated,

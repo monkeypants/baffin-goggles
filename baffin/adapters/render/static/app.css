@@ -30,6 +30,19 @@ main { padding: 1rem; max-width: 1200px; margin: 0 auto; }
 .timeline-entry img { width: 120px; height: 90px; object-fit: cover; border-radius: 4px; }
 .timeline-count { color: var(--muted); margin-left: auto; }
 
+/* Prev / next navigation between group pages. */
+.group-nav {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--gap);
+  margin: var(--gap) 0;
+}
+.group-nav a { color: inherit; }
+.group-nav-up { color: var(--muted); text-decoration: none; }
+.group-nav-prev { text-align: left; }
+.group-nav-next { text-align: right; margin-left: auto; }
+
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -42,13 +55,109 @@ main { padding: 1rem; max-width: 1200px; margin: 0 auto; }
 .lightbox {
   position: fixed;
   inset: 0;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-rows: auto 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.92);
+  z-index: 100;
+  --lb-fg: #f2f2f2;
+}
+.lightbox[hidden] { display: none; }
+/* Fit (default): scale the image to the window; never scroll. `align-self:
+   stretch` fills the row so Fit uses the whole area. */
+.lb-figure {
+  grid-column: 2;
+  grid-row: 2;
+  margin: 0;
+  align-self: stretch;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
-  background: rgba(0, 0, 0, 0.9);
   cursor: zoom-out;
-  z-index: 100;
 }
-.lightbox[hidden] { display: none; }
-.lightbox img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.lb-figure img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+
+/* Native-size tiers (S / M / Full): show the file at true pixels — centered
+   when it fits, pannable on both axes when it overflows. `safe center` keeps
+   the top-left reachable once the image is bigger than the viewport (plain
+   `center` would push the overflow out of reach). */
+.lb-figure.is-native {
+  display: grid;
+  place-content: safe center;
+  overflow: auto;
+  cursor: grab;
+  touch-action: none;
+}
+.lb-figure.is-native:active { cursor: grabbing; }
+.lb-figure.is-native img {
+  max-width: none;
+  max-height: none;
+  width: auto;
+  height: auto;
+  object-fit: none;
+}
+
+.lb-bar {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--lb-fg);
+}
+.lb-counter { font-variant-numeric: tabular-nums; font-size: 0.9rem; }
+.lb-name { font-size: 0.9rem; opacity: 0.85; margin: 0 auto; }
+
+.lb-foot {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Controls share a quiet, tappable look on the dark backdrop. */
+.lightbox button,
+.lb-download {
+  appearance: none;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--lb-fg);
+  font: inherit;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+}
+.lightbox button:hover,
+.lb-download:hover { background: rgba(255, 255, 255, 0.2); }
+
+.lb-nav {
+  grid-row: 2;
+  font-size: 2rem;
+  line-height: 1;
+  width: 2.6rem;
+  height: 3.2rem;
+  align-self: center;
+}
+.lb-prev { grid-column: 1; }
+.lb-next { grid-column: 3; }
+.lb-close { width: 2.4rem; height: 2.4rem; font-size: 1rem; }
+
+.lb-tiers { display: flex; gap: 0.4rem; }
+.lb-tiers[hidden] { display: none; }
+.lb-tier { min-width: 2.6rem; padding: 0.3rem 0.6rem; }
+.lb-tier.is-active {
+  background: var(--lb-fg);
+  color: #111;
+  border-color: var(--lb-fg);
+}
+.lb-download { padding: 0.35rem 0.7rem; }
+.lb-download[hidden] { display: none; }

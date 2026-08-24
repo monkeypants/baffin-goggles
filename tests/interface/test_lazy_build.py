@@ -1,5 +1,6 @@
-"""The lazy-build promise (see :doc:`/lazy-build`), end to end: a re-run is all
-cache hits, and editing a template rewrites ZERO image bytes."""
+"""The lazy-build promise (see :doc:`/lazy-build`), end to end:
+a re-run is all cache hits,
+and editing a template rewrites ZERO image bytes."""
 
 from pathlib import Path
 

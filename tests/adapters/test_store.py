@@ -61,6 +61,28 @@ def test_delete_removes_file_and_manifest_entry(tmp_path: Path) -> None:
     assert store.snapshot().present == frozenset()
 
 
+def test_present_spec_names_reports_only_tiers_holding_files(tmp_path: Path) -> None:
+    # The renderer asks this to decide what the pages may offer, so an empty or
+    # missing tier directory must not count as available.
+    _write_file(tmp_path, "thumb/a.jpg")
+    _write_file(tmp_path, "full/a.jpg")
+    (tmp_path / "med").mkdir()  # created but never filled
+
+    present = FileDerivativeStore(tmp_path).present_spec_names(
+        ["thumb", "low", "med", "full"]
+    )
+    assert present == frozenset({"thumb", "full"})
+
+
+def test_present_spec_names_follows_files_disappearing(tmp_path: Path) -> None:
+    _write_file(tmp_path, "full/a.jpg")
+    store = FileDerivativeStore(tmp_path)
+    assert store.present_spec_names(["full"]) == frozenset({"full"})
+
+    (tmp_path / "full" / "a.jpg").unlink()  # e.g. reaped by a tmp cleaner
+    assert store.present_spec_names(["full"]) == frozenset()
+
+
 def test_manifest_is_diffable_sorted_json(tmp_path: Path) -> None:
     _write_file(tmp_path, "thumb/b.jpg")
     _write_file(tmp_path, "thumb/a.jpg")

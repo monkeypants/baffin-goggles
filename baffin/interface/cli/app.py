@@ -1,7 +1,7 @@
 """Typer application shell and the doctor command (see :doc:`/cli`).
 
-Each command is a thin translation from argv into a use case; doctor checks the
-system dependencies and reports the resolved configuration.
+Each command is a thin translation from argv into a use case;
+doctor checks the system dependencies and reports the resolved configuration.
 """
 
 from __future__ import annotations
@@ -17,9 +17,15 @@ from typing import Annotated
 import typer
 
 from baffin.adapters.settings import BaffinSettings
+from baffin.application.origin import content_hash_of
 from baffin.interface.cli.meta import meta_app
 from baffin.interface.cli.pipeline import run_build, watch_templates
-from baffin.interface.cli.wiring import build_cleaner, build_scanner, load_config
+from baffin.interface.cli.wiring import (
+    build_cleaner,
+    build_origin_resolver,
+    build_scanner,
+    load_config,
+)
 
 SourceOpt = Annotated[Path | None, typer.Option(help="Source folder of originals.")]
 OutputOpt = Annotated[Path | None, typer.Option(help="Output site directory.")]
@@ -109,6 +115,33 @@ def scan(source: SourceOpt = None, output: OutputOpt = None) -> None:
 
 
 @app.command()
+def origin(
+    items: list[str],
+    source: SourceOpt = None,
+    output: OutputOpt = None,
+) -> None:
+    """Print the original source path for gallery images.
+
+    Accepts content hashes, derivative paths (``full/HASH.jpg``), or pasted
+    image URLs — so you can trace a gallery picture back to the file to open in
+    another tool. Pipe them straight in: ``open -a Hugin $(baffin origin ...)``.
+    """
+    config = load_config(source=source, output=output)
+    index = build_origin_resolver(config).index(config.source)
+    missing = False
+    for item in items:
+        content_hash = content_hash_of(item)
+        path = index.get(content_hash) if content_hash else None
+        if path is not None:
+            typer.echo(path)
+        else:
+            typer.echo(f"no original found for {item!r}", err=True)
+            missing = True
+    if missing:
+        raise typer.Exit(code=1)
+
+
+@app.command()
 def build(
     source: SourceOpt = None,
     output: OutputOpt = None,
@@ -160,13 +193,23 @@ def _serve_directory(directory: Path, host: str, port: int) -> None:  # pragma: 
 def serve(
     source: SourceOpt = None,
     output: OutputOpt = None,
+    full: FullOpt = False,
+    jobs: JobsOpt = 1,
     host: HostOpt = "127.0.0.1",
     port: PortOpt = 8000,
     watch: WatchOpt = False,
 ) -> None:
-    """Build then serve the site locally; --watch re-renders templates."""
-    config = load_config(source=source, output=output)
-    run_build(config)
+    """Build then serve the site locally; --watch re-renders templates.
+
+    ``serve`` rebuilds before serving, so it takes the options that control the
+    rebuild: ``--full`` decides what the pages contain (serving without it would
+    re-render a ``build --full`` site without its download button), and
+    ``--jobs`` decides how fast a cold cache fills.
+    """
+    config = load_config(
+        source=source, output=output, include_full=True if full else None
+    )
+    run_build(config, jobs=jobs)
     if watch:
         threading.Thread(
             target=watch_templates,

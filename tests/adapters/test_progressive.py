@@ -5,7 +5,13 @@ from datetime import datetime
 from pathlib import Path
 
 from baffin.adapters.render.renderer import Jinja2Renderer
-from baffin.domain import Asset, Group, Site, SourceRef
+from baffin.domain import Asset, DerivativeSpec, Group, Site, SourceRef
+
+_SPECS = (
+    DerivativeSpec("thumb", 300, 80),
+    DerivativeSpec("low", 800, 82),
+    DerivativeSpec("med", 1600, 85),
+)
 
 
 def _site() -> Site:
@@ -27,13 +33,30 @@ def _site() -> Site:
         span=(datetime(2025, 7, 12), datetime(2025, 7, 12)),
         assets=assets,
     )
-    return Site(title="Trip", base_url="", peers=(), groups=(group,))
+    return Site(
+        title="Trip", base_url="", peers=(), groups=(group,), photo_tiers=_SPECS
+    )
 
 
 def test_app_js_wires_lightbox_and_keyboard_nav(tmp_path: Path) -> None:
     Jinja2Renderer().render(_site(), tmp_path)
     js = (tmp_path / "assets" / "app.js").read_text()
-    for token in ["keydown", "Escape", "ArrowLeft", "ArrowRight", "preventDefault"]:
+    tokens = [
+        "keydown",
+        "Escape",
+        "ArrowLeft",
+        "ArrowRight",
+        "preventDefault",
+        # on-screen controls layered on top of the keyboard nav
+        "lb-prev",
+        "lb-next",
+        "lb-tier",
+        "download",
+        # native tiers render at 1:1 in a pannable figure
+        "is-native",
+        "pointermove",
+    ]
+    for token in tokens:
         assert token in js, token
 
 

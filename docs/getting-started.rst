@@ -1,15 +1,16 @@
 Getting started
 ===============
 
-Point ``baffin`` at a folder of camera originals; get a chronological static
-gallery you can share as a link. This chapter gets you from checkout to a served
-gallery. For *why* it works this way, read :doc:`rationale`.
+Point ``baffin`` at a folder of camera originals;
+get a chronological static gallery you can share as a link.
+This chapter gets you from checkout to a served gallery.
+For *why* it works this way, read :doc:`rationale`.
 
 System dependencies
 -------------------
 
-baffin leans on a few native libraries that aren't Python packages. Install them
-before ``uv sync``.
+baffin leans on a few native libraries that aren't Python packages.
+Install them before ``uv sync``.
 
 macOS (Homebrew)
 ~~~~~~~~~~~~~~~~~
@@ -19,13 +20,15 @@ macOS (Homebrew)
    brew install vips ffmpeg inih
    brew install plantuml   # only to build the docs
 
-- **vips** (libvips): the default ``pyvips`` thumbnailer. Without it, only the
-  Pillow fallback works.
-- **ffmpeg**: video poster frames and clip copies. Must be on ``PATH``.
-- **inih**: provides ``libINIReader``, which the ``pyexiv2`` wheel's bundled
-  ``libexiv2`` links against on macOS. Without it, ``import pyexiv2`` fails to
-  load its dylib.
-- **plantuml**: renders the architecture diagrams. Only needed for ``make docs``.
+- **vips** (libvips): the default ``pyvips`` thumbnailer.
+  Without it, only the Pillow fallback works.
+- **ffmpeg**: video poster frames and clip copies.
+  Must be on ``PATH``.
+- **inih**: provides ``libINIReader``,
+  which the ``pyexiv2`` wheel's bundled ``libexiv2`` links against on macOS.
+  Without it, ``import pyexiv2`` fails to load its dylib.
+- **plantuml**: renders the architecture diagrams.
+  Only needed for ``make docs``.
 
 Linux (Debian/Ubuntu)
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -34,8 +37,9 @@ Linux (Debian/Ubuntu)
 
    sudo apt-get install -y libvips-dev ffmpeg plantuml
 
-The ``pyexiv2`` manylinux wheel bundles its own libraries, so no ``inih``
-equivalent is needed. This is what CI installs.
+The ``pyexiv2`` manylinux wheel bundles its own libraries,
+so no ``inih`` equivalent is needed.
+This is what CI installs.
 
 First gallery
 -------------
@@ -47,10 +51,29 @@ First gallery
    uv run baffin build --source photos --output site
    uv run baffin serve --source photos --output site --watch
 
-``build`` is lazy: a second run regenerates nothing, and editing a template
-rewrites zero image bytes (:doc:`lazy-build`). ``serve --watch`` re-renders
-templates on change without touching images. Per-image captions are optional
-(:doc:`use-cases`):
+``build`` is lazy:
+a second run regenerates nothing,
+and editing a template rewrites zero image bytes (:doc:`lazy-build`).
+``serve --watch`` re-renders templates on change without touching images.
+
+Put the settings you would otherwise retype into ``baffin.toml``
+(``source``, ``output``, ``include_full``; see :doc:`cli`),
+and the Makefile targets take it from there:
+
+.. code-block:: sh
+
+   make build ARGS="--full --jobs 8"   # any CLI flag via ARGS
+   make serve                          # foreground; dies with the terminal
+   make up                             # login agent: survives crashes and reboots
+   make status                         # is the agent running, and as what pid
+   make down                           # stop and remove it
+
+``make up`` installs a launchd agent (macOS) that runs ``baffin serve`` from the
+repo root with ``RunAtLoad`` and ``KeepAlive``,
+so the gallery comes back by itself after a crash or a restart
+instead of dying with whatever shell started it.
+It logs to ``~/Library/Logs/baffin-gallery.log``.
+Per-image captions are optional (:doc:`use-cases`):
 
 .. code-block:: sh
 
@@ -78,5 +101,5 @@ Resolution order: CLI flag > env var (``BAFFIN_*``) > ``baffin.toml`` > default.
    max_edge = 300
    quality = 80
 
-The CLI suite parses this exact sample, in
-``test_documented_sample_config_parses``. To contribute, see :doc:`contributing`.
+The CLI suite parses this exact sample, in ``test_documented_sample_config_parses``.
+To contribute, see :doc:`contributing`.

@@ -1,8 +1,9 @@
-"""pyvips thumbnailer (see :doc:`/lazy-build`): downscale + auto-orient +
-sharpen, one pass.
+"""pyvips thumbnailer (see :doc:`/lazy-build`):
+downscale + auto-orient + sharpen, one pass.
 
-GPS is stripped from every derivative by default; authored IPTC/XMP is embedded
-afterward. The original is only ever read.
+GPS is stripped from every derivative by default;
+authored IPTC/XMP is embedded afterward.
+The original is only ever read.
 """
 
 from __future__ import annotations
@@ -31,9 +32,10 @@ class VipsThumbnailer:
         dst.parent.mkdir(parents=True, exist_ok=True)
         try:
             if spec.max_edge is None:
-                image = pyvips.Image.new_from_file(
-                    str(src.path), access="sequential"
-                ).autorot()
+                # Random access (the default): autorot() + sharpen() re-read
+                # lines out of order, which a sequential-access source rejects
+                # ("out of order read") on rotated originals.
+                image = pyvips.Image.new_from_file(str(src.path)).autorot()
             else:
                 image = pyvips.Image.thumbnail(
                     str(src.path), spec.max_edge, height=spec.max_edge, size="down"
@@ -55,9 +57,10 @@ class VipsThumbnailer:
 
 
 class PillowThumbnailer:
-    """No-libvips fallback: the same :class:`Thumbnailer` port without the
-    libvips dependency. Never carries source metadata forward, so GPS is dropped
-    by construction; authored IPTC/XMP is re-embedded after."""
+    """No-libvips fallback:
+    the same :class:`Thumbnailer` port without the libvips dependency.
+    Never carries source metadata forward, so GPS is dropped by construction;
+    authored IPTC/XMP is re-embedded after."""
 
     def render(
         self,

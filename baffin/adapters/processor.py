@@ -1,11 +1,12 @@
-"""Per-asset processor composite (see :doc:`/lazy-build`): the process-pool
-submission unit.
+"""Per-asset processor composite (see :doc:`/lazy-build`):
+the process-pool submission unit.
 
-Runs hash -> read -> render for ONE asset and returns its derivatives. It is a
-shell-side composite, not an application port: the core plans, the shell
-executes. Its inputs and outputs are picklable and its adapters are
-re-constructable in a worker (``from_config``), so a ProcessPoolExecutor can fan
-it out.
+Runs hash -> read -> render for ONE asset and returns its derivatives.
+It is a shell-side composite, not an application port:
+the core plans, the shell executes.
+Its inputs and outputs are picklable
+and its adapters are re-constructable in a worker (``from_config``),
+so a ProcessPoolExecutor can fan it out.
 """
 
 from __future__ import annotations

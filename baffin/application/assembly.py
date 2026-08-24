@@ -1,8 +1,8 @@
-"""Shared asset assembly: turn source refs into domain Assets (see
-:doc:`/lazy-build`).
+"""Shared asset assembly: turn source refs into domain Assets (see :doc:`/lazy-build`).
 
-Hashing and metadata reads are the fallible per-asset steps, so they run under
-the skip-and-report guard: a bad file is skipped, not fatal (unless --strict).
+Hashing and metadata reads are the fallible per-asset steps,
+so they run under the skip-and-report guard:
+a bad file is skipped, not fatal (unless --strict).
 """
 
 from __future__ import annotations

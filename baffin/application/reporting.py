@@ -1,9 +1,10 @@
 """Skip-and-report build policy (see :doc:`/use-cases`).
 
-The default build policy is per-asset **skip-and-report**: a port error on one
-asset records the failure and moves on, so one bad file can't sink the whole
-run. ``--strict`` flips it: any port error becomes fatal. Non-port exceptions
-(real bugs) always propagate regardless.
+The default build policy is per-asset **skip-and-report**:
+a port error on one asset records the failure and moves on,
+so one bad file can't sink the whole run.
+``--strict`` flips it: any port error becomes fatal.
+Non-port exceptions (real bugs) always propagate regardless.
 """
 
 from __future__ import annotations
@@ -31,8 +32,8 @@ class BuildReport:
 def per_asset(report: BuildReport, label: str, *, strict: bool) -> Iterator[None]:
     """Guard one asset's work: record and continue, or (strict) re-raise.
 
-    Only :class:`BaffinError` is treated as a skippable port failure; any other
-    exception is a bug and propagates.
+    Only :class:`BaffinError` is treated as a skippable port failure;
+    any other exception is a bug and propagates.
     """
     try:
         yield

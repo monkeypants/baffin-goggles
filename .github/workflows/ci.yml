@@ -1,29 +1,77 @@
 name: CI
 
+# A branch with an open PR would otherwise run everything twice, once for the
+# push and once for the pull_request, producing pairs of identical runs that are
+# impossible to tell apart in the checks list.
 on:
   push:
+    branches: [master]
   pull_request:
 
+# Superseded runs are pointless once a newer commit exists on the same ref.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  check:
+  gate:
+    name: Gate (lint, types, tests, docs) on the pinned toolchain
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install system dependencies
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # libvips and ffmpeg come from the pinned image rather than from whatever
+      # ubuntu-latest ships this month. Derivative cache keys do not include the
+      # toolchain, so a floating libvips changes output bytes without changing a
+      # single key — see the Dockerfile.
+      - name: Build the toolchain image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: baffin-builder:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Record the pinned toolchain
+        run: docker run --rm baffin-builder:ci
+
+      - name: Checks
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libvips-dev ffmpeg plantuml
+          docker run --rm --user "$(id -u):$(id -g)" \
+            -v "$PWD:/work" -w /work baffin-builder:ci make check
+
+      - name: Build docs
+        run: |
+          docker run --rm --user "$(id -u):$(id -g)" \
+            -v "$PWD:/work" -w /work baffin-builder:ci make docs
+
+  browser:
+    name: Browser tests (Playwright chromium)
+    runs-on: ubuntu-latest
+    # Not containerised: `playwright install` fetches the browser build matching
+    # the playwright version in uv.lock, so the browser is already pinned by the
+    # lockfile. An image would save the download, not add determinism.
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Install uv
         uses: astral-sh/setup-uv@v5
 
       - name: Sync dependencies
-        run: uv sync
+        run: uv sync --group e2e
 
-      - name: Run checks
-        run: make check
+      - name: Install the browser
+        run: uv run --group e2e python -m playwright install --with-deps chromium
 
-      - name: Build docs
-        run: make docs
+      # Via the Makefile, so this cannot drift from `make e2e`. It collects only
+      # tests/e2e: pytest imports every module before the marker deselects
+      # anything, and tests/adapters imports pyvips, which this job has no
+      # libvips for.
+      - name: Run browser tests
+        run: make e2e-tests
