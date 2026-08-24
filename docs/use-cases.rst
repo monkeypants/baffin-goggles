@@ -8,26 +8,25 @@ so the use cases test with no I/O:
 :py:class:`~baffin.application.clean.CleanGallery`, and
 :py:class:`~baffin.application.editmeta.EditAssetMeta`.
 
-The build is the exception, and deliberately so.
-Planning stays pure (:py:func:`~baffin.application.planning.plan_derivatives` and
+The build is the exception.
+Planning is pure (:py:func:`~baffin.application.planning.plan_derivatives`,
 :py:func:`~baffin.application.planning.diff_plan`),
-but *executing* the plan is fanned out across a process pool over the
+but executing the plan fans out across a process pool over the
 :py:class:`~baffin.adapters.processor.AssetProcessor` composite,
-so the orchestration lives in the shell as
-:py:func:`~baffin.interface.cli.pipeline.run_build`:
-the core plans, the shell executes.
+so its orchestration lives in the shell as
+:py:func:`~baffin.interface.cli.pipeline.run_build`.
 
 Skip and report
 ---------------
 
-Protocols cannot type their exceptions,
-so the error policy is a prose contract made executable:
+Protocols cannot type their exceptions, so the policy is stated here and
+enforced by tests:
 a port failure on one asset is recorded and skipped so the run continues,
 unless ``--strict`` makes it fatal.
 Real bugs always propagate.
 
-The policy holds on both generation paths, serial and pooled —
-a worker's exception re-raises inside the same guard:
+The policy holds on both generation paths.
+In the pooled one, a worker's exception re-raises inside the same guard:
 
 .. literalinclude:: ../tests/adapters/test_generation.py
    :pyobject: test_generate_skips_and_reports_a_failing_asset

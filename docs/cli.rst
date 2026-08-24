@@ -25,15 +25,14 @@ Nothing in :py:mod:`baffin.interface.cli.app` leaks into the core.
    * - ``baffin doctor``
      - Check libvips/ffmpeg and the resolved config.
 
-``serve`` rebuilds before it serves, so it takes the options that decide what the
-pages contain, not just where to bind.
-``--full`` is the one that matters for correctness: the tier drives both the
-lightbox's **Full** switcher entry and its download button,
-so serving without it would re-render a ``build --full`` gallery without them.
-Put ``include_full = true`` in ``baffin.toml`` to stop depending on the flag.
-``--jobs`` matters for patience —
-a cold cache generates every tier of every photo before the first page is served,
-and both commands default to one worker.
+``serve`` rebuilds before it serves, so it takes the build options too.
+``--full`` affects the output: the tier drives the lightbox's Full switcher
+entry and its download button, so serving without it re-renders a
+``build --full`` gallery without them.
+Set ``include_full = true`` in ``baffin.toml`` rather than relying on the flag.
+``--jobs`` affects only speed;
+both commands default to one worker,
+and a cold cache generates every tier of every photo before the first page is served.
 
 Configuration resolves CLI flag > env var > ``baffin.toml`` > default
 (parsed by :py:class:`~baffin.adapters.settings.BaffinSettings` at the edge,

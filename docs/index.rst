@@ -1,5 +1,5 @@
-baffin
-======
+Baffin Goggles
+==============
 
 Point it at a folder of camera originals;
 get a chronological static gallery you can share as a link.

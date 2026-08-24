@@ -7,7 +7,7 @@ and the doctest builder runs the examples embedded in the functional core.
 
 from __future__ import annotations
 
-project = "baffin"
+project = "Baffin Goggles"
 author = "Chris Gough"
 
 extensions = [
@@ -45,7 +45,7 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "reference/index.rst"]
 
 # --- Theme ---
 html_theme = "furo"
-html_title = "baffin"
+html_title = "Baffin Goggles"
 
 # Where the built docs live, so canonical links resolve to the published site
 # rather than to whatever host served the page (see the Docs workflow).
