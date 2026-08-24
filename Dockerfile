@@ -19,6 +19,13 @@ FROM python@sha256:2c941e860699f878900b0edc2403613c234d4b32eda3cc9fa7036991a2a63
 # libvips-dev      the pyvips thumbnailer
 # ffmpeg           video poster frames and clip copies (must be on PATH)
 # plantuml         renders the architecture diagrams for `make docs`
+# graphviz         plantuml only *Recommends* it, and --no-install-recommends
+#                  drops it — but every diagram except a sequence diagram is
+#                  laid out by `dot`. Without it plantuml still exits 0 and
+#                  still writes an image, containing the words "Cannot find
+#                  Graphviz" instead of the diagram, so -W never fires and a
+#                  broken page publishes green. Homebrew's plantuml pulls
+#                  graphviz in, which is why it only ever failed in the image.
 # make/git         the entry point, and the version metadata hatch reads
 # build-essential  pyvips compiles its cffi API module against libvips headers;
 # pkg-config       there is no prebuilt wheel for every platform, so the
@@ -29,6 +36,7 @@ RUN apt-get update \
         libvips-dev \
         ffmpeg \
         plantuml \
+        graphviz \
         make \
         git \
         build-essential \
