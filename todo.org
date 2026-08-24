@@ -1,257 +1,71 @@
-#+TITLE: baffin — build & test plan
+#+TITLE: baffin — outstanding work
 #+STARTUP: overview
 #+TODO: TODO NEXT | DONE
 #+FILETAGS: :baffin:
 
-# Each leaf headline is ONE atomic commit: it builds green, and it is
-# testable on its own. From the moment Phase 0 lands the GitHub Actions
-# workflow (0.5), every subsequent commit is exercised in CI by `make check`.
+# Only what is yet to be done. Completed work is not recorded here — the
+# history is in git, and the docs are the specification.
 #
 # Convention per leaf:
 #   - "commit:" the imperative summary line (Linux-kernel style, no prefixes)
 #   - "test:"   how the commit proves itself (local + CI)
-# Build order is inside-out (domain -> core -> ports -> adapters -> interface),
-# so the pure, fast-to-test logic exists before any heavy I/O adapter.
 
-* Phase 0 — Scaffolding & CI ratchet
-  The goal of this phase: get the quality gates and GitHub Actions running
-  against a nearly-empty package, so gates are never retrofitted and CI
-  validates every later commit.
-** DONE Add pyproject and package skeleton
-   commit: Add pyproject and empty package skeleton
-   - pyproject.toml: Python 3.12+, project metadata, deps stubs, build backend
-   - baffin/ with domain/ application/ adapters/ interface/cli/ (empty __init__.py)
-   test: `uv run python -c "import baffin"` succeeds; tree imports clean
-** DONE Add ruff + mypy strict config
-   commit: Add ruff and mypy strict configuration
-   - ruff lint + format config, mypy --strict targeting baffin/
-   test: `uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy` all pass on empty tree
-** DONE Add pytest with a smoke test
-   commit: Add pytest configuration and package-import smoke test
-   - tests/ layout, pytest config, markers (manual, wip)
-   - tests/test_smoke.py asserting `import baffin`
-   test: `uv run pytest -m "not manual and not wip"` green (>=1 test)
-** DONE Add import-linter contracts
-   commit: Add import-linter layered and delivery-agnostic contracts
-   - layered contract: domain < application < adapters < interface
-   - independence contract: interface/cli & interface/web unimportable by application/domain
-   test: `uv run lint-imports` passes trivially against skeleton
-** DONE Add Makefile with unified check target
-   commit: Add Makefile check target
-   - check: ruff + ruff format --check + lint-imports + mypy + pytest
-   - placeholder build/serve/clean targets
-   test: `make check` runs all five gates green
-** DONE Add GitHub Actions CI running make check      :MILESTONE:
-   commit: Add GitHub Actions workflow running make check
-   - .github/workflows/ci.yml: checkout, install uv, system libvips + ffmpeg, `make check`
-   - runs on push + pull_request
-   test: workflow goes green on the PR — from here, EVERY commit is CI-tested
+* NEXT Decide whether cache_key includes a toolchain fingerprint
+  The drift is live, not hypothetical: a dev machine renders with Homebrew's
+  libvips (8.18.5) and the pinned image with Debian's (8.16.1), and each
+  reports "all hits" over the other's output, because the key is
+  hash(content_hash + spec) and does not include the toolchain. Identical keys
+  promise identical inputs, not identical bytes.
 
-* Phase 1 — Domain (pure frozen dataclasses)
-  No I/O, no framework imports. Only behaviour here is a cache key.
-** DONE Add core value objects
-   commit: Add domain value objects
-   - AssetKind, SourceRef, CameraInfo, GpsFix, AssetMeta, Derivative, Group, Site, Peer
-   - RawMetadata (raw read: dims/kind/EXIF — distinct from authored AssetMeta)
-   - StoreState (immutable cache snapshot the pure diff consumes)
-   test: unit tests assert frozen/immutability and field shapes; RawMetadata vs AssetMeta kept distinct
-** DONE Add Asset aggregate
-   commit: Add Asset domain type
-   - Asset(ref, content_hash, kind, captured_at, width, height, orientation, camera, gps)
-   test: construction + immutability tests
-** DONE Add DerivativeSpec with cache_key
-   commit: Add DerivativeSpec and content-hash cache key
-   - DerivativeSpec(name, max_edge, quality); cache_key = hash(content_hash + spec)
-   test: cache_key stable across runs, distinct per hash, changes when spec changes
+  Either add a toolchain fingerprint to the key — correct, but every libvips
+  bump then invalidates every derivative — or accept the divergence and treat
+  the container as the only sanctioned way to build a gallery that matters.
+  A cache that can silently mean two things is the same class of defect as a
+  page advertising a tier it does not have.
+  test: two builds of the same source under different libvips versions either
+  disagree on keys (fingerprint) or are documented as unsafe to mix
 
-* Phase 2 — Functional core (pure, the crown jewel)
-  Most of the real logic and most of the tests. Zero images on disk.
-** DONE Add grouping policy type
-   commit: Add grouping policy configuration type
-   - GroupingPolicy(mode, day1_anchor, order) with modes adaptive|day|month|year-month|flat
-   test: construction + defaults
-** DONE Add group_timeline
-   commit: Add chronological grouping over the timeline
-   - adaptive: <=~30 day span -> by-day (trip-day labels); longer -> year->month
-   test: table-driven — day/month boundary, trip-day labelling, ordering, empty input, flat
-** DONE Add plan_derivatives
-   commit: Add derivative planning over assets and specs
-   - pure expansion of (asset x specs) into planned derivative keys
-   test: full plan for N assets x M specs; include_full toggle adds/removes only full tier
-** DONE Add diff_plan producing BuildPlan
-   commit: Add cache diff producing the build plan
-   - diff_plan(plan, store_state: StoreState) -> BuildPlan of HITs vs MISSes
-   - pure over the snapshot; file-existence is pre-checked into StoreState by the shell
-   test: unchanged -> skip; changed spec -> only that tier misses; moved/duplicate bytes -> hit
-** DONE Add url_for portable URL builder
-   commit: Add portable relative URL builder
-   - url_for(...) yields relative in-site links; base_url only for OG/sitemap
-   test: portability across domain root, /baffin/ subpath, and file://
+* TODO Publish the gallery
+  The point of the project, and the last thing not done: it only exists on
+  localhost behind a login agent. The output is deliberately portable static
+  files, so this is an upload, not a port.
 
-* Phase 3 — Application ports & use cases
-  Orchestration over Protocol ports + functional core. Tested with fakes only.
-** DONE Define port contracts and error hierarchy      :PREP:
-   commit: Add port error hierarchy and contract fixtures
-   Closes the §5 under-specifications before any port is implemented:
-   - error types: SourceUnreadable, MetadataUnreadable, DerivativeFailed
-   - build policy contract: skip-and-report per asset; --strict makes fatal
-   - read-seam contract: SourceRef.path is always a readable local handle
-     (v2 lands uploads to a staging tree before discover)
-   - memo owner: Hasher owns the stat->hash memo (injected .baffin/ handle)
-   - cache boundary: DerivativeStore.snapshot() -> StoreState feeds pure diff_plan
-   test: error hierarchy importable; a contract test module encodes skip-vs-strict
-** DONE Add Protocol ports
-   commit: Add application port protocols
-   - AssetRepository, MetadataReader (-> RawMetadata), SidecarStore, Hasher,
-     Thumbnailer, VideoProcessor, DerivativeStore (snapshot/record/orphans), SiteRenderer
-   - source-side identity is SourceRef; output side is Path
-   test: mypy structural conformance; in-memory fakes implement each port
-** DONE Add in-memory fake adapters for tests
-   commit: Add in-memory fakes for the ports
-   - test doubles: fake repo, hasher, store, renderer, thumbnailer, sidecar store
-   test: fakes satisfy the Protocols (mypy) and back the use-case tests below
-** DONE Add ScanGallery use case
-   commit: Add ScanGallery dry-run use case
-   - scan -> plan -> diff; report model + HIT/MISS plan, no generation
-   test: against fakes — correct plan and counts, no side effects
-** DONE Add BuildGallery use case
-   commit: Add BuildGallery use case
-   - scan -> hash -> read meta -> model -> group -> plan -> diff -> generate MISSES -> render
-   test: against fakes — only misses generated; render always invoked; manifest recorded
-** DONE Add CleanGallery use case
-   commit: Add CleanGallery use case
-   - prune orphaned derivatives / stale manifest entries; --all wipes cache
-   test: against fakes — orphans identified and removed; live keys retained
-** DONE Add EditAssetMeta use case
-   commit: Add EditAssetMeta use case
-   - read -> merge -> write one asset's sidecar; never touches image bytes
-   test: against fakes — merge semantics; only sidecar store written
+  S3 costs roughly AUD 0.25/month at friends-and-family traffic, essentially
+  all of it storing the full tier. Decide whether the audience needs
+  original-resolution downloads before uploading 6GB of them; without that
+  tier the bill is about a cent.
+  test: the published URL serves every referenced derivative, and the lightbox
+  download button works from the public site
 
-* Phase 4 — Adapters (imperative shell)
-  Slow / I/O-bound. Focused integration tests with tiny fixture images in temp trees.
-** DONE Add XxHasher with stat->hash memo
-   commit: Add xxhash file hasher with stat memo
-   - hash_file + (path,size,mtime_ns)->hash memo prefilter
-   test: memo hit on unchanged stat; re-hash on changed stat; hash matches bytes
-** DONE Add FsAssetRepository
-   commit: Add filesystem read-only asset repository
-   - discover JPEG/MP4/MOV under source root
-   test: discovery of fixtures; INVARIANT — source tree byte-for-byte unchanged after run
-** DONE Add ExifMetadataReader
-   commit: Add EXIF metadata reader
-   - captured_at (DateTimeOriginal, fallback mtime), dims, orientation, camera, gps, kind
-   test: reads fixture EXIF; mtime fallback when DateTimeOriginal absent
-** DONE Add VipsThumbnailer
-   commit: Add pyvips thumbnailer
-   - downscale + auto-orient + sharpen one pass; strip_gps; optional IPTC/XMP embed
-   test: output dims/quality; INVARIANT — GPS absent in output; original untouched
-** DONE Add PillowThumbnailer fallback
-   commit: Add Pillow thumbnailer fallback
-   - same Thumbnailer Protocol, no libvips
-   test: parity on dims + GPS-strip against a shared thumbnailer test suite
-** DONE Add FileDerivativeStore with JSON manifest
-   commit: Add file derivative store and JSON manifest
-   - snapshot() -> StoreState (manifest read + file-existence check), record, orphans
-   - .baffin/manifest.json
-   test: real HIT/MISS across two runs; snapshot omits keys whose file is missing; orphan detection; diffable manifest
-** DONE Add MarkdownSidecarStore
-   commit: Add markdown sidecar store
-   - read/write meta/ tree mirroring source; YAML front-matter + caption body
-   test: round-trip; template creation when absent; writes only sidecars
-** DONE Add FfmpegVideo processor
-   commit: Add ffmpeg video processor
-   - poster (mid-frame) + copy clip; strip_gps on copy
-   test: poster/<hash>.jpg produced; clip copied; original untouched
-** DONE Add Jinja2Renderer
-   commit: Add Jinja2 site renderer
-   - index timeline + per-group pages + sitemap.xml; copy app.css/app.js verbatim
-   test: HTML complete and navigable with NO JS (wget/lynx crawl); relative in-site links
-** DONE Add progressive-enhancement JS layer
-   commit: Add lightbox and keyboard navigation enhancement
-   - app.js adds lightbox + <-/->/Esc + lazy-load; JS-off breaks nothing
-   test: HTML unchanged in function without JS; srcset present across thumb/low/med
+* TODO Give serve --force, or split serve from build
+  --force is the last build option serve cannot express. If it does get added,
+  the composition is the thing to fix rather than the flag list: serve does two
+  jobs, which is why it keeps attracting build's flags. The alternative is a
+  serve that only serves, and explicit composition at the shell.
+  test: whichever way it goes, the parity test in
+  tests/interface/test_rebuild_option_plumbing.py encodes the decision
 
-* Phase 5 — Configuration & CLI wiring
-** DONE Add Pydantic Settings for baffin.toml
-   commit: Add configuration model and loader
-   - Pydantic Settings parsed at edge, handed inward as plain config
-   - resolution order: CLI flag > env var > baffin.toml > default
-   test: parse sample baffin.toml; validation errors; precedence
-** DONE Add CLI app shell and doctor
-   commit: Add Typer app and doctor command
-   - baffin doctor: verify libvips/ffmpeg presence+versions and config sanity
-   test: doctor reports deps; exits nonzero on missing dep (mocked)
-** DONE Add scan command
-   commit: Add scan CLI command
-   - assembles adapters, invokes ScanGallery, prints HIT/MISS plan
-   test: CLI runner over fixtures reports expected plan
-** DONE Add build command
-   commit: Add build CLI command
-   - --force, --jobs N, --source, --output, --full
-   test: fixtures -> build -> assert site layout (§6)
-** DONE Add lazy-build end-to-end proof              :MILESTONE:
-   commit: Add lazy-build end-to-end test
-   - build; re-run asserts ALL cache hits; edit a template asserts ZERO image bytes rewritten
-   test: the §8 promise, verified end to end in CI
-** DONE Add AssetProcessor per-asset composite
-   commit: Add per-asset processor composite
-   - shell-side composite: hash -> read -> render for one asset; NOT a port
-   - picklable inputs/outputs; adapters re-constructable in a worker
-   test: serial composite produces expected Derivatives; picklability of args/results asserted
-** DONE Add parallel generation over process pool
-   commit: Add process-pool generation of misses
-   - ProcessPoolExecutor over AssetProcessor, workers ~ CPU, VIPS_CONCURRENCY=1 per worker
-   test: parallel vs serial produce identical output; --jobs honoured
-** DONE Add clean command
-   commit: Add clean CLI command
-   - prune orphans; --all wipes cache
-   test: orphans removed after include_full toggled off; --all empties cache
-** DONE Add meta command group
-   commit: Add meta CLI commands
-   - meta show / edit ($EDITOR) / set (--title/--caption/--credit/--alt, --all bulk)
-   test: set writes sidecar; show reads it; originals untouched
-** DONE Add serve command with watch
-   commit: Add serve CLI command with template watch
-   - serve output/ locally; --watch re-renders templates on change
-   test: serves site; template change triggers re-render, not image regen
+* TODO Add a Linux equivalent of the login agent
+  `make up` installs a launchd agent, so it is macOS only, and nothing outside
+  the script's comments says so. A systemd user unit is the counterpart. Worth
+  doing when something actually runs this on Linux — the container is the more
+  portable answer for anything that is not a laptop.
+  test: the unit survives a restart of the user session
 
-* Phase 6 — Docs as a literate, test-driven spec
-  Re-planned: autodoc of code + tests, with doctests as the runnable examples,
-  should make SPEC.md's mechanical half redundant. Tests are the medium.
-** DONE Tidy tests for living documentation
-   commit: Tidy tests for use as living documentation
-   - one canonical an_asset() builder (baffin/testing/builders.py); kill dupes
-   - rule-flavoured test names; module docstrings as chapter intros
-   - name assemble_assets with its own spec test (skip-vs-strict at that seam)
-   test: make check green; the pure-layer tests share one cosmology
-** DONE Add doctests to the functional core
-   commit: Add doctests to the functional core
-   - runnable >>> examples on cache_key, url_for, group_timeline,
-     plan_derivatives, diff_plan
-   - make check gains `pytest --doctest-modules baffin`
-   test: doctests pass under make check
-** DONE Add Sphinx skeleton with AutoAPI and doctest
-   commit: Add Sphinx docs build
-   - docs/ + conf.py: AutoAPI over baffin + tests, MyST, Napoleon, doctest
-   - -W + nitpicky; nitpick_ignore for Literal aliases (AssetKind, SpecName,
-     GroupMode, Order); docs dep group; make docs
-   test: `make docs` green with -W
-** DONE Add PlantUML architecture diagrams
-   commit: Add PlantUML architecture diagrams
-   - install plantuml; sphinxcontrib-plantuml wired
-   - layered dependency rule (== import-linter contract), ports/adapters/fakes
-     seam, the lazy-build sequence (§8)
-   test: make docs renders the diagrams
-** DONE Add narrative chapters and eat the spec
-   commit: Add narrative docs chapters and trim the spec
-   - authored chapters weaving prose + autodoc + featured tests/doctests
-   - SPEC.md trimmed to the "why": vision, principles, privacy, roadmap, decisions
-   test: make docs green; SPEC's mechanical sections are gone, cross-linked
-** DONE Add README and quickstart
-   commit: Add README and quickstart
-   - install (brew deps), doctor, build, serve; sample baffin.toml
-   test: documented commands run against the fixture set
-** DONE Wire docs build into CI
-   commit: Wire docs build into CI
-   - ci.yml installs plantuml; builds docs with -W on API/docstring/docs changes
-   test: workflow YAML valid; make docs green locally
+* TODO Declare a licence in pyproject.toml
+  The repository carries GPL-3.0, which arrived with the GitHub repo rather
+  than by decision here, and pyproject declares no licence at all. Make the
+  two agree, deliberately.
+  test: make docs stays green (a licence classifier is a metadata change)
+
+* TODO Verify the login agent survives a reboot
+  Crash recovery is verified — the process was killed and launchd respawned it,
+  still serving. RunAtLoad is not. It costs one reboot to know.
+  test: reboot; the gallery answers on its port with no intervention
+
+* TODO Shrink the toolchain image
+  ~3.2GB, mostly plantuml's JRE and the compilers pyvips needs to build its
+  cffi module. Splitting the docs build out of the gate image, or a multi-stage
+  build that leaves the compilers behind, would cut most of it. Only worth it
+  if the CI cache stops absorbing the cost.
+  test: make check-docker and the CI gate stay green on the smaller image
