@@ -5,8 +5,7 @@ Generated from the source and the test suite;
 nothing here is written by hand.
 
 The package's public surface is the tree below, grouped by layer (:doc:`architecture`).
-The **test suite is the specification**.
-Its curated examples appear inline in the chapters as doctests and ``literalinclude``\ s;
+Curated examples from the test suite appear inline in the chapters as doctests and ``literalinclude``\ s;
 the full suite is browsable here, under its own heading rather than mixed into the API.
 
 .. toctree::
@@ -16,7 +15,7 @@ the full suite is browsable here, under its own heading rather than mixed into t
    reference/baffin/index
 
 .. toctree::
-   :caption: Test suite (the specification)
+   :caption: Test suite
    :maxdepth: 1
    :glob:
 

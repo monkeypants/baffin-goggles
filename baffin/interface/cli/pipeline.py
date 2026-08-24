@@ -28,10 +28,9 @@ def _rendered_tiers(
 ) -> tuple[DerivativeSpec, ...]:
     """The tiers the pages may offer: those the output actually holds.
 
-    ``include_full`` decides what gets *generated*; the derivatives on disk
-    decide what gets *advertised*. Keeping those separate is what stops a
-    rebuild under a quieter config from retracting a tier whose files are still
-    sitting there — the bug that cost a published gallery its download button.
+    ``include_full`` decides what is generated; the derivatives on disk decide
+    what is advertised. A rebuild under a narrower config therefore does not
+    retract a tier whose files remain on disk.
     """
     return config.offerable_tiers(
         store.present_spec_names(spec.name for spec in config.specs)

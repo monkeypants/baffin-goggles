@@ -2,7 +2,7 @@
 
 Every port is a :class:`typing.Protocol`, structural,
 so adapters and fakes conform without inheritance.
-The identity currency is :class:`SourceRef` on the source side
+Identity is :class:`SourceRef` on the source side
 and :class:`~pathlib.Path` on the output side.
 """
 
@@ -91,6 +91,6 @@ class DerivativeStore(Protocol):
 
 
 class SiteRenderer(Protocol):
-    """Jinja2 -> HTML/CSS/JS. Always runs; cheap."""
+    """Jinja2 -> HTML/CSS/JS. Always runs."""
 
     def render(self, site: Site, out: Path) -> None: ...

@@ -59,7 +59,7 @@ class VipsThumbnailer:
 class PillowThumbnailer:
     """No-libvips fallback:
     the same :class:`Thumbnailer` port without the libvips dependency.
-    Never carries source metadata forward, so GPS is dropped by construction;
+    Never carries source metadata forward, so GPS is dropped;
     authored IPTC/XMP is re-embedded after."""
 
     def render(

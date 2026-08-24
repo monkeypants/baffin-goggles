@@ -12,11 +12,11 @@ uv run baffin build --source photos --output site
 ```
 
 Native prerequisites (libvips, ffmpeg, and inih on macOS) and the full
-walkthrough are in the **Getting started** chapter of the docs.
+walkthrough are in the Getting started chapter of the docs.
 
 ## Docs
 
-The docs are the specification, generated from the code and its test suite.
+The docs are generated from the code and its test suite.
 They are published from `master` to
 <https://monkeypants.github.io/baffin-goggles/> by the `Docs` workflow, built
 with the same pinned toolchain as the tests.

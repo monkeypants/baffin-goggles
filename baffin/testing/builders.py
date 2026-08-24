@@ -1,10 +1,7 @@
-"""Canonical builders for the test cosmology.
+"""Builders for test fixtures.
 
-One place to meet an :class:`~baffin.domain.Asset`:
-a photo from the Akshayuk Pass trip, captured 14 Jul 2025,
-whose content hash is its tag.
-Tests vary only what they care about via keyword overrides,
-so the same world recurs everywhere.
+``an_asset`` returns a photo captured 14 Jul 2025 whose content hash is its tag.
+Tests override only the fields they care about.
 """
 
 from __future__ import annotations

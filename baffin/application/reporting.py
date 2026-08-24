@@ -1,8 +1,8 @@
 """Skip-and-report build policy (see :doc:`/use-cases`).
 
-The default build policy is per-asset **skip-and-report**:
+The default build policy is per-asset skip-and-report:
 a port error on one asset records the failure and moves on,
-so one bad file can't sink the whole run.
+so the run continues.
 ``--strict`` flips it: any port error becomes fatal.
 Non-port exceptions (real bugs) always propagate regardless.
 """

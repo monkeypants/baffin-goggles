@@ -1,6 +1,6 @@
 // Progressive enhancement: a lightbox with a resolution switcher, panning, and
 // keyboard navigation. With JS off, every thumbnail is already a plain link to
-// a real image, so nothing here is load-bearing — this only upgrades things.
+// a real image; this layer only adds to that.
 //
 // Display model: the box opens in "Fit" (image scaled to the window, no
 // scroll). The switcher offers Fit plus each built tier (S / M / Full);

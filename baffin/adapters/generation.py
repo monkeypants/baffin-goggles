@@ -3,7 +3,7 @@
 The pool fans out the coarse per-asset ``AssetProcessor`` unit,
 pinning libvips to one thread per worker to avoid CPU oversubscription.
 Each asset runs under the skip-and-report guard,
-so one failed derivative is recorded and skipped rather than sinking the whole run
+so one failed derivative is recorded and skipped and the run continues
 (unless ``--strict``, which makes any failure fatal).
 """
 
@@ -20,11 +20,11 @@ from baffin.application.reporting import BuildReport, per_asset
 #
 # libvips initialises a thread pool on import, and forking a process that holds
 # one deadlocks the child on locks whose owning threads did not survive the
-# fork. Python's default hides this: macOS has defaulted to spawn since 3.8, so
-# a pooled build works there and hangs on Linux, where fork is still the default
-# through 3.13. Spawn also makes ``_init_worker`` mean something — under fork,
-# libvips is already initialised in the parent, so setting VIPS_CONCURRENCY in
-# the child is too late to pin it to one thread.
+# fork. The platform default differs: macOS spawns (since 3.8), Linux forks
+# (through 3.13), so a pooled build works on one and hangs on the other.
+# Spawn is also what makes _init_worker effective: under fork, libvips is
+# already initialised in the parent, so setting VIPS_CONCURRENCY in the child
+# is too late to pin it to one thread.
 _SPAWN = multiprocessing.get_context("spawn")
 
 

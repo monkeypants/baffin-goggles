@@ -1,157 +1,145 @@
 Rationale & decisions
 =====================
 
-*Point it at a folder of camera originals;
+Point it at a folder of camera originals;
 get a chronological static gallery you can share as a link.
-It never edits your photos, and needs no curation.*
+It never edits your photos, and needs no curation.
 
 Named for the Akshayuk Pass traverse on Baffin Island,
 where the driving photo collection was made.
 
-This chapter keeps only the *why*:
-vision, principles, privacy, roadmap, and decisions of record.
-The *what/how* (the domain model, the ports, the build flow, the CLI) is the rest of these docs,
+This chapter records why the design is what it is:
+vision, scope, principles, privacy, roadmap, and decisions of record.
+The domain model, ports, build flow and CLI are covered by the other chapters,
 generated from the code and its tests.
-The specification's original section numbers are kept here as headings for provenance;
-code and tests no longer cite them,
-and docstrings cross-reference the owning chapter directly (e.g. :doc:`lazy-build`).
-The gaps (§4–13, §16–18) are the sections now owned by the narrative chapters and the API reference:
-
-- §4 domain model → :doc:`domain`
-- §5 architecture & ports → :doc:`architecture`, :doc:`use-cases`
-- §6–10 layout, derivatives, lazy build, grouping, rendering → :doc:`functional-core`, :doc:`lazy-build`
-- §11–13 config, CLI, sidecars → :doc:`cli`, :doc:`use-cases`
-- §16–18 dependencies, testing, Makefile → the README and the test suite itself
 
 .. _rationale-vision:
 
-1. Vision
----------
+Vision
+------
 
-``baffin`` is the **raw-dump publisher**:
-it turns a folder of camera originals into a **static website**
-— thumbnails and multiple resolutions, organised chronologically —
-generated **lazily** so the expensive image work happens once
-and template/HTML iteration is effectively free.
-Then you share the link.
+``baffin`` turns a folder of camera originals into a static website:
+thumbnails and several resolutions, organised chronologically,
+generated lazily so the image work happens once
+and HTML iteration is cheap.
 
-It deliberately does **one** job (publish a gallery) and does not curate, caption for you, sequence a narrative, or produce a book.
-Those are separate concerns for separate tools.
+It does one job, publishing a gallery.
+It does not curate, caption, sequence a narrative, or produce a book.
+Those are separate tools.
 
-The reason it's built on clean architecture is concrete, not aspirational:
-**one application core, two delivery mechanisms.**
+The layering exists for one reason: one application core, two delivery mechanisms.
 
-- **v1 — CLI** (``baffin …``, Typer).
-  For the technical user, now.
-- **v2 — FastAPI web UI.**
-  Upload photos in a browser, generate + host the gallery, get a link
-  — so travel companions who won't touch a Python CLI can use the exact same core.
+- v1 — CLI (``baffin …``, Typer), for the technical user.
+- v2 — FastAPI web UI: upload photos in a browser, generate and host the gallery,
+  return a link, so travel companions who will not use a Python CLI
+  can drive the same core.
 
-Both are thin adapters over the same use cases.
-Designing the core to be delivery-agnostic from day one is what makes the web UI an *addition*, not a rewrite
-— and is the entire justification for the layering.
+Both are thin adapters over the same use cases,
+so v2 is a new ``interface/`` package rather than a second application.
 
 .. _rationale-scope:
 
-2. Scope
---------
+Scope
+-----
 
 In scope — v1 (CLI)
 ~~~~~~~~~~~~~~~~~~~~
 
-- Read-only ingest of a source tree of **JPEG** photos and **MP4/MOV** videos.
+- Read-only ingest of a source tree of JPEG photos and MP4/MOV videos.
 - Lazy generation of JPEG derivatives: ``thumb``, ``low``, ``med``, ``full``.
-- Video: extract a poster frame + copy the clip (no transcode yet).
-- **Adaptive** chronological grouping (per-day for short spans, Year→Month for long archives), overridable in config.
-- Jinja2-rendered static HTML/CSS, portable relative URLs, social/OpenGraph + sitemap using a configured ``base_url``.
-- Progressive enhancement:
-  complete, navigable HTML with **no JS**;
-  a tiny vanilla-JS layer adds a lightbox + keyboard nav when available.
-- Content-hash-based lazy rebuild that never regenerates unchanged derivatives.
-- Typer CLI + Makefile.
-- **Optional** per-image metadata sidecars — never required — both **read and authored** via ``baffin meta``.
-  Authoring writes sidecars only, never the originals.
+- Video: extract a poster frame and copy the clip (no transcode).
+- Adaptive chronological grouping (per-day for short spans, Year→Month for long
+  archives), overridable in config.
+- Jinja2-rendered static HTML/CSS, portable relative URLs,
+  OpenGraph tags and a sitemap from a configured ``base_url``.
+- Complete, navigable HTML with no JavaScript;
+  a small vanilla-JS layer adds a lightbox and keyboard navigation when available.
+- Content-hash-based rebuild that never regenerates unchanged derivatives.
+- Typer CLI and Makefile.
+- Optional per-image metadata sidecars, read and authored via ``baffin meta``.
+  Authoring writes sidecars only.
 
 Reserved — v2 (FastAPI web UI), designed for but not built
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - Browser upload of photos into a server-managed source store.
-- Trigger a build and host the resulting static gallery;
-  return a shareable link.
-- A **graphical** authoring surface over the *same* ``EditAssetMeta`` use case the v1 CLI already exposes
-  — a friendlier front-end, not a new capability.
-- Multi-user / accounts / auth — flagged as a real question, not solved here.
+- Trigger a build, host the resulting static gallery, return a shareable link.
+- A graphical authoring surface over the same ``EditAssetMeta`` use case
+  the v1 CLI exposes.
+- Multi-user, accounts and auth: an open question, not solved here.
 
-Explicitly out of scope
+Out of scope
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- **Narrative / story composition** (sequencing photos into prose)
-  — a separate downstream tool, never baffin.
-- Print / PDF / coffee-table book.
+- Narrative composition (sequencing photos into prose): a downstream tool.
+- Print, PDF, coffee-table book.
 - Any mutation or curation of the originals.
-- RAW ``.ARW`` ingest, video transcoding, GPS maps
-  — named extension points, off by default.
+- RAW ``.ARW`` ingest, video transcoding, GPS maps:
+  extension points, off by default.
 
 .. _rationale-principles:
 
-3. Principles & invariants
---------------------------
+Principles & invariants
+-----------------------
 
 1. **The application core is delivery-agnostic.**
    It knows nothing about a terminal or HTTP.
    CLI and web are interchangeable adapters over the same use cases.
-   This is the load-bearing principle.
 2. **Originals are immutable; sidecars are a separate annotation layer.**
-   baffin never modifies, moves, renames, or deletes the image/video **originals**
-   — and by default never writes into the source tree at all.
+   baffin never modifies, moves, renames or deletes the originals,
+   and by default never writes into the source tree at all.
    Per-image metadata lives in a separate ``meta/`` tree;
-   creating/updating a ``.md`` sidecar there never touches a photo's bytes.
-   (In v2, "source" is the uploaded set, still immutable once landed.)
+   writing a ``.md`` sidecar there never touches a photo's bytes.
+   In v2, "source" is the uploaded set, still immutable once landed.
 3. **Originals are never mutated, even for privacy.**
-   GPS stripping and IPTC embedding happen only on *derivative copies* in the output dir.
-4. **Every published tier is a derivative**, including ``full``
-   — default GPS-stripping makes ``full`` a *scrubbed copy*, not the literal original.
+   GPS stripping and IPTC embedding happen on derivative copies in the output
+   directory.
+4. **Every published tier is a derivative**, including ``full``.
+   Default GPS-stripping makes ``full`` a scrubbed copy rather than the
+   literal original.
 5. **Derivatives are expensive and cached; HTML is cheap and always re-rendered.**
-   The core of the lazy-build promise:
-   editing a template touches zero image bytes.
+   Editing a template touches zero image bytes.
 6. **Words in, metadata out.**
-   Optional human-authored sidecars are the source of truth for per-image text (editable, git-diffable).
-   The build *writes* that text into output JPEG IPTC/XMP so shared files are self-describing
-   — it never treats generated artifacts as the source of truth.
+   Optional human-authored sidecars are the source of truth for per-image text,
+   editable and git-diffable.
+   The build writes that text into the output JPEG's IPTC/XMP so shared files
+   are self-describing, and never reads generated artifacts back as source.
 7. **Framework-free core.**
-   Domain = plain dataclasses.
-   Seams = ``typing.Protocol``.
-   Pydantic only at I/O edges (config, sidecar parsing, manifest records, and later the web request/response DTOs).
-   Not every layer needs serialisation.
+   Domain is plain dataclasses, seams are ``typing.Protocol``,
+   and Pydantic appears only at I/O edges:
+   config, sidecar parsing, manifest records, and later the web DTOs.
 8. **Functional core, imperative shell.**
-   Planning, grouping, URL building, and cache-diffing are pure functions over the model.
-   All I/O (filesystem, pyvips, ffmpeg, hashing, Jinja writes, HTTP) lives in adapters at the edge.
+   Planning, grouping, URL building and cache-diffing are pure functions over
+   the model.
+   All I/O (filesystem, pyvips, ffmpeg, hashing, Jinja writes, HTTP) lives in
+   adapters at the edge.
 
 .. _rationale-privacy:
 
-14. Privacy / EXIF
-------------------
+Privacy / EXIF
+--------------
 
-- ``captured_at`` and optional camera settings read from originals.
-- **GPS stripped from all derivatives by default** (``strip_gps = true``);
-  ``full`` is therefore a scrubbed re-write, never the literal original.
-- Retaining GPS + rendering a route/pin map is an opt-in future extension
-  — off by default because these are shared publicly.
+- ``captured_at`` and optional camera settings are read from the originals.
+- GPS is stripped from all derivatives by default (``strip_gps = true``),
+  so ``full`` is a scrubbed re-write rather than the literal original.
+- Retaining GPS and rendering a route map is an opt-in extension,
+  off by default because galleries are shared publicly.
 
 .. _rationale-peers:
 
-15. Peers / cross-linking (reserved)
-------------------------------------
+Peers / cross-linking (reserved)
+--------------------------------
 
-``[[peers]]`` renders a "fellow travellers" nav of absolute links to other people's galleries.
-It only becomes meaningful once more than one person is publishing
-— i.e. once the **v2 web UI** lets non-CLI users generate their own galleries.
-The field is reserved now so v1 output can link out by hand in the meantime.
+``[[peers]]`` renders a "fellow travellers" nav of absolute links to other
+people's galleries.
+It becomes useful once more than one person is publishing,
+which in practice means once the v2 web UI lets non-CLI users generate galleries.
+The field is reserved now so v1 output can link out by hand.
 
 .. _rationale-roadmap:
 
-19. Roadmap
------------
+Roadmap
+-------
 
 .. list-table::
    :header-rows: 1
@@ -160,48 +148,55 @@ The field is reserved now so v1 output can link out by hand in the meantime.
      - Adds
      - Seam it plugs into
    * - v1
-     - CLI raw-dump gallery, lazy build, optional sidecars **read + authored** (``baffin meta``)
+     - CLI raw-dump gallery, lazy build, optional sidecars read and authored (``baffin meta``)
      - ``EditAssetMeta`` + ``SidecarStore``
    * - v2
-     - **FastAPI web UI**: browser upload → generate → host → link; **graphical** metadata authoring over the same ``EditAssetMeta``
+     - FastAPI web UI: browser upload → generate → host → link; graphical metadata authoring over the same ``EditAssetMeta``
      - new ``interface/web`` + ``UploadAssetRepository``; same use cases
    * - later
      - RAW ``.ARW``, video transcode, GPS map
      - ``MetadataReader``, ``VideoProcessor``, config flags
 
-Everything additive: a new adapter or a config flag, never a core rewrite.
-The whole reason for the layering is that v2's web UI is a new ``interface/``, not a second application.
+Each phase adds an adapter or a config flag; none requires a core change.
 
 .. _rationale-decisions:
 
-20. Decisions of record & open questions
-----------------------------------------
+Decisions of record & open questions
+------------------------------------
 
-**Decided:**
+Decided:
 
-- **Manifest:** flat ``manifest.json`` (diffable, zero-dep;
-  SQLite only if v2 brings concurrent writers — a ``DerivativeStore`` swap).
-- **EXIF/metadata:** ``pyexiv2`` (in-process, wheels bundle libexiv2) for read + write;
-  exiftool-subprocess kept as a fallback adapter behind the port.
+- **Manifest:** flat ``manifest.json``, diffable and zero-dependency.
+  SQLite only if v2 brings concurrent writers, which is a ``DerivativeStore`` swap.
+- **EXIF/metadata:** ``pyexiv2`` (in-process; wheels bundle libexiv2) for read
+  and write, with an exiftool-subprocess fallback adapter behind the port.
 - **``full`` tier:** opt-in per build (``include_full``, default off).
-- **Parallelism:** process pool over assets, ``VIPS_CONCURRENCY=1`` per worker.
-- **Sidecar location:** separate ``meta/`` tree by default (source stays pristine);
-  co-location beside originals configurable.
-- **Read seam:** ``SourceRef.path`` is always a readable local handle;
-  v2 lands uploads to a local staging tree before discovery rather than introducing a stream/object-store port.
-  Landing is the adapter's job;
-  reading is uniform.
-- **Cache-state boundary:** ``DerivativeStore.snapshot() -> StoreState`` (manifest read + existence check) feeds the pure ``diff_plan``;
-  no per-key ``is_current`` I/O interleaves with planning.
-- **Stat→hash memo owner:** the ``Hasher`` adapter, injected with a ``.baffin/`` memo handle
-  — not a separate port.
-- **Per-asset unit:** an ``AssetProcessor`` shell-side composite (not a port) is the process-pool submission unit;
-  adapters must be picklable / worker-constructable.
-- **Port DTO:** ``MetadataReader`` returns ``RawMetadata`` (raw read: dims/kind/EXIF),
+- **Parallelism:** process pool over assets, ``VIPS_CONCURRENCY=1`` per worker,
+  workers started by spawn rather than fork
+  (forking an initialised libvips deadlocks).
+- **Sidecar location:** a separate ``meta/`` tree by default,
+  leaving the source untouched; co-location beside the originals is configurable.
+- **Read seam:** ``SourceRef.path`` is always a readable local handle.
+  v2 lands uploads to a local staging tree before discovery
+  instead of introducing a stream or object-store port:
+  landing is the adapter's job, reading is uniform.
+- **Cache-state boundary:** ``DerivativeStore.snapshot() -> StoreState``
+  (manifest read plus existence check) feeds the pure ``diff_plan``,
+  so no per-key I/O interleaves with planning.
+- **Stat→hash memo owner:** the ``Hasher`` adapter, injected with a ``.baffin/``
+  memo handle, rather than a separate port.
+- **Per-asset unit:** an ``AssetProcessor`` shell-side composite, not a port,
+  is the process-pool submission unit;
+  its adapters must be picklable and constructable in a worker.
+- **Port DTO:** ``MetadataReader`` returns ``RawMetadata`` (dims, kind, EXIF),
   distinct from the authored ``AssetMeta`` sidecar.
+- **Toolchain:** libvips and ffmpeg are pinned in ``Dockerfile`` for CI,
+  because a derivative's cache key does not include them
+  (see :doc:`contributing`).
 
-**Deferred (not a blocker for v1):**
+Deferred:
 
-1. **v2 auth / multi-user** — explicitly not being decided now.
-   When v2 is real, choose single-tenant (one deploy per person, share links) vs accounts;
-   keeping the web layer a thin adapter preserves both options at zero cost today.
+- **v2 auth and multi-user.**
+  When v2 is real, choose between single-tenant (one deploy per person, shared
+  links) and accounts.
+  Keeping the web layer a thin adapter preserves both options.

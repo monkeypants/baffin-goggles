@@ -1,7 +1,7 @@
 """File derivative store + JSON manifest (see :doc:`/lazy-build`).
 
 The manifest (``.baffin/manifest.json``) maps cache key → derivative record.
-``snapshot`` reads it AND pre-checks that each file still exists on disk,
+``snapshot`` reads it and pre-checks that each file still exists on disk,
 so the pure ``diff_plan`` gets a truthful :class:`StoreState` and never does I/O itself.
 """
 
@@ -57,10 +57,9 @@ class FileDerivativeStore:
     def present_spec_names(self, names: Iterable[str]) -> frozenset[str]:
         """Which of ``names`` the output actually holds derivatives for.
 
-        The renderer needs this because a tier is only offerable once its files
-        exist. Deriving it from the build flag instead is what let a ``serve``
-        without ``--full`` re-render a ``build --full`` gallery into one whose
-        download button was gone while every full-size file was still on disk.
+        A tier is offerable only once its files exist, which the build flag
+        does not track: derivatives from ``build --full`` stay on disk across a
+        later ``serve`` without it.
         """
         return frozenset(
             name

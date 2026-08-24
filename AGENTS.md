@@ -1,16 +1,15 @@
 # AGENTS.md
 
-Orientation for coding agents. Tool-neutral; assumes no particular assistant.
-
+Orientation for coding agents. 
 ## What this is
 
 `baffin` is a raw-dump static photo-gallery generator: point it at camera
 originals, get a chronological static site. Clean architecture, functional core /
-imperative shell. The full narrative is in `docs/`: build it with `make docs`
+imperative shell. The full docs are in `docs/`: build them with `make docs`
 and open `docs/_build/html/index.html`. Start with `architecture` and
 `contributing`.
 
-## The one gate
+## The gate
 
 Every change must pass, before it is pushed:
 
@@ -26,10 +25,10 @@ make docs      # sphinx-build -W (doctest + html); warnings are errors
 ```
 
 `make check` uses the host's libvips. CI runs the same gate inside the image
-from `Dockerfile`, which pins libvips and ffmpeg — derivative cache keys do not
-include the toolchain, so a floating libvips changes output bytes without
-changing a key. Reach for it when a change touches generation, or when a result
-should match CI byte for byte:
+from `Dockerfile`, which pins libvips and ffmpeg. Derivative cache keys do not include the
+toolchain, so a floating libvips changes output bytes without changing a key.
+Use it when a change touches generation, or when a result must match CI byte
+for byte:
 
 ```sh
 make check-docker   # the gate, on the pinned Linux toolchain
@@ -60,7 +59,7 @@ baffin/
   adapters/      the imperative shell (hashing, exif, thumbnails, store, render)
   interface/cli/ the Typer surface
   testing/       in-memory fakes + builders (shipped so mypy checks them)
-tests/           mirrors baffin/; the specification
+tests/           mirrors baffin/
 docs/            reStructuredText chapters + AutoAPI reference
 ```
 
@@ -70,18 +69,18 @@ imported by production code; a forbidden-import contract enforces it.
 
 ## Conventions
 
-- **Commits:** Linux-kernel style. Imperative summary (~50 chars), blank line,
-  a body that says *why* when it isn't obvious. No conventional-commit prefixes
+- Commits: Linux-kernel style. Imperative summary (~50 chars), blank line,
+  a body that says why when it isn't obvious. No conventional-commit prefixes
   (`feat:`/`fix:`). No AI attribution; the author is accountable.
-- **Branches:** feature branches with plain descriptive names. Never commit
+- Branches: feature branches with plain descriptive names. Never commit
   directly to `master`.
-- **New native dependency:** update `docs/getting-started.rst` and the CI install
+- New native dependency: update `docs/getting-started.rst` and the CI install
   step, not just `pyproject.toml`.
 
 ## Gotchas
 
-- The derivative cache key is a **SHA-256** over the content hash plus the spec
+- The derivative cache key is a SHA-256 over the content hash plus the spec
   (not the salted builtin `hash`); it must be stable across runs and machines.
 - Parallel generation runs a process pool with `VIPS_CONCURRENCY=1` per worker.
-- Native prerequisites: **libvips**, **ffmpeg**, and on macOS **inih** (for the
+- Native prerequisites: libvips, ffmpeg, and on macOS inih (for the
   `pyexiv2` dylib). `baffin doctor` checks the first two.

@@ -3,7 +3,7 @@ The domain
 
 The domain is frozen dataclasses with no I/O and one method.
 The central type is :py:class:`~baffin.domain.models.Asset`:
-a source item plus its **content hash**.
+a source item plus its content hash.
 The hash is its identity,
 so a renamed or duplicated file is the same asset.
 
@@ -17,7 +17,7 @@ The cache key
 The domain's one method is :py:meth:`~baffin.domain.models.DerivativeSpec.cache_key`.
 It must be stable across runs and machines,
 so it is a SHA-256 over the content hash and the spec rather than the salted builtin ``hash``.
-This is what makes the :doc:`lazy build <lazy-build>` content-addressed:
+The :doc:`lazy build <lazy-build>` is content-addressed on it:
 
 .. doctest::
 
