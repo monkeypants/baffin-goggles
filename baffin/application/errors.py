@@ -3,7 +3,7 @@
 Protocols can't type their exceptions,
 so the contract lives here in prose and types.
 Read/generate ports raise one of these;
-``BuildGallery`` catches them per-asset under the skip-and-report policy
+The build catches them per-asset under the skip-and-report policy
 (see :mod:`baffin.application.reporting`),
 unless ``--strict`` makes any failure fatal.
 """

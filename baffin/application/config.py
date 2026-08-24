@@ -36,18 +36,14 @@ class GalleryConfig:
     strip_gps: bool = True
     show_filenames: bool = False
 
-    @property
-    def active_photo_specs(self) -> tuple[DerivativeSpec, ...]:
-        """The photo tiers this build produces (``full`` only when opted in)."""
-        return tuple(s for s in self.specs if s.name != "full" or self.include_full)
-
     def offerable_tiers(self, present: frozenset[str]) -> tuple[DerivativeSpec, ...]:
         """The tiers the pages may advertise, given what the output holds.
 
-        :attr:`active_photo_specs` decides what to *generate*;
-        this decides what to *advertise*, from the derivatives that exist.
-        Keeping the two apart is what stops a rebuild under a quieter config
-        from retracting a tier whose files are still on disk.
+        ``include_full`` decides what gets *generated* (it gates the ``full``
+        spec out of the plan); this decides what gets *advertised*, from the
+        derivatives that actually exist. Keeping the two apart is what stops a
+        rebuild under a quieter config from retracting a tier whose files are
+        still on disk.
 
         >>> from pathlib import Path
         >>> from baffin.application.config import GalleryConfig
