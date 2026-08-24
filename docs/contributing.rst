@@ -41,6 +41,35 @@ also build the docs (CI does, under ``-W``):
 
    make docs
 
+The pinned toolchain
+--------------------
+
+``make check`` uses whatever libvips your machine has,
+which is the fast path and usually what you want.
+CI does not:
+it runs the same gate inside the image built from the repo's ``Dockerfile``,
+which pins libvips and ffmpeg.
+
+That matters because a derivative's cache key is
+``hash(content_hash + spec)`` and does **not** include the toolchain
+(:doc:`lazy-build`).
+Identical keys therefore promise identical *inputs*, not identical output bytes:
+upgrading libvips changes what a thumbnail looks like
+while every key — and so every cache hit — stays exactly the same.
+Pinning is what makes "all hits" mean the same thing on two machines.
+
+.. code-block:: sh
+
+   make check-docker                                    # the gate, pinned
+   make build-docker SOURCE=~/photos OUTPUT=~/site      # a gallery, pinned
+
+The container is also the only place the pooled build is exercised on Linux,
+which is not a detail:
+``ProcessPoolExecutor`` defaults to *spawn* on macOS and *fork* on Linux,
+and forking a process that has initialised libvips deadlocks.
+``baffin.adapters.generation`` therefore selects spawn explicitly
+rather than inheriting the platform default.
+
 Where things live
 -----------------
 
