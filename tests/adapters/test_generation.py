@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 from PIL import Image
 
+from baffin.adapters import generation
 from baffin.adapters.generation import generate
 from baffin.adapters.processor import AssetJob, AssetResult
 from baffin.application.config import GalleryConfig
@@ -48,6 +49,18 @@ def _tier_hashes(out: Path) -> dict[str, str]:
             key = str(jpg.relative_to(out))
             prints[key] = hashlib.sha256(jpg.read_bytes()).hexdigest()
     return prints
+
+
+def test_workers_are_spawned_never_forked() -> None:
+    """The start method is chosen explicitly, not inherited from the platform.
+
+    libvips initialises a thread pool on import, and forking a process holding
+    one deadlocks the child. Python's default hid this: macOS spawns, so the
+    pooled build worked there, while Linux forks and hung — which nothing
+    caught, because the suite only ever ran on macOS. The test below is the one
+    that hangs when this regresses; this one names the reason.
+    """
+    assert generation._SPAWN.get_start_method() == "spawn"
 
 
 def test_parallel_output_is_identical_to_serial(tmp_path: Path) -> None:
