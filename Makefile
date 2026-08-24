@@ -1,4 +1,4 @@
-.PHONY: check build serve clean docs e2e up down status image check-docker build-docker
+.PHONY: check build serve clean docs e2e e2e-tests up down status image check-docker build-docker
 
 # Port for `serve` and the login agent; override with `make serve PORT=8000`.
 PORT ?= 8753
@@ -18,7 +18,15 @@ check:
 # browser binary and are slower. Run explicitly.
 e2e:
 	uv run --group e2e python -m playwright install chromium
-	uv run --group e2e pytest -m browser -q
+	$(MAKE) e2e-tests
+
+# Collect only tests/e2e. The `browser` marker deselects the rest, but pytest
+# imports every module before it deselects anything, and tests/adapters imports
+# pyvips — so a wider collection needs libvips present just to throw it away.
+# CI runs this target directly, after installing the browser with --with-deps,
+# so the command cannot drift from the one used here.
+e2e-tests:
+	uv run --group e2e pytest tests/e2e -m browser -q
 
 # Source and output come from baffin.toml (or BAFFIN_* / the defaults); pass
 # anything else through ARGS.

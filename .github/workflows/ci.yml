@@ -1,11 +1,21 @@
 name: CI
 
+# A branch with an open PR would otherwise run everything twice, once for the
+# push and once for the pull_request, producing pairs of identical runs that are
+# impossible to tell apart in the checks list.
 on:
   push:
+    branches: [master]
   pull_request:
 
+# Superseded runs are pointless once a newer commit exists on the same ref.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  check:
+  gate:
+    name: Gate (lint, types, tests, docs) on the pinned toolchain
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -40,11 +50,12 @@ jobs:
           docker run --rm --user "$(id -u):$(id -g)" \
             -v "$PWD:/work" -w /work baffin-builder:ci make docs
 
-  # Not containerised: `playwright install` fetches the browser build matching
-  # the playwright version in uv.lock, so the browser is already pinned by the
-  # lockfile. An image would save the download, not add determinism.
-  e2e:
+  browser:
+    name: Browser tests (Playwright chromium)
     runs-on: ubuntu-latest
+    # Not containerised: `playwright install` fetches the browser build matching
+    # the playwright version in uv.lock, so the browser is already pinned by the
+    # lockfile. An image would save the download, not add determinism.
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -58,5 +69,9 @@ jobs:
       - name: Install the browser
         run: uv run --group e2e python -m playwright install --with-deps chromium
 
+      # Via the Makefile, so this cannot drift from `make e2e`. It collects only
+      # tests/e2e: pytest imports every module before the marker deselects
+      # anything, and tests/adapters imports pyvips, which this job has no
+      # libvips for.
       - name: Run browser tests
-        run: uv run --group e2e pytest -m browser -q
+        run: make e2e-tests
