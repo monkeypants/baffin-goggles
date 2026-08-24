@@ -40,7 +40,7 @@ handed inward as a plain :py:class:`~baffin.application.config.GalleryConfig`).
 
 Derivatives are content-addressed, so gallery URLs carry a content hash, not the
 source name.
-``baffin origin`` recovers the original path — handy for editing a picked shot
+``baffin origin`` recovers the original path, for editing a picked shot
 elsewhere (e.g. ``open -a Hugin $(baffin origin full/069f10b0a11b9961.jpg ...)``).
 Setting ``show_filenames = true`` also prints each original's name in the
 lightbox while browsing;

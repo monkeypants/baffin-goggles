@@ -1,10 +1,8 @@
 Contributing
 ============
 
-baffin is small and strict.
-This chapter is the workflow around the code:
-the gate that must stay green, where code lives, and the conventions.
-The code's *shape* is :doc:`architecture`.
+The gate that must stay green, where code lives, and the conventions.
+The code's structure is in :doc:`architecture`.
 
 The gate
 --------
@@ -26,7 +24,7 @@ All must pass before pushing:
    * - ``ruff check``
      - Lint (pyflakes, imports, bugbears, pyupgrade).
    * - ``ruff format --check``
-     - Formatting is enforced.
+     - Formatting.
    * - ``lint-imports``
      - The dependency rule from :doc:`architecture`, enforced.
    * - ``mypy`` (strict)
@@ -78,22 +76,22 @@ and the tests mirror the package:
      adapters/      the imperative shell (I/O)               (:doc:`architecture`)
      interface/cli/ the Typer surface                        (:doc:`cli`)
      testing/       in-memory fakes + builders (shipped, so mypy checks them)
-   tests/           mirrors baffin/; the specification
+   tests/           mirrors baffin/
 
-Tests are the specification:
+The tests specify the behaviour:
 the curated ones are doctests and the examples pulled into these chapters;
 the rest live in ``tests/`` and are browsable in the :doc:`API reference <reference>`.
 
 Conventions
 -----------
 
-- **Commits** follow the Linux-kernel style:
-  imperative summary (~50 chars), a blank line, then a body that explains *why* when it isn't obvious.
+- Commits follow the Linux-kernel style:
+  imperative summary (~50 chars), a blank line, then a body that explains why when it isn't obvious.
   No conventional-commit prefixes;
   no AI attribution (the author is accountable).
-- **Branches** are feature branches with plain descriptive names;
+- Branches are feature branches with plain descriptive names;
   work never lands directly on ``master``.
-- **New native dependency?** Add it to the docs and the CI install step,
+- A new native dependency goes in the docs and the CI install step,
   not just ``pyproject.toml`` (:doc:`getting-started`).
 
 The decisions behind these choices, and the open questions, are recorded in :doc:`rationale`.

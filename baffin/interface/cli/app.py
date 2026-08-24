@@ -123,8 +123,8 @@ def origin(
     """Print the original source path for gallery images.
 
     Accepts content hashes, derivative paths (``full/HASH.jpg``), or pasted
-    image URLs — so you can trace a gallery picture back to the file to open in
-    another tool. Pipe them straight in: ``open -a Hugin $(baffin origin ...)``.
+    image URLs. The printed path can be piped to another tool:
+    ``open -a Hugin $(baffin origin ...)``.
     """
     config = load_config(source=source, output=output)
     index = build_origin_resolver(config).index(config.source)
@@ -201,10 +201,10 @@ def serve(
 ) -> None:
     """Build then serve the site locally; --watch re-renders templates.
 
-    ``serve`` rebuilds before serving, so it takes the options that control the
-    rebuild: ``--full`` decides what the pages contain (serving without it would
-    re-render a ``build --full`` site without its download button), and
-    ``--jobs`` decides how fast a cold cache fills.
+    ``serve`` rebuilds before serving, so it takes the build options too.
+    ``--full`` decides what the pages contain; serving without it re-renders a
+    ``build --full`` site without its download button. ``--jobs`` sets the
+    worker count for a cold cache.
     """
     config = load_config(
         source=source, output=output, include_full=True if full else None

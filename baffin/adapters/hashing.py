@@ -1,7 +1,7 @@
 """xxhash file hasher with a persistent stat->hash memo (see :doc:`/lazy-build`).
 
-Re-hashing gigabytes every run is wasteful,
-so ``(path, size, mtime_ns)`` maps to a previously computed content hash.
+``(path, size, mtime_ns)`` maps to a previously computed content hash,
+so unchanged files are not re-hashed.
 An unchanged stat trusts the memo;
 a changed stat re-hashes.
 The memo is a small JSON table under ``.baffin/``.

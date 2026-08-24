@@ -39,11 +39,10 @@ class GalleryConfig:
     def offerable_tiers(self, present: frozenset[str]) -> tuple[DerivativeSpec, ...]:
         """The tiers the pages may advertise, given what the output holds.
 
-        ``include_full`` decides what gets *generated* (it gates the ``full``
-        spec out of the plan); this decides what gets *advertised*, from the
-        derivatives that actually exist. Keeping the two apart is what stops a
-        rebuild under a quieter config from retracting a tier whose files are
-        still on disk.
+        ``include_full`` gates the ``full`` spec out of the plan, deciding what
+        is generated; this decides what is advertised, from the derivatives that
+        exist. A rebuild under a narrower config therefore does not retract a
+        tier whose files are still on disk.
 
         >>> from pathlib import Path
         >>> from baffin.application.config import GalleryConfig

@@ -1,9 +1,8 @@
 """Read-only filesystem asset repository.
 
 Discovers JPEG/MP4/MOV under a source root.
-It only ever *stats* files,
-so the camera folder stays byte-for-byte pristine,
-honouring the immutable-originals invariant (see :ref:`rationale-principles`).
+It only stats files; the source tree is never written
+(see :ref:`rationale-principles`).
 """
 
 from __future__ import annotations

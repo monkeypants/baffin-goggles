@@ -1,7 +1,7 @@
 Ports and use cases
 ===================
 
-The application orchestrates the pure core over ``typing.Protocol`` **ports**.
+The application orchestrates the pure core over ``typing.Protocol`` ports.
 Each port is a swappable seam with a real adapter and an in-memory fake (drawn in :doc:`architecture`),
 so the use cases test with no I/O:
 :py:class:`~baffin.application.scan.ScanGallery`,
@@ -42,7 +42,7 @@ Authoring is a use case
 
 :py:class:`~baffin.application.editmeta.EditAssetMeta` reads, merges, and writes one sidecar.
 It depends on nothing but the sidecar store,
-so it *cannot* touch a photo's bytes.
+so it cannot touch a photo's bytes.
 The CLI drives it now;
 a v2 web form would drive the same use case.
 Merge semantics: set fields overwrite, unset fields are left alone.

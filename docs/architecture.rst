@@ -3,7 +3,6 @@ Architecture
 
 baffin is a clean-architecture application:
 a delivery-agnostic core with thin adapters at the edge.
-Three views follow.
 
 The dependency rule
 -------------------
@@ -11,7 +10,7 @@ The dependency rule
 Dependencies point inward only: ``interface → adapters → application → domain``.
 The domain imports nothing outward.
 `import-linter <https://import-linter.readthedocs.io/>`_ enforces this on every ``make check``,
-so the diagram below is the contract itself.
+so the diagram below matches the enforced contract.
 
 .. uml::
    :caption: Layers: each depends only on those below.
@@ -66,8 +65,6 @@ through its :py:class:`~baffin.adapters.thumbnails.VipsThumbnailer` and :py:clas
 The lazy build
 --------------
 
-The core plans;
-the shell generates.
 Hashing is memoised on ``stat`` (the :py:class:`~baffin.application.ports.Hasher`),
 only cache misses run in a process pool of :py:class:`~baffin.adapters.processor.AssetProcessor` units,
 results are recorded through the :py:class:`~baffin.application.ports.DerivativeStore`,
@@ -97,5 +94,5 @@ Editing a template rewrites zero image bytes (:doc:`lazy-build`).
    Core --> CLI: BuildPlan (hits, misses)
    CLI -> Pool: generate misses only
    Pool -> Store: record(key, derivative)
-   CLI -> Renderer: render()   (always; HTML is cheap)
+   CLI -> Renderer: render()   (always)
    @enduml

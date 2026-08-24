@@ -4,7 +4,7 @@ No I/O, no framework imports;
 stdlib only.
 Types here are pure value objects;
 the only behaviour in the domain is ``DerivativeSpec.cache_key``,
-the seed of the lazy build (see :doc:`/lazy-build`).
+used by the lazy build (see :doc:`/lazy-build`).
 """
 
 from __future__ import annotations
@@ -101,8 +101,8 @@ class Derivative:
 class StoreState:
     """Immutable cache snapshot the pure diff consumes (see :doc:`/lazy-build`).
 
-    ``present`` holds cache keys that are BOTH recorded in the manifest
-    AND whose file exists on disk;
+    ``present`` holds cache keys that are recorded in the manifest
+    and whose file exists on disk;
     existence is pre-checked by the shell during ``snapshot()``
     so ``diff_plan`` stays pure.
     """
@@ -180,8 +180,7 @@ class DerivativeSpec:
 
         Uses stdlib SHA-256 over a canonical string
         (NOT the builtin ``hash``, which is per-process salted)
-        so the key is stable across runs and machines.
-        It is the foundation of the lazy-build cache (see :doc:`/lazy-build`).
+        so the key is stable across runs and machines (see :doc:`/lazy-build`).
         Identical bytes under an identical spec always yield the same key;
         changing any spec field (e.g. thumb 300→320) changes only that tier's key.
 

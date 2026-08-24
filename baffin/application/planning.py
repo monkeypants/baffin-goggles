@@ -77,7 +77,7 @@ def diff_plan(
     """Split a plan into cache HITs and MISSes over an immutable snapshot.
 
     Pure: a key is a HIT iff it is ``present`` in the snapshot
-    (manifest-recorded AND file-on-disk, pre-checked by the shell).
+    (manifest-recorded and file-on-disk, pre-checked by the shell).
     Identical bytes yield an identical key,
     so a moved or duplicated source is a hit;
     changing a spec changes only that tier's key, so only that tier misses.
