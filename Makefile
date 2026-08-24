@@ -1,4 +1,4 @@
-.PHONY: check build serve clean docs e2e e2e-tests up down status image check-docker build-docker
+.PHONY: check build serve clean docs docs-diagrams e2e e2e-tests up down status image check-docker build-docker
 
 # Port for `serve` and the login agent; override with `make serve PORT=8000`.
 PORT ?= 8753
@@ -84,3 +84,15 @@ status:
 docs:
 	uv run --group docs sphinx-build -b doctest -W --keep-going docs docs/_build/doctest
 	uv run --group docs sphinx-build -b html -W --keep-going docs docs/_build/html
+	$(MAKE) docs-diagrams
+
+# plantuml exits 0 when graphviz is missing and writes "Cannot find Graphviz"
+# *into the image*, so -W sees nothing wrong and a page with a broken diagram
+# publishes green. Assert on the rendered output instead of trusting the exit
+# code.
+docs-diagrams:
+	@if grep -rilE "cannot find graphviz|dot executable" docs/_build/html/_images >/dev/null 2>&1; then \
+		echo "docs: a diagram rendered as a Graphviz error - is graphviz installed?" >&2; \
+		exit 1; \
+	fi
+	@echo "docs: diagrams rendered ($$(ls docs/_build/html/_images/*.svg 2>/dev/null | wc -l | tr -d ' ') svg)"
