@@ -1,4 +1,9 @@
-.PHONY: check build serve clean docs e2e
+.PHONY: check build serve clean docs e2e up down status
+
+# Port for `serve` and the login agent; override with `make serve PORT=8000`.
+PORT ?= 8753
+# Extra CLI flags, e.g. `make build ARGS="--full --jobs 8"`.
+ARGS ?=
 
 # Unified quality gate: lint, format, architecture, types, tests.
 check:
@@ -15,15 +20,29 @@ e2e:
 	uv run --group e2e python -m playwright install chromium
 	uv run --group e2e pytest -m browser -q
 
-# Placeholders wired up in later phases (CLI).
+# Source and output come from baffin.toml (or BAFFIN_* / the defaults); pass
+# anything else through ARGS.
 build:
-	@echo "build: not implemented yet"
+	uv run baffin build $(ARGS)
 
+# Foreground: dies with the terminal. For a gallery that outlives the shell and
+# comes back after a reboot, use `make up`.
 serve:
-	@echo "serve: not implemented yet"
+	uv run baffin serve --port $(PORT) $(ARGS)
 
 clean:
-	@echo "clean: not implemented yet"
+	uv run baffin clean $(ARGS)
+
+# Run the gallery as a login agent: restarted if it crashes, back after a
+# reboot. `make status` reports it, `make down` removes it.
+up:
+	./scripts/gallery-agent install $(PORT)
+
+down:
+	./scripts/gallery-agent uninstall
+
+status:
+	./scripts/gallery-agent status
 
 docs:
 	uv run --group docs sphinx-build -b doctest -W --keep-going docs docs/_build/doctest

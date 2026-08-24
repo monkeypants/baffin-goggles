@@ -1,0 +1,89 @@
+#!/bin/sh
+# Manage the gallery as a macOS login agent, so `baffin serve` survives both a
+# crash (KeepAlive) and a reboot (RunAtLoad) instead of dying with the terminal
+# that started it.
+#
+#   scripts/gallery-agent install [port]
+#   scripts/gallery-agent uninstall
+#   scripts/gallery-agent status
+#
+# The agent runs from the repo root so baffin.toml resolves the same way it does
+# interactively, and carries an explicit PATH because launchd starts with a
+# minimal one and ffmpeg lives in Homebrew.
+
+set -eu
+
+LABEL="dev.baffin.gallery"
+REPO="$(cd "$(dirname "$0")/.." && pwd)"
+PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"
+LOG="$HOME/Library/Logs/baffin-gallery.log"
+BAFFIN="$REPO/.venv/bin/baffin"
+DOMAIN="gui/$(id -u)"
+
+usage() {
+    echo "usage: $0 {install [port]|uninstall|status}" >&2
+    exit 64
+}
+
+require_binary() {
+    [ -x "$BAFFIN" ] || {
+        echo "no baffin at $BAFFIN — run 'uv sync' first" >&2
+        exit 1
+    }
+}
+
+write_plist() {
+    port="$1"
+    mkdir -p "$(dirname "$PLIST")" "$(dirname "$LOG")"
+    cat > "$PLIST" <<PLIST_EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key><string>$LABEL</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>$BAFFIN</string>
+        <string>serve</string>
+        <string>--port</string>
+        <string>$port</string>
+    </array>
+    <key>WorkingDirectory</key><string>$REPO</string>
+    <key>RunAtLoad</key><true/>
+    <key>KeepAlive</key><true/>
+    <key>StandardOutPath</key><string>$LOG</string>
+    <key>StandardErrorPath</key><string>$LOG</string>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key><string>/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    </dict>
+</dict>
+</plist>
+PLIST_EOF
+}
+
+case "${1:-}" in
+install)
+    require_binary
+    port="${2:-8753}"
+    launchctl bootout "$DOMAIN/$LABEL" 2>/dev/null || true
+    write_plist "$port"
+    launchctl bootstrap "$DOMAIN" "$PLIST"
+    echo "$LABEL installed on port $port; logging to $LOG"
+    ;;
+uninstall)
+    launchctl bootout "$DOMAIN/$LABEL" 2>/dev/null || true
+    rm -f "$PLIST"
+    echo "$LABEL removed"
+    ;;
+status)
+    if launchctl print "$DOMAIN/$LABEL" > /dev/null 2>&1; then
+        launchctl print "$DOMAIN/$LABEL" | grep -E "^\s+(state|pid) =" || true
+    else
+        echo "$LABEL not loaded"
+    fi
+    ;;
+*)
+    usage
+    ;;
+esac

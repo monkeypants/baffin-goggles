@@ -27,4 +27,5 @@ They cover getting started, the architecture, and how to contribute. Start at
 
 ```sh
 make check   # ruff + format + import-linter + mypy + pytest + doctests
+make up      # serve the gallery as a login agent (survives crash + reboot)
 ```
