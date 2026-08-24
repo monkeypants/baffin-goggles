@@ -1,12 +1,20 @@
 name: CI
 
-# A branch with an open PR would otherwise run everything twice, once for the
-# push and once for the pull_request, producing pairs of identical runs that are
-# impossible to tell apart in the checks list.
+# The gate runs on pull requests only.
+#
+# Nothing lands on master except by PR, and merging is rebase-only, so the
+# commits that reach master are the ones the PR just tested. Running the gate
+# again on the push re-prosecutes a verdict already reached, which is both
+# wasted minutes and a second identical entry in the run list. (Master pushes
+# still build the docs under -W, which exercises the doctests.)
+#
+# The residual gap: a PR tested against an older master, then rebased onto a
+# newer one, lands a combination nothing tested. The fix for that is branch
+# protection requiring branches to be up to date before merging, not a
+# duplicate run after the fact.
 on:
-  push:
-    branches: [master]
   pull_request:
+  workflow_dispatch:
 
 # Superseded runs are pointless once a newer commit exists on the same ref.
 concurrency:
