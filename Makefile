@@ -1,4 +1,4 @@
-.PHONY: check build serve clean docs e2e up down status
+.PHONY: check build serve clean docs e2e up down status image check-docker build-docker
 
 # Port for `serve` and the login agent; override with `make serve PORT=8000`.
 PORT ?= 8753
@@ -32,6 +32,35 @@ serve:
 
 clean:
 	uv run baffin clean $(ARGS)
+
+# --- Pinned toolchain (see Dockerfile) -------------------------------------
+#
+# The host's libvips decides what a derivative looks like, but the cache key
+# does not include it. These targets run the same work against one pinned
+# libvips/ffmpeg, which is what CI uses too.
+
+IMAGE ?= baffin-builder
+DOCKER_RUN = docker run --rm --user "$$(id -u):$$(id -g)" \
+	-v "$(CURDIR):/work" -w /work $(IMAGE)
+
+image:
+	docker build -t $(IMAGE) .
+
+# The gate, on the pinned toolchain instead of whatever this machine has.
+check-docker: image
+	$(DOCKER_RUN) make check
+
+# Build a gallery with the pinned libvips, so its bytes match CI's. SOURCE is
+# mounted read-only: baffin never writes to originals, and the mount enforces
+# it. BAFFIN_* env beats baffin.toml, so the container's paths win.
+build-docker: image
+	@test -n "$(SOURCE)" || { echo "set SOURCE=/path/to/originals" >&2; exit 64; }
+	@test -n "$(OUTPUT)" || { echo "set OUTPUT=/path/to/site" >&2; exit 64; }
+	docker run --rm --user "$$(id -u):$$(id -g)" \
+		-v "$(CURDIR):/work" -w /work \
+		-v "$(SOURCE):/photos:ro" -v "$(OUTPUT):/site" \
+		-e BAFFIN_SOURCE=/photos -e BAFFIN_OUTPUT=/site \
+		$(IMAGE) make build ARGS="$(ARGS)"
 
 # Run the gallery as a login agent: restarted if it crashes, back after a
 # reboot. `make status` reports it, `make down` removes it.
