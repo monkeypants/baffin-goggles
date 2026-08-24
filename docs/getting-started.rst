@@ -56,9 +56,9 @@ a second run regenerates nothing,
 and editing a template rewrites zero image bytes (:doc:`lazy-build`).
 ``serve --watch`` re-renders templates on change without touching images.
 
-Put the settings you would otherwise retype into ``baffin.toml``
-(``source``, ``output``, ``include_full``; see :doc:`cli`),
-and the Makefile targets take it from there:
+Put the recurring settings in ``baffin.toml``
+(``source``, ``output``, ``include_full``; see :doc:`cli`).
+The Makefile targets then need no arguments:
 
 .. code-block:: sh
 
@@ -68,11 +68,10 @@ and the Makefile targets take it from there:
    make status                         # is the agent running, and as what pid
    make down                           # stop and remove it
 
-``make up`` installs a launchd agent (macOS) that runs ``baffin serve`` from the
-repo root with ``RunAtLoad`` and ``KeepAlive``,
-so the gallery comes back by itself after a crash or a restart
-instead of dying with whatever shell started it.
-It logs to ``~/Library/Logs/baffin-gallery.log``.
+``make up`` installs a launchd agent (macOS only) that runs ``baffin serve``
+from the repo root with ``RunAtLoad`` and ``KeepAlive``,
+so it restarts after a crash and returns after a reboot.
+Logs go to ``~/Library/Logs/baffin-gallery.log``.
 Per-image captions are optional (:doc:`use-cases`):
 
 .. code-block:: sh
