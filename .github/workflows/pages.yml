@@ -1,0 +1,66 @@
+name: Docs
+
+# Only master publishes. A PR's docs are still built and validated under -W by
+# the CI gate, which is what catches a broken cross-reference; this workflow is
+# just the publish step.
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+# Serialised, not cancelled: interrupting a half-finished deploy would leave the
+# site mid-swap, and a superseded docs build is harmless to let finish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  publish:
+    name: Build the docs and publish them to GitHub Pages
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # The same pinned image the gate uses, so the published docs are built
+      # with the Sphinx and plantuml this project pins rather than whatever the
+      # runner happens to have. The diagrams need plantuml (and its JRE), which
+      # is most of why that image is large.
+      - name: Build the toolchain image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: baffin-builder:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # `make docs` runs the doctest builder before the HTML one, both under -W,
+      # so a published page cannot contain a doctest that does not pass.
+      - name: Build the docs
+        run: |
+          docker run --rm --user "$(id -u):$(id -g)" \
+            -v "$PWD:/work" -w /work baffin-builder:ci make docs
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload the HTML
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/_build/html
+
+      - name: Deploy
+        id: deploy
+        uses: actions/deploy-pages@v4

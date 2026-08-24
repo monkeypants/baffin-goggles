@@ -47,6 +47,10 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "reference/index.rst"]
 html_theme = "furo"
 html_title = "baffin"
 
+# Where the built docs live, so canonical links resolve to the published site
+# rather than to whatever host served the page (see the Docs workflow).
+html_baseurl = "https://monkeypants.github.io/baffin-goggles/"
+
 # --- PlantUML (diagrams render into the build; requires plantuml on PATH) ---
 plantuml = "plantuml"
 plantuml_output_format = "svg"
