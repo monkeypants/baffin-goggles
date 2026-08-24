@@ -125,10 +125,6 @@ class FakeDerivativeStore:
     def snapshot(self) -> StoreState:
         return StoreState(present=frozenset(self._present))
 
-    def present_spec_names(self, names: Iterable[str]) -> frozenset[str]:
-        recorded = {deriv.spec_name for deriv in self._by_key.values()}
-        return frozenset(name for name in names if name in recorded)
-
     def record(self, key: str, deriv: Derivative) -> None:
         self._present.add(key)
         self._by_key[key] = deriv

@@ -5,9 +5,17 @@ The application orchestrates the pure core over ``typing.Protocol`` **ports**.
 Each port is a swappable seam with a real adapter and an in-memory fake (drawn in :doc:`architecture`),
 so the use cases test with no I/O:
 :py:class:`~baffin.application.scan.ScanGallery`,
-:py:class:`~baffin.application.build.BuildGallery`,
 :py:class:`~baffin.application.clean.CleanGallery`, and
 :py:class:`~baffin.application.editmeta.EditAssetMeta`.
+
+The build is the exception, and deliberately so.
+Planning stays pure (:py:func:`~baffin.application.planning.plan_derivatives` and
+:py:func:`~baffin.application.planning.diff_plan`),
+but *executing* the plan is fanned out across a process pool over the
+:py:class:`~baffin.adapters.processor.AssetProcessor` composite,
+so the orchestration lives in the shell as
+:py:func:`~baffin.interface.cli.pipeline.run_build`:
+the core plans, the shell executes.
 
 Skip and report
 ---------------
@@ -18,11 +26,17 @@ a port failure on one asset is recorded and skipped so the run continues,
 unless ``--strict`` makes it fatal.
 Real bugs always propagate.
 
-.. literalinclude:: ../tests/application/test_build_gallery.py
-   :pyobject: test_skip_and_report_survives_a_failing_asset
+The policy holds on both generation paths, serial and pooled —
+a worker's exception re-raises inside the same guard:
 
-.. literalinclude:: ../tests/application/test_build_gallery.py
-   :pyobject: test_strict_makes_a_failing_asset_fatal
+.. literalinclude:: ../tests/adapters/test_generation.py
+   :pyobject: test_generate_skips_and_reports_a_failing_asset
+
+.. literalinclude:: ../tests/adapters/test_generation.py
+   :pyobject: test_generate_skips_in_the_process_pool_too
+
+.. literalinclude:: ../tests/adapters/test_generation.py
+   :pyobject: test_generate_strict_makes_a_failing_asset_fatal
 
 Authoring is a use case
 -----------------------

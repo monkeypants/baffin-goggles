@@ -12,13 +12,10 @@ from typing import Any
 
 from baffin.adapters.hashing import StatMemo, XxHasher
 from baffin.adapters.metadata import ExifMetadataReader
-from baffin.adapters.render.renderer import Jinja2Renderer
 from baffin.adapters.repository import FsAssetRepository
 from baffin.adapters.settings import BaffinSettings
 from baffin.adapters.sidecars import MarkdownSidecarStore
 from baffin.adapters.store import FileDerivativeStore
-from baffin.adapters.thumbnails import VipsThumbnailer
-from baffin.application.build import BuildGallery
 from baffin.application.clean import CleanGallery
 from baffin.application.config import GalleryConfig
 from baffin.application.origin import ResolveOrigins
@@ -47,18 +44,6 @@ def build_scanner(config: GalleryConfig) -> ScanGallery:
         hasher=_hasher(config),
         reader=ExifMetadataReader(),
         store=FileDerivativeStore(config.output),
-    )
-
-
-def build_builder(config: GalleryConfig) -> BuildGallery:
-    return BuildGallery(
-        repo=FsAssetRepository(),
-        hasher=_hasher(config),
-        reader=ExifMetadataReader(),
-        sidecars=_sidecars(config),
-        thumbnailer=VipsThumbnailer(),
-        store=FileDerivativeStore(config.output),
-        renderer=Jinja2Renderer(),
     )
 
 
