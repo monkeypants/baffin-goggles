@@ -31,17 +31,6 @@
   test: two builds of the same source under different libvips versions either
   disagree on keys (fingerprint) or are documented as unsafe to mix
 
-* NEXT Declare a licence in pyproject.toml
-  The repository carries GPL-3.0, which arrived with the GitHub repo rather
-  than by decision here, and pyproject declares no licence at all. Make the
-  two agree, deliberately.
-
-  Newly pressing: v0.1.0 is tagged, and a downstream repo installs it straight
-  from that tag. The distribution therefore has consumers while carrying no
-  licence metadata at all, which is the one kind of ambiguity a licence exists
-  to remove.
-  test: make docs stays green (a licence classifier is a metadata change)
-
 * NEXT Give serve --force, or split serve from build
   --force is the last build option serve cannot express. If it does get added,
   the composition is the thing to fix rather than the flag list: serve does two
