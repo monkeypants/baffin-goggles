@@ -1,6 +1,6 @@
 [project]
 name = "baffin-gallery"
-version = "0.1.0"
+version = "0.1.1"
 description = "Point it at a folder of camera originals; get a chronological static gallery you can share as a link."
 readme = "README.md"
 requires-python = ">=3.12"
