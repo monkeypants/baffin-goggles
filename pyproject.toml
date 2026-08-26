@@ -5,6 +5,18 @@ description = "Point it at a folder of camera originals; get a chronological sta
 readme = "README.md"
 requires-python = ">=3.12"
 authors = [{ name = "Chris Gough", email = "chris.gough@gosource.com.au" }]
+
+# GPL-3.0-only, not -or-later. The repository carries the plain GPLv3 text and
+# grants no "or any later version" anywhere, and GPLv3 without that statement is
+# version 3 alone. Widening it later is a one-word change; narrowing it after
+# people have relied on it is not, so the narrower reading is the honest one to
+# publish. Change to GPL-3.0-or-later if that was the intent.
+#
+# Declared as an SPDX expression (PEP 639) rather than a License:: classifier,
+# which that PEP deprecates. license-files ships the licence text in the
+# distribution, which the GPL requires you to convey with the work.
+license = "GPL-3.0-only"
+license-files = ["LICENSE"]
 # Runtime dependencies are added per-adapter in later phases; the domain is
 # framework-free (stdlib only).
 dependencies = [
