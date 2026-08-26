@@ -50,7 +50,10 @@ A derivative's cache key is ``hash(content_hash + spec)``
 and does not include the toolchain (:doc:`lazy-build`).
 Upgrading libvips changes the output bytes without changing any key,
 so two machines can both report all-hits over derivatives that differ.
-Pinning the toolchain removes that variable.
+
+The image is therefore **the only sanctioned builder for a gallery that will be
+published**; building on the host is a development convenience
+(:doc:`rationale`).
 
 .. code-block:: sh
 
@@ -58,6 +61,16 @@ Pinning the toolchain removes that variable.
    make build-docker SOURCE=~/photos OUTPUT=~/site      # a gallery, pinned
 
 The container is also where the pooled build gets exercised on Linux.
+
+Two consequences worth knowing before mixing them.
+A cache written by one toolchain is **not** invalidated by switching to another:
+the keys still match, so the second build reports all-hits and silently reuses
+the first one's bytes.
+Moving a published gallery onto the sanctioned toolchain therefore takes
+``make clean`` first, and regenerates the whole corpus.
+And nothing detects the mismatch -- the rule is a convention, not an
+enforcement, so a cache of unknown provenance is best discarded rather than
+trusted.
 ``ProcessPoolExecutor`` defaults to spawn on macOS and fork on Linux,
 and forking a process that has initialised libvips deadlocks,
 so ``baffin.adapters.generation`` sets the start method explicitly.

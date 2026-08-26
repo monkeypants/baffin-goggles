@@ -147,9 +147,16 @@ Decisions of record
   its adapters must be picklable and constructable in a worker.
 - **Port DTO:** ``MetadataReader`` returns ``RawMetadata`` (dims, kind, EXIF),
   distinct from the authored ``AssetMeta`` sidecar.
-- **Toolchain:** libvips and ffmpeg are pinned in ``Dockerfile`` for CI,
-  because a derivative's cache key does not include them
-  (see :doc:`contributing`).
+- **Toolchain:** the cache key does not include libvips or ffmpeg, and will not.
+  The image built from ``Dockerfile`` is the only sanctioned builder for a
+  gallery that will be published; a host build is a development convenience.
+  The alternative was a toolchain fingerprint in the key, which is more correct
+  in the abstract but invalidates every derivative on every libvips upgrade --
+  paying a full rebuild of the whole corpus, repeatedly, to protect against a
+  hazard that one sanctioned builder removes for free. See :doc:`contributing`
+  for the mechanics, and note the residual risk: nothing *detects* a cache
+  written by an unsanctioned toolchain, so the rule is a convention rather than
+  an enforcement.
 
 Open questions
 --------------
@@ -158,9 +165,3 @@ Open questions
   The choice is between single-tenant (one deploy per person, shared links)
   and accounts.
   Keeping the web layer a thin adapter preserves both options.
-- **Toolchain in the cache key.**
-  Two machines with different libvips versions produce different bytes under
-  identical keys, and each reports all-hits over the other's output.
-  Either the key includes a toolchain fingerprint, at the cost of invalidating
-  every derivative on an upgrade, or the pinned image is the only sanctioned
-  builder.
