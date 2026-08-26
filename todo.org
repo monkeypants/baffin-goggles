@@ -10,27 +10,6 @@
 #   - "commit:" the imperative summary line (Linux-kernel style, no prefixes)
 #   - "test:"   how the commit proves itself (local + CI)
 
-* NEXT Decide whether cache_key includes a toolchain fingerprint
-  The drift is live, not hypothetical: a dev machine renders with Homebrew's
-  libvips (8.18.5) and the pinned image with Debian's (8.16.1), and each
-  reports "all hits" over the other's output, because the key is
-  hash(content_hash + spec) and does not include the toolchain. Identical keys
-  promise identical inputs, not identical bytes.
-
-  This has now shipped rather than merely threatened. A real gallery has been
-  built for publication on a Homebrew machine, so the derivatives an audience
-  sees were rendered by the toolchain the key does not name. Rebuilding that
-  same source in the container would report every key a hit while producing
-  different bytes, and nothing anywhere would notice.
-
-  Either add a toolchain fingerprint to the key — correct, but every libvips
-  bump then invalidates every derivative — or accept the divergence and treat
-  the container as the only sanctioned way to build a gallery that matters.
-  A cache that can silently mean two things is the same class of defect as a
-  page advertising a tier it does not have.
-  test: two builds of the same source under different libvips versions either
-  disagree on keys (fingerprint) or are documented as unsafe to mix
-
 * NEXT Give serve --force, or split serve from build
   --force is the last build option serve cannot express. If it does get added,
   the composition is the thing to fix rather than the flag list: serve does two
