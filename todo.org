@@ -10,6 +10,9 @@
 #   - "commit:" the imperative summary line (Linux-kernel style, no prefixes)
 #   - "test:"   how the commit proves itself (local + CI)
 
+* TODO Review Baffin goggles :review:
+SCHEDULED: <2026-11-30 Mon>
+
 * NEXT Give serve --force, or split serve from build
   --force is the last build option serve cannot express. If it does get added,
   the composition is the thing to fix rather than the flag list: serve does two
